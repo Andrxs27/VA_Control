@@ -2,30 +2,35 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('facturas', {
+    await queryInterface.createTable('ventas', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      venta_id: {
+      vendedor_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         references: {
-          model: 'ventas',
+          model: 'usuarios',
           key: 'id'
         }
       },
-      detalle_productos: {
-        type: Sequelize.JSONB,
+      cliente_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'usuarios',
+          key: 'id'
+        }
+      },
+      total: {
+        type: Sequelize.DECIMAL(10, 2),
         allowNull: false
       },
-      impuestos: {
-        type: Sequelize.DECIMAL(10, 2),
-        defaultValue: 0
+      metodo_pago: {
+        type: Sequelize.STRING(50)
       },
-      fecha_emision: {
+      creado_en: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW
       }
@@ -33,6 +38,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('facturas');
+    await queryInterface.dropTable('ventas');
   }
 };

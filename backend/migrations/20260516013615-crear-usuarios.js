@@ -2,6 +2,10 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
+    await queryInterface.sequelize.query(`
+      CREATE TYPE rol_usuario AS ENUM ('admin', 'vendedor', 'tecnico', 'cliente');
+    `);
+
     await queryInterface.createTable('usuarios', {
       id: {
         allowNull: false,
@@ -13,31 +17,31 @@ module.exports = {
         type: Sequelize.STRING(100),
         allowNull: false
       },
-      correo: {
-        type: Sequelize.STRING(150),
+      rol: {
+        type: Sequelize.ENUM('admin', 'vendedor', 'tecnico', 'cliente'),
+        allowNull: false
+      },
+      email: {
+        type: Sequelize.STRING(100),
         allowNull: false,
         unique: true
       },
-      contrasena: {
+      password: {
         type: Sequelize.STRING(255),
         allowNull: false
       },
-      rol: {
-        type: Sequelize.ENUM('admin', 'vendedor', 'tecnico'),
-        allowNull: false
+      config: {
+        type: Sequelize.JSONB
       },
-      activo: {
+      active: {
         type: Sequelize.BOOLEAN,
         defaultValue: true
-      },
-      creado_en: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
       }
     });
   },
 
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('usuarios');
+    await queryInterface.sequelize.query(`DROP TYPE IF EXISTS rol_usuario;`);
   }
 };
