@@ -5,8 +5,6 @@ module.exports = {
     await queryInterface.sequelize.query(`
       DROP TYPE IF EXISTS estado_servicio;
       DROP TYPE IF EXISTS estado_entrega;
-      CREATE TYPE estado_servicio AS ENUM ('pendiente', 'en_proceso', 'completado', 'entregado');
-      CREATE TYPE estado_entrega AS ENUM ('domicilio', 'tienda');
     `);
 
     await queryInterface.sequelize.query(`
@@ -16,8 +14,8 @@ module.exports = {
         tecnico_id INT REFERENCES usuarios(id),
         equipo VARCHAR(100) NOT NULL,
         falla TEXT,
-        estado estado_servicio DEFAULT 'pendiente',
-        tipo_entrega estado_entrega,
+        estado VARCHAR(20) DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'en_proceso', 'completado', 'entregado')),
+        tipo_entrega VARCHAR(20) CHECK (tipo_entrega IN ('domicilio', 'tienda')),
         fecha_promesa DATE
       );
     `);
@@ -25,9 +23,5 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('ordenes_servicio');
-    await queryInterface.sequelize.query(`
-      DROP TYPE IF EXISTS estado_servicio;
-      DROP TYPE IF EXISTS estado_entrega;
-    `);
   }
 };
