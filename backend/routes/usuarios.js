@@ -1,14 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Pool } = require('pg');
-
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'va_control_db',
-    password: '123456',
-    port: 5432,
-});
+const pool = require('../db');
 
 // GET ALL
 router.get('/', async (req, res) => {
