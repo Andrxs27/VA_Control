@@ -7,17 +7,17 @@ async function renderProductos() {
     let html = '';
     for (const p of productos) {
         html += `<tr>
-    <td><code>${p.sku}</code></td>
-    <td>${p.nombre}</td>
-    <td>${p.categoria}</td>
-    <td>${p.stock} uds.</td>
-    <td>${p.precio_venta}</td>
-    <td>${p.active ? 'Activo' : 'Inactivo'}</td>
-    <td>
+      <td><code>${p.sku}</code></td>
+      <td>${p.nombre}</td>
+      <td>${p.categoria}</td>
+      <td>${p.stock} uds.</td>
+      <td>${p.precio_venta}</td>
+      <td>${p.activo ? 'Activo' : 'Inactivo'}</td>
+      <td>
         <button class="btn btn-danger btn-sm" onclick="desactivarProducto(${p.id})">
-        <i class="ti ti-trash"></i>
+          <i class="ti ti-trash"></i>
         </button>
-    </td>
+      </td>
     </tr>`;
     }
 
@@ -48,11 +48,9 @@ async function guardarProducto() {
     renderProductos();
 }
 
-
 async function desactivarProducto(id) {
     await fetch(`${API}/productos/${id}`, { method: 'DELETE' });
     renderProductos();
 }
-
 
 renderProductos();
