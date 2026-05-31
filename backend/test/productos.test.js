@@ -6,10 +6,9 @@ const app = express();
 app.use(express.json());
 app.use('/api/productos', productosRoutes);
 
-describe('Pruebas de Productos', () => {
+describe('Pruebas de productos', () => {
     let testId;
 
-    
     describe('GET /api/productos', () => {
         it('deberia retornar todos los productos', async () => {
             const res = await request(app).get('/api/productos');
@@ -25,6 +24,7 @@ describe('Pruebas de Productos', () => {
                 .send({
                     sku: 'TEST-999',
                     nombre: 'Producto de prueba',
+                    descripcion: 'Descripcion de prueba',
                     categoria: 'electronicos',
                     stock: 10,
                     stock_minimo: 2,
@@ -51,6 +51,7 @@ describe('Pruebas de Productos', () => {
                 .send({
                     sku: 'TEST-999',
                     nombre: 'Producto actualizado',
+                    descripcion: 'Descripcion actualizada',
                     categoria: 'repuestos',
                     stock: 20,
                     stock_minimo: 5,
