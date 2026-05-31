@@ -5,39 +5,33 @@ module.exports = {
     await queryInterface.bulkInsert('usuarios', [
       {
         nombre: 'Administrador Principal',
-        rol: 'admin',
         email: 'admin@vacontrol.com',
         password: '123456',
-        config: null,
-        active: true
+        rol: 'admin',
+        activo: true,
+        creado_en: new Date(),
+        actualizado_en: new Date()
       },
       {
-        nombre: 'Valen Vendedor',
-        rol: 'vendedor',
-        email: 'valen@vacontrol.com',
+        nombre: 'Carlos Vendedor',
+        email: 'carlos@vacontrol.com',
         password: '123456',
-        config: null,
-        active: true
+        rol: 'vendedor',
+        activo: true,
+        creado_en: new Date(),
+        actualizado_en: new Date()
       },
       {
         nombre: 'Maria Tecnico',
-        rol: 'tecnico',
         email: 'maria@vacontrol.com',
         password: '123456',
-        config: null,
-        active: true
-      },
-      {
-        nombre: 'Andres Cliente',
-        rol: 'cliente',
-        email: 'andres@gmail.com',
-        password: '123456',
-        config: null,
-        active: true
+        rol: 'tecnico',
+        activo: true,
+        creado_en: new Date(),
+        actualizado_en: new Date()
       }
     ]);
   },
-
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete('usuarios', null, {});
   }
