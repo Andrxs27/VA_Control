@@ -44,9 +44,8 @@ function prepararEdicion(id) {
         return;
     }
 
-    productoEditandoId = id; // Activamos el modo edición (PUT)
+    productoEditandoId = id; 
 
-    // Llenamos el formulario con los datos cargados
     document.getElementById('p-sku').value = producto.sku || '';
     document.getElementById('p-nombre').value = producto.nombre || '';
     document.getElementById('p-categoria').value = producto.categoria || '';
@@ -66,7 +65,7 @@ async function guardarProducto() {
     const nombre = document.getElementById('p-nombre').value;
     const categoria = document.getElementById('p-categoria').value;
     const stock = document.getElementById('p-stock').value;
-    const stock_minimo = document.getElementById('p-stockmin')?.value || 0; // Evita error si el input no existe
+    const stock_minimo = document.getElementById('p-stockmin')?.value || 0; 
     const precio_venta = document.getElementById('p-precio').value;
 
     if (!sku || !nombre) {
@@ -125,5 +124,4 @@ function resetearFormulario() {
     document.getElementById('p-precio').value = '';
 }
 
-// Ejecución inicial
 renderProductos();
