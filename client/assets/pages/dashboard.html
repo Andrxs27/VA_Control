@@ -7,11 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="/client/assets/css/styles.css">
 </head>
 <body>
 
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="logo">
       <h1>Inventario<span>Pro</span></h1>
@@ -41,7 +40,6 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
   <div class="main">
     <header class="topbar">
       <div class="page-title" id="page-title">Dashboard</div>
@@ -56,13 +54,12 @@
 
     <main class="content">
 
-      <!-- DASHBOARD -->
       <div class="page active" id="page-dashboard">
         <div class="kpi-grid">
           <div class="kpi-card kpi-green">
             <div class="kpi-label">Ventas Hoy</div>
             <div class="kpi-value" id="kpi-ventas">$0</div>
-            <div class="kpi-sub"><i class="ti ti-trending-up" style="color:var(--green)"></i> 12 transacciones</div>
+            <div class="kpi-sub"><i class="ti ti-trending-up icon-trend"></i> 12 transacciones</div>
             <i class="ti ti-receipt kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-blue">
@@ -74,7 +71,7 @@
           <div class="kpi-card kpi-amber">
             <div class="kpi-label">Stock Bajo</div>
             <div class="kpi-value" id="kpi-stockbajo">0</div>
-            <div class="kpi-sub"><i class="ti ti-alert-triangle" style="color:var(--amber)"></i> requieren reposición</div>
+            <div class="kpi-sub"><i class="ti ti-alert-triangle icon-alert"></i> requieren reposición</div>
             <i class="ti ti-alert-triangle kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-red">
@@ -102,26 +99,27 @@
     </main>
   </div>
 
-  <!-- ==================== MODALES (compartidos en todas las páginas) ==================== -->
-
-  <!-- Modal Producto -->
   <div class="modal-overlay" id="modal-producto">
     <div class="modal">
-      <div class="modal-head"><h2>Nuevo Producto</h2><button class="icon-btn" onclick="closeModal('modal-producto')"><i class="ti ti-x"></i></button></div>
+      <div class="modal-head">
+        <h2>Nuevo Producto</h2>
+        <button class="icon-btn" onclick="closeModal('modal-producto')" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+      </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
-          <div class="form-group"><label>SKU *</label><input type="text" id="p-sku" placeholder="EJ: ELEC-001"></div>
-          <div class="form-group"><label>Nombre *</label><input type="text" id="p-nombre" placeholder="Nombre del producto"></div>
-          <div class="form-group"><label>Categoría</label>
+          <div class="form-group"><label for="p-sku">SKU *</label><input type="text" id="p-sku" placeholder="EJ: ELEC-001"></div>
+          <div class="form-group"><label for="p-nombre">Nombre *</label><input type="text" id="p-nombre" placeholder="Nombre del producto"></div>
+          <div class="form-group">
+            <label for="p-categoria">Categoría</label>
             <select class="form-select" id="p-categoria">
               <option value="electronica">Electrónica</option>
               <option value="repuestos">Repuestos</option>
               <option value="servicios">Servicios</option>
             </select>
           </div>
-          <div class="form-group"><label>Precio de Venta</label><input type="number" id="p-precio" placeholder="0.00" step="0.01"></div>
-          <div class="form-group"><label>Stock Inicial</label><input type="number" id="p-stock" placeholder="0" min="0"></div>
-          <div class="form-group"><label>Stock Mínimo</label><input type="number" id="p-stockmin" placeholder="5" min="0"></div>
+          <div class="form-group"><label for="p-precio">Precio de Venta</label><input type="number" id="p-precio" placeholder="0.00" step="0.01"></div>
+          <div class="form-group"><label for="p-stock">Stock Inicial</label><input type="number" id="p-stock" placeholder="0" min="0"></div>
+          <div class="form-group"><label for="p-stockmin">Stock Mínimo</label><input type="number" id="p-stockmin" placeholder="5" min="0"></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -131,25 +129,31 @@
     </div>
   </div>
 
-  <!-- Modal Movimiento -->
   <div class="modal-overlay" id="modal-movimiento">
     <div class="modal">
-      <div class="modal-head"><h2>Registrar Movimiento de Inventario</h2><button class="icon-btn" onclick="closeModal('modal-movimiento')"><i class="ti ti-x"></i></button></div>
+      <div class="modal-head">
+        <h2>Registrar Movimiento de Inventario</h2>
+        <button class="icon-btn" onclick="closeModal('modal-movimiento')" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+      </div>
       <div class="modal-body">
-        <div class="alert alert-info" style="margin-bottom:16px"><i class="ti ti-info-circle"></i>Se recomienda tabla <code>movimientos_inventario(id, producto_id, tipo ENUM('entrada','salida','ajuste'), cantidad, motivo, usuario_id, creado_en)</code></div>
+        <div class="alert alert-info shadow-sm">
+          <i class="ti ti-info-circle"></i>Se recomienda tabla <code>movimientos_inventario(id, producto_id, tipo ENUM('entrada','salida','ajuste'), cantidad, motivo, usuario_id, creado_en)</code>
+        </div>
         <div class="form-grid">
-          <div class="form-group"><label>Producto *</label>
+          <div class="form-group">
+            <label for="mov-producto">Producto *</label>
             <select class="form-select" id="mov-producto"><option value="">Seleccionar producto</option></select>
           </div>
-          <div class="form-group"><label>Tipo de Movimiento</label>
+          <div class="form-group">
+            <label for="mov-tipo">Tipo de Movimiento</label>
             <select class="form-select" id="mov-tipo">
               <option value="entrada">Entrada (compra/recepción)</option>
               <option value="salida">Salida (uso/pérdida)</option>
               <option value="ajuste">Ajuste manual</option>
             </select>
           </div>
-          <div class="form-group"><label>Cantidad</label><input type="number" id="mov-cantidad" min="1" placeholder="1"></div>
-          <div class="form-group"><label>Motivo / Referencia</label><textarea id="mov-motivo" placeholder="Ej: Compra proveedor XYZ, factura #123"></textarea></div>
+          <div class="form-group"><label for="mov-cantidad">Cantidad</label><input type="number" id="mov-cantidad" min="1" placeholder="1"></div>
+          <div class="form-group"><label for="mov-motivo">Motivo / Referencia</label><textarea id="mov-motivo" placeholder="Ej: Compra proveedor XYZ, factura #123"></textarea></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -159,19 +163,24 @@
     </div>
   </div>
 
-  <!-- Modal Venta -->
   <div class="modal-overlay" id="modal-venta">
     <div class="modal">
-      <div class="modal-head"><h2>Nueva Venta</h2><button class="icon-btn" onclick="closeModal('modal-venta')"><i class="ti ti-x"></i></button></div>
+      <div class="modal-head">
+        <h2>Nueva Venta</h2>
+        <button class="icon-btn" onclick="closeModal('modal-venta')" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+      </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
-          <div class="form-group"><label>Vendedor</label>
+          <div class="form-group">
+            <label for="v-vendedor">Vendedor</label>
             <select class="form-select" id="v-vendedor"><option value="">Seleccionar...</option></select>
           </div>
-          <div class="form-group"><label>Cliente</label>
+          <div class="form-group">
+            <label for="v-cliente">Cliente</label>
             <select class="form-select" id="v-cliente"><option value="">Seleccionar...</option></select>
           </div>
-          <div class="form-group"><label>Método de Pago</label>
+          <div class="form-group">
+            <label for="v-metodo">Método de Pago</label>
             <select class="form-select" id="v-metodo">
               <option value="efectivo">Efectivo</option>
               <option value="tarjeta">Tarjeta</option>
@@ -179,7 +188,7 @@
               <option value="credito">Crédito</option>
             </select>
           </div>
-          <div class="form-group"><label>Total ($)</label><input type="number" id="v-total" placeholder="0.00" step="0.01"></div>
+          <div class="form-group"><label for="v-total">Total ($)</label><input type="number" id="v-total" placeholder="0.00" step="0.01"></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -189,28 +198,34 @@
     </div>
   </div>
 
-  <!-- Modal Orden -->
   <div class="modal-overlay" id="modal-orden">
     <div class="modal">
-      <div class="modal-head"><h2>Nueva Orden de Servicio</h2><button class="icon-btn" onclick="closeModal('modal-orden')"><i class="ti ti-x"></i></button></div>
+      <div class="modal-head">
+        <h2>Nueva Orden de Servicio</h2>
+        <button class="icon-btn" onclick="closeModal('modal-orden')" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+      </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
-          <div class="form-group"><label>Cliente *</label>
+          <div class="form-group">
+            <label for="o-cliente">Cliente *</label>
             <select class="form-select" id="o-cliente"><option value="">Seleccionar...</option></select>
           </div>
-          <div class="form-group"><label>Técnico Asignado</label>
+          <div class="form-group">
+            <label for="o-tecnico">Técnico Asignado</label>
             <select class="form-select" id="o-tecnico"><option value="">Asignar técnico...</option></select>
           </div>
-          <div class="form-group"><label>Equipo *</label><input type="text" id="o-equipo" placeholder="Ej: iPhone 13 Pro"></div>
-          <div class="form-group"><label>Fecha Promesa</label><input type="date" id="o-fecha"></div>
-          <div class="form-group form-group--full" style="grid-column:1/-1"><label>Descripción de la Falla *</label><textarea id="o-falla" placeholder="Describe el problema del equipo..."></textarea></div>
-          <div class="form-group"><label>Tipo de Entrega</label>
+          <div class="form-group"><label for="o-equipo">Equipo *</label><input type="text" id="o-equipo" placeholder="Ej: iPhone 13 Pro"></div>
+          <div class="form-group"><label for="o-fecha">Fecha Promesa</label><input type="date" id="o-fecha"></div>
+          <div class="form-group form-group-full"><label for="o-falla">Descripción de la Falla *</label><textarea id="o-falla" placeholder="Describe el problema del equipo..."></textarea></div>
+          <div class="form-group">
+            <label for="o-entrega">Tipo de Entrega</label>
             <select class="form-select" id="o-entrega">
               <option value="tienda">Retiro en Tienda</option>
               <option value="domicilio">Entrega a Domicilio</option>
             </select>
           </div>
-          <div class="form-group"><label>Estado Inicial</label>
+          <div class="form-group">
+            <label for="o-estado">Estado Inicial</label>
             <select class="form-select" id="o-estado">
               <option value="pendiente">Pendiente</option>
               <option value="en_proceso">En Proceso</option>
@@ -225,23 +240,26 @@
     </div>
   </div>
 
-  <!-- Modal Factura -->
   <div class="modal-overlay" id="modal-factura">
     <div class="modal">
-      <div class="modal-head"><h2>Emitir Factura</h2><button class="icon-btn" onclick="closeModal('modal-factura')"><i class="ti ti-x"></i></button></div>
+      <div class="modal-head">
+        <h2>Emitir Factura</h2>
+        <button class="icon-btn" onclick="closeModal('modal-factura')" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+      </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
-          <div class="form-group"><label>Tipo de Factura</label>
+          <div class="form-group">
+            <label for="f-tipo">Tipo de Factura</label>
             <select class="form-select" id="f-tipo">
               <option value="venta">Por Venta</option>
               <option value="servicio">Por Orden de Servicio</option>
             </select>
           </div>
-          <div class="form-group"><label>Referencia ID</label><input type="number" id="f-ref" placeholder="ID de venta u orden"></div>
-          <div class="form-group"><label>Subtotal ($)</label><input type="number" id="f-subtotal" placeholder="0.00" step="0.01"></div>
-          <div class="form-group"><label>IVA (%)</label><input type="number" id="f-iva" placeholder="19" value="19" min="0" max="100"></div>
+          <div class="form-group"><label for="f-ref">Referencia ID</label><input type="number" id="f-ref" placeholder="ID de venta u orden"></div>
+          <div class="form-group"><label for="f-subtotal">Subtotal ($)</label><input type="number" id="f-subtotal" placeholder="0.00" step="0.01"></div>
+          <div class="form-group"><label for="f-iva">IVA (%)</label><input type="number" id="f-iva" placeholder="19" value="19" min="0" max="100"></div>
         </div>
-        <div id="f-total-preview" style="margin-top:12px;padding:12px;background:var(--bg3);border-radius:8px;font-size:14px;color:var(--text2)">Total estimado: <strong style="color:var(--text)">$0.00</strong></div>
+        <div id="f-total-preview" class="preview-box">Total estimado: <strong>$0.00</strong></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" onclick="closeModal('modal-factura')">Cancelar</button>
@@ -250,15 +268,18 @@
     </div>
   </div>
 
-  <!-- Modal Usuario -->
   <div class="modal-overlay" id="modal-usuario">
     <div class="modal">
-      <div class="modal-head"><h2>Nuevo Usuario</h2><button class="icon-btn" onclick="closeModal('modal-usuario')"><i class="ti ti-x"></i></button></div>
+      <div class="modal-head">
+        <h2>Nuevo Usuario</h2>
+        <button class="icon-btn" onclick="closeModal('modal-usuario')" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+      </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
-          <div class="form-group"><label>Nombre Completo</label><input type="text" id="u-nombre" placeholder="Juan Pérez"></div>
-          <div class="form-group"><label>Email</label><input type="email" id="u-email" placeholder="usuario@email.com"></div>
-          <div class="form-group"><label>Rol</label>
+          <div class="form-group"><label for="u-nombre">Nombre Completo</label><input type="text" id="u-nombre" placeholder="Juan Pérez"></div>
+          <div class="form-group"><label for="u-email">Email</label><input type="email" id="u-email" placeholder="usuario@email.com"></div>
+          <div class="form-group">
+            <label for="u-rol">Rol</label>
             <select class="form-select" id="u-rol">
               <option value="admin">Administrador</option>
               <option value="vendedor">Vendedor</option>
@@ -266,7 +287,7 @@
               <option value="cliente">Cliente</option>
             </select>
           </div>
-          <div class="form-group"><label>Contraseña</label><input type="password" id="u-password" placeholder="••••••••"></div>
+          <div class="form-group"><label for="u-password">Contraseña</label><input type="password" id="u-password" placeholder="••••••••"></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -276,10 +297,8 @@
     </div>
   </div>
 
-  <!-- TOAST CONTAINER -->
   <div class="toast-container" id="toasts"></div>
 
-  <script src="../script.js"></script>
+  <script src="/client/assets/js/script.js"></script>
 </body>
 </html>
-

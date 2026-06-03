@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InventarioPro — Órdenes de Servicio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="/client/assets/css/styles.css">
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <h1>Inventario<span>Pro</span></h1>
+      <p>Sistema de Gestión</p>
+    </div>
+    <nav>
+      <span class="nav-section">Principal</span>
+      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
+      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-boxes"></i>Inventario</div>
+      <span class="nav-section">Operaciones</span>
+      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
+      <div class="nav-item active" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
+      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
+      <span class="nav-section">Administración</span>
+      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
+      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar">AD</div>
+        <div class="user-info">
+          <p>Admin User</p>
+          <span>Administrador</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="page-title" id="page-title">Órdenes de Servicio</div>
+      <div class="topbar-right">
+        <div class="icon-btn" title="Alertas de stock"><i class="ti ti-bell"></i><span class="badge-dot"></span></div>
+        <div class="icon-btn" title="Configuración"><i class="ti ti-settings"></i></div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page active" id="page-ordenes">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Órdenes de Servicio</div>
+            <div class="section-sub">Gestión de reparaciones y servicios técnicos</div>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('modal-orden')"><i class="ti ti-plus"></i> Nueva Orden</button>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="filtrarOrdenes('all',this)">Todas</div>
+          <div class="tab" onclick="filtrarOrdenes('pendiente',this)">Pendientes</div>
+          <div class="tab" onclick="filtrarOrdenes('en_proceso',this)">En Proceso</div>
+          <div class="tab" onclick="filtrarOrdenes('completado',this)">Completadas</div>
+          <div class="tab" onclick="filtrarOrdenes('entregado',this)">Entregadas</div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#ID</th>
+                <th>Cliente</th>
+                <th>Técnico</th>
+                <th>Equipo / Falla</th>
+                <th>Estado</th>
+                <th>Entrega</th>
+                <th>Fecha Promesa</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tb-ordenes">
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modal-orden">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Nueva Orden de Servicio</h2>
+        <button class="icon-btn" onclick="closeModal('modal-orden')" title="Cerrar modal" aria-label="Cerrar modal"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label for="o-cliente">Cliente *</label>
+            <select class="form-select" id="o-cliente" title="Seleccionar cliente">
+              <option value="">Seleccionar...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="o-tecnico">Técnico Asignado</label>
+            <select class="form-select" id="o-tecnico" title="Asignar técnico">
+              <option value="">Asignar técnico...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="o-equipo">Equipo *</label>
+            <input type="text" id="o-equipo" placeholder="Ej: iPhone 13 Pro">
+          </div>
+          <div class="form-group">
+            <label for="o-fecha">Fecha Promesa</label>
+            <input type="date" id="o-fecha">
+          </div>
+          <div class="form-group form-group-fullwidth">
+            <label for="o-falla">Descripción de la Falla *</label>
+            <textarea id="o-falla" placeholder="Describe el problema"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="o-entrega">Tipo de Entrega</label>
+            <select class="form-select" id="o-entrega" title="Seleccionar tipo de entrega">
+              <option value="tienda">Retiro en Tienda</option>
+              <option value="domicilio">Entrega a Domicilio</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="o-estado">Estado Inicial</label>
+            <select class="form-select" id="o-estado" title="Seleccionar estado inicial">
+              <option value="pendiente">Pendiente</option>
+              <option value="en_proceso">En Proceso</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-orden')">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarOrden()"><i class="ti ti-check"></i> Crear Orden</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toasts"></div>
+
+  <script src="/client/assets/js/script.js"></script>
+  <script src="/client/assets/js/ordenes.js"></script>
+</body>
+</html>

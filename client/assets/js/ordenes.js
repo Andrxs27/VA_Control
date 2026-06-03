@@ -30,7 +30,7 @@ function formatFecha(fecha) {
     if (!fecha) return '—';
     return fecha.split('T')[0];
 }
-
+ 
 function estadoBadge(e) {
     const map = {
         pendiente: ['badge-amber', 'Pendiente'],
