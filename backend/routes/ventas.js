@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db');
+const pool = require('../db'); 
 
+// CRUD - GET
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM ventas');
@@ -11,6 +12,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// CRUD - GET id
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -22,6 +24,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// CRUD - POST
 router.post('/', async (req, res) => {
     try {
         const { vendedor_id, cliente_id, subtotal, descuento, impuestos, total, metodo_pago, estado, notas } = req.body;
@@ -35,6 +38,7 @@ router.post('/', async (req, res) => {
     }
 });
 
+// CRUD - PUT
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -50,6 +54,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// CRUD - DELETE (Esta si la elimina)
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
