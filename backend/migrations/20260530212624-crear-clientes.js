@@ -5,10 +5,12 @@ module.exports = {
     await queryInterface.sequelize.query(`
       CREATE TABLE clientes (
         id SERIAL PRIMARY KEY,
+        identificacion VARCHAR(50) UNIQUE NOT NULL,
         nombre VARCHAR(100) NOT NULL,
         email VARCHAR(100) UNIQUE,
         telefono VARCHAR(20),
         direccion TEXT,
+        tipo_cliente VARCHAR(20) DEFAULT 'particular', -- Soporta 'particular' o 'empresa'
         notas TEXT,
         activo BOOLEAN DEFAULT true,
         creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

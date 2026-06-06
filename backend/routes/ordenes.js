@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); 
+const pool = require('../db');
 
 // CRUD - GET
 router.get('/', async (req, res) => {
@@ -54,7 +54,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// CRUD - DELETE (Esta si la elimina)
+// CRUD - DELETE
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

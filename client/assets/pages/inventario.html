@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>InventarioPro — Inventario</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="/client/assets/css/styles.css">
 </head>
+
 <body>
 
   <aside class="sidebar" id="sidebar">
@@ -27,7 +31,7 @@
       <div class="nav-item active" onclick="window.location.href='inventario.html'">
         <i class="ti ti-boxes"></i>Inventario
       </div>
-      
+
       <span class="nav-section">Operaciones</span>
       <div class="nav-item" onclick="window.location.href='ventas.html'">
         <i class="ti ti-receipt"></i>Ventas
@@ -38,8 +42,10 @@
       <div class="nav-item" onclick="window.location.href='facturas.html'">
         <i class="ti ti-file-invoice"></i>Facturas
       </div>
-      
+
       <span class="nav-section">Administración</span>
+      <div class="nav-item" onclick="window.location.href='clientes.html'">
+        <i class="ti ti-users"></i>clientes</div>
       <div class="nav-item" onclick="window.location.href='usuarios.html'">
         <i class="ti ti-users"></i>Usuarios
       </div>
@@ -47,7 +53,7 @@
         <i class="ti ti-chart-bar"></i>Reportes
       </div>
     </nav>
-    
+
     <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">AD</div>
@@ -74,7 +80,7 @@
 
     <main class="content">
       <div class="page active" id="page-inventario">
-        
+
         <div class="section-header">
           <div>
             <div class="section-title">Control de Inventario</div>
@@ -87,14 +93,16 @@
 
         <div class="alert alert-info">
           <i class="ti ti-info-circle"></i>
-          <div><strong>Esquema mejorado:</strong> Se recomienda agregar tabla <code>movimientos_inventario</code> para auditar cada entrada/salida.</div>
+          <div><strong>Esquema mejorado:</strong> Se recomienda agregar tabla <code>movimientos_inventario</code> para
+            auditar cada entrada/salida.</div>
         </div>
 
         <div class="table-wrap">
           <div class="table-toolbar">
             <div class="search-box">
               <i class="ti ti-search"></i>
-              <input type="text" id="search-inventario" placeholder="Buscar producto..." oninput="filtrarTabla('tb-inventario', this.value)">
+              <input type="text" id="search-inventario" placeholder="Buscar producto..."
+                oninput="filtrarTabla('tb-inventario', this.value)">
             </div>
           </div>
           <table>
@@ -110,10 +118,10 @@
               </tr>
             </thead>
             <tbody id="tb-inventario">
-              </tbody>
+            </tbody>
           </table>
         </div>
-        
+
       </div>
     </main>
   </div>
@@ -131,7 +139,7 @@
           <i class="ti ti-info-circle"></i>
           <div>Se recomienda tabla <code>movimientos_inventario</code></div>
         </div>
-        
+
         <div class="form-grid">
           <div class="form-group">
             <label for="mov-producto">Producto *</label>
@@ -139,7 +147,7 @@
               <option value="">Seleccionar producto</option>
             </select>
           </div>
-          
+
           <div class="form-group">
             <label for="mov-tipo">Tipo de Movimiento</label>
             <select class="form-select" id="mov-tipo">
@@ -148,12 +156,12 @@
               <option value="ajuste">Ajuste manual</option>
             </select>
           </div>
-          
+
           <div class="form-group">
             <label for="mov-cantidad">Cantidad</label>
             <input type="number" id="mov-cantidad" min="1" placeholder="1">
           </div>
-          
+
           <div class="form-group">
             <label for="mov-motivo">Motivo / Referencia</label>
             <textarea id="mov-motivo" placeholder="Ej: Compra proveedor XYZ"></textarea>
@@ -173,4 +181,5 @@
 
   <script src="/client/assets/js/script.js"></script>
 </body>
+
 </html>

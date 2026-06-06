@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>InventarioPro — Usuarios</title>
+  <title>InventarioPro — Clientes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
@@ -23,13 +23,17 @@
       <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
       <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
       <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-boxes"></i>Inventario</div>
+      
       <span class="nav-section">Operaciones</span>
       <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
       <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
       <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
+      
       <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users"></i>clientes</div>
-      <div class="nav-item active" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
+      <!-- Clientes seleccionado como activo -->
+      <div class="nav-item active" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
+      <!-- Usuarios ahora es un enlace normal para poder volver -->
+      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
       <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
     </nav>
     <div class="sidebar-footer">
@@ -45,7 +49,7 @@
 
   <div class="main">
     <header class="topbar">
-      <div class="page-title" id="page-title">Usuarios</div>
+      <div class="page-title" id="page-title">Clientes</div>
       <div class="topbar-right">
         <div class="icon-btn" title="Alertas de stock"><i class="ti ti-bell"></i><span class="badge-dot"></span></div>
         <div class="icon-btn" title="Configuración"><i class="ti ti-settings"></i></div>
@@ -53,13 +57,13 @@
     </header>
 
     <main class="content">
-      <div class="page active" id="page-usuarios">
+      <div class="page active" id="page-clientes">
         <div class="section-header">
           <div>
-            <div class="section-title">Usuarios del Sistema</div>
-            <div class="section-sub">Gestión de roles y permisos</div>
+            <div class="section-title">Clientes del Sistema</div>
+            <div class="section-sub">Gestión de la cartera de clientes y cuentas</div>
           </div>
-          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> Nuevo Usuario</button>
+          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> Nuevo Cliente</button>
         </div>
 
         <div class="search-container">
@@ -67,10 +71,10 @@
             <i class="ti ti-search search-icon"></i>
             <input 
               type="text" 
-              id="buscar-usuario" 
+              id="buscar-cliente" 
               class="input-search"
-              placeholder="Buscar por nombre, email o rol..." 
-              oninput="filtrarUsuarios()"
+              placeholder="Buscar por nombre, identificación, email o teléfono..." 
+              oninput="filtrarClientes()"
             >
           </div>
         </div>
@@ -80,59 +84,69 @@
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Nombre</th>
+                <th>Identificación / RUT</th>
+                <th>Nombre / Razón Social</th>
                 <th>Email</th>
-                <th>Rol</th>
+                <th>Teléfono</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
-            <tbody id="tb-usuarios"></tbody>
+            <tbody id="tb-clientes"></tbody>
           </table>
         </div>
       </div>
     </main>
   </div>
 
-  <div class="modal-overlay" id="modal-usuario">
+  <!-- Modal para Crear/Editar Cliente -->
+  <div class="modal-overlay" id="modal-cliente">
     <div class="modal">
       <div class="modal-head">
-        <h2>Nuevo Usuario</h2>
-        <button class="icon-btn" onclick="closeModal('modal-usuario')" aria-label="Cerrar modal">
+        <h2 id="modal-cliente-titulo">Nuevo Cliente</h2>
+        <button class="icon-btn" onclick="closeModal('modal-cliente')" aria-label="Cerrar modal">
           <i class="ti ti-x"></i>
         </button>
       </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
           <div class="form-group">
-            <label for="u-nombre">Nombre Completo</label>
-            <input type="text" id="u-nombre" placeholder="Juan Pérez">
+            <label for="c-identificacion">Identificación / NIT / RUT</label>
+            <input type="text" id="c-identificacion" placeholder="12345678-9">
           </div>
           <div class="form-group">
-            <label for="u-email">Email</label>
-            <input type="email" id="u-email" placeholder="usuario@email.com">
+            <label for="c-nombre">Nombre o Razón Social</label>
+            <input type="text" id="c-nombre" placeholder="Juan Pérez o Empresa S.A.">
           </div>
           <div class="form-group">
-            <label for="u-rol">Rol</label>
-            <select class="form-select" id="u-rol">
-              <option value="admin">Administrador</option>
-              <option value="vendedor">Vendedor</option>
-              <option value="tecnico">Técnico</option>
+            <label for="c-email">Email</label>
+            <input type="email" id="c-email" placeholder="cliente@email.com">
+          </div>
+          <div class="form-group">
+            <label for="c-telefono">Teléfono</label>
+            <input type="tel" id="c-telefono" placeholder="+56 9 1234 5678">
+          </div>
+          <div class="form-group" style="grid-column: span 2;">
+            <label for="c-direccion">Dirección</label>
+            <input type="text" id="c-direccion" placeholder="Av. Principal 123, Ciudad">
+          </div>
+          <div class="form-group">
+            <label for="c-tipo">Tipo de Cliente</label>
+            <select class="form-select" id="c-tipo">
+              <option value="particular">Persona Natural / Particular</option>
+              <option value="empresa">Empresa / Corporativo</option>
             </select>
-          </div>
-          <div class="form-group">
-            <label for="u-password">Contraseña</label>
-            <input type="password" id="u-password" placeholder="••••••••">
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-usuario')">Cancelar</button>
-        <button class="btn btn-primary" onclick="guardarUsuario()"><i class="ti ti-check"></i> Crear Usuario</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-cliente')">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarCliente()"><i class="ti ti-check"></i> Crear Cliente</button>
       </div>
     </div>
   </div>
 
+  <!-- Modal de Confirmación -->
   <div class="modal-overlay" id="modal-confirmacion">
     <div class="modal modal-confirm">
       <div id="confirm-icon-container" class="confirm-icon-box">
@@ -150,7 +164,7 @@
   <div class="toast-container" id="toasts"></div>
   
   <script src="/client/assets/js/script.js"></script>
-  <script src="/client/assets/js/usuarios.js"></script>
+  <script src="/client/assets/js/clientes.js"></script>
 </body>
 
 </html>

@@ -75,7 +75,12 @@ async function guardarOrden() {
     const falla = document.getElementById('o-falla').value;
     const estado = document.getElementById('o-estado').value;
     const tipo_entrega = document.getElementById('o-entrega').value;
-    const fecha_promesa = document.getElementById('o-fecha').value;
+    const fecha_promesa = document.getElementById('o-fecha').value || null;
+    const marca = document.getElementById('o-marca')?.value || null;
+    const modelo = document.getElementById('o-modelo')?.value || null;
+    const serial_equipo = document.getElementById('o-serial')?.value || null;
+    const costo_servicio = document.getElementById('o-costo')?.value || 0;
+    const notas = document.getElementById('o-notas')?.value || null;
 
     if (!cliente_id || !equipo || !falla) {
         alert('Cliente, equipo y falla son requeridos');
@@ -85,7 +90,11 @@ async function guardarOrden() {
     await fetch(`${API}/ordenes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cliente_id, tecnico_id, equipo, falla, estado, tipo_entrega, fecha_promesa })
+        body: JSON.stringify({
+            cliente_id, tecnico_id, equipo, falla, estado,
+            tipo_entrega, fecha_promesa,
+            marca, modelo, serial_equipo, costo_servicio, notas
+        })
     });
 
     closeModal('modal-orden');

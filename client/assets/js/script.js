@@ -1,39 +1,3 @@
-// ==================== DATA STORE ====================
-const DB = {
-  productos: [
-    {id:1,sku:'ELEC-001',nombre:'Pantalla Samsung S22',categoria:'electronica',stock:12,stock_minimo:5,precio_venta:180000,active:true},
-    {id:2,sku:'ELEC-002',nombre:'Batería iPhone 13',categoria:'repuestos',stock:3,stock_minimo:8,precio_venta:45000,active:true},
-    {id:3,sku:'REP-001',nombre:'Conector de Carga USB-C',categoria:'repuestos',stock:0,stock_minimo:10,precio_venta:15000,active:true},
-    {id:4,sku:'SVC-001',nombre:'Diagnóstico General',categoria:'servicios',stock:99,stock_minimo:0,precio_venta:25000,active:true},
-    {id:5,sku:'ELEC-003',nombre:'Altavoz Bluetooth',categoria:'electronica',stock:7,stock_minimo:5,precio_venta:95000,active:true},
-    {id:6,sku:'REP-002',nombre:'Vidrio Templado Universal',categoria:'repuestos',stock:2,stock_minimo:15,precio_venta:8000,active:true},
-  ],
-  usuarios: [
-    {id:1,nombre:'Carlos Mendoza',rol:'admin',email:'admin@tienda.com',active:true},
-    {id:2,nombre:'Laura Gómez',rol:'vendedor',email:'lgomez@tienda.com',active:true},
-    {id:3,nombre:'Diego Ríos',rol:'tecnico',email:'drios@tienda.com',active:true},
-    {id:4,nombre:'María Torres',rol:'cliente',email:'mtorres@gmail.com',active:true},
-    {id:5,nombre:'Juan Pérez',rol:'cliente',email:'jperez@gmail.com',active:true},
-  ],
-  ventas: [
-    {id:1,vendedor_id:2,cliente_id:4,total:225000,metodo_pago:'tarjeta',creado_en:'2025-05-14 10:30'},
-    {id:2,vendedor_id:2,cliente_id:5,total:45000,metodo_pago:'efectivo',creado_en:'2025-05-14 11:15'},
-    {id:3,vendedor_id:1,cliente_id:4,total:103000,metodo_pago:'transferencia',creado_en:'2025-05-15 09:00'},
-  ],
-  ordenes: [
-    {id:1,cliente_id:4,tecnico_id:3,equipo:'Samsung Galaxy S21',falla:'Pantalla rota, no enciende',estado:'en_proceso',tipo_entrega:'tienda',fecha_promesa:'2025-05-20'},
-    {id:2,cliente_id:5,tecnico_id:3,equipo:'MacBook Pro 2019',falla:'No carga la batería',estado:'pendiente',tipo_entrega:'domicilio',fecha_promesa:'2025-05-22'},
-    {id:3,cliente_id:4,tecnico_id:null,equipo:'iPhone 12',falla:'Micrófono sin sonido',estado:'pendiente',tipo_entrega:'tienda',fecha_promesa:'2025-05-18'},
-    {id:4,cliente_id:5,tecnico_id:3,equipo:'Laptop HP ProBook',falla:'Teclado con teclas pegadas',estado:'completado',tipo_entrega:'tienda',fecha_promesa:'2025-05-16'},
-  ],
-  facturas: [
-    {id:1,venta_id:1,orden_servicio_id:null,impuestos:35910,subtotal:189090,fecha_emision:'2025-05-14 10:35'},
-    {id:2,venta_id:2,orden_servicio_id:null,impuestos:7186,subtotal:37814,fecha_emision:'2025-05-14 11:20'},
-  ],
-  movimientos: [],
-  nextId: {productos:7,usuarios:6,ventas:4,ordenes:5,facturas:3}
-};
-
 // ==================== NAVEGACIÓN ====================
 const pageNames = {dashboard:'Dashboard',productos:'Productos',inventario:'Inventario',ventas:'Ventas',ordenes:'Órdenes de Servicio',facturas:'Facturas',usuarios:'Usuarios',reportes:'Reportes'};
 
@@ -487,18 +451,6 @@ function guardarFactura() {
   closeModal('modal-factura');
   renderFacturas();
   toast(`Factura #F${id} emitida por ${formatCOP(sub+imp)}`,'success');
-}
-
-function guardarUsuario() {
-  const nombre = document.getElementById('u-nombre').value.trim();
-  const email = document.getElementById('u-email').value.trim();
-  if(!nombre || !email) { toast('Nombre y email requeridos','error'); return; }
-  if(DB.usuarios.find(u=>u.email===email)) { toast('El email ya está registrado','error'); return; }
-  const id = DB.nextId.usuarios++;
-  DB.usuarios.push({id,nombre,rol:document.getElementById('u-rol').value,email,active:true});
-  closeModal('modal-usuario');
-  renderUsuarios();
-  toast(`Usuario ${nombre} creado`,'success');
 }
 
 function editarProducto(id) {
