@@ -10,10 +10,8 @@ let filtroCategoria = '';
 // ==========================================
 // 1. CARGAR Y RENDERIZAR PRODUCTOS
 // ==========================================
-// Modificado: Ahora acepta un array opcional para soportar los filtros dinámicos
 async function renderProductos(productosAMostrar = null) {
     try {
-        // Solo hacemos el fetch si no nos pasaron una lista ya filtrada
         if (productosAMostrar === null) {
             const res = await fetch(`${API}/productos`);
             if (!res.ok) throw new Error('No se pudo obtener el catálogo de productos');
@@ -49,40 +47,35 @@ async function renderProductos(productosAMostrar = null) {
             '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px">No se encontraron productos con los criterios de búsqueda</td></tr>';
             
     } catch (error) {
-        mostrarToast(`Error: ${error.message}`, 'error');
+        toast(`Error: ${error.message}`, 'error');
     }
 }
 
 // ==========================================
-// 2. SISTEMA DE FILTRADO DINÁMICO (NUEVO)
+// 2. SISTEMA DE FILTRADO DINÁMICO
 // ==========================================
-
-// Maneja la barra de búsqueda (Input de texto)
 function filtrarTabla(idTabla, valor) {
     filtroTexto = valor.toLowerCase().trim();
     aplicarFiltrosCombinados();
 }
 
-// Maneja el selector de categorías (Select drop-down)
+// Maneja el selector de categorías
 function filtrarPorCategoria(categoria) {
     filtroCategoria = categoria;
     aplicarFiltrosCombinados();
 }
 
-// Junta ambos filtros para que puedas buscar un término dentro de una categoría específica
+// Junta ambos filtros
 function aplicarFiltrosCombinados() {
     const productosFiltrados = productosListados.filter(p => {
-        // Evaluar filtro de texto (SKU o Nombre)
         const coincideTexto = p.nombre.toLowerCase().includes(filtroTexto) || 
                               p.sku.toLowerCase().includes(filtroTexto);
         
-        // Evaluar filtro de categoría
         const coincideCategoria = filtroCategoria === '' || p.categoria === filtroCategoria;
         
         return coincideTexto && coincideCategoria;
     });
 
-    // Renderizamos pasando la lista filtrada sin volver a consultar la base de datos
     renderProductos(productosFiltrados);
 }
 
@@ -106,7 +99,7 @@ function prepararEdicion(id) {
     const producto = productosListados.find(p => p.id === id);
     
     if (!producto) {
-        mostrarToast("No se encontró el producto solicitado", "error");
+        toast("No se encontró el producto solicitado", "error");
         return;
     }
 
@@ -146,7 +139,7 @@ async function guardarProducto() {
     const precio_venta = parseFloat(precioRaw) || 0;
 
     if (!sku || !nombre) {
-        mostrarToast('El SKU y el Nombre del producto son campos requeridos', 'error');
+        toast('El SKU y el Nombre del producto son campos requeridos', 'error');
         return;
     }
 
@@ -172,7 +165,7 @@ async function guardarProducto() {
             throw new Error(errData.error || 'Error al procesar el producto');
         }
 
-        mostrarToast(
+        toast(
             productoEditandoId !== null ? 'Producto actualizado con éxito' : 'Producto creado correctamente', 
             'success'
         );
@@ -183,7 +176,7 @@ async function guardarProducto() {
             closeModal('modal-producto');
         }
         
-        // Al guardar volvemos a renderizar y limpiar filtros visuales
+        // Reset de filtros visuales
         filtroTexto = '';
         filtroCategoria = '';
         const inputBuscar = document.querySelector('.search-box input');
@@ -193,7 +186,7 @@ async function guardarProducto() {
 
         renderProductos();
     } catch (error) {
-        mostrarToast(error.message, 'error');
+        toast(error.message, 'error');
     }
 }
 
@@ -211,10 +204,10 @@ async function desactivarProducto(id) {
             }
 
             const data = await res.json();
-            mostrarToast(data.mensaje || 'Producto desactivado', 'success');
+            toast(data.mensaje || 'Producto desactivado', 'success');
             renderProductos();
         } catch (error) {
-            mostrarToast(error.message, 'error');
+            toast(error.message, 'error');
         }
     }
 }
@@ -235,37 +228,20 @@ function resetearFormulario() {
     document.getElementById('p-precio').value = '';
 }
 
-function mostrarToast(mensaje, tipo = 'success') {
-    const container = document.getElementById('toasts');
-    if (!container) return; 
+// Tu nueva función de notificaciones optimizada con clases CSS
+function toast(msg, type='info') {
+    const c = document.getElementById('toasts');
+    if (!c) return; // Validación por si el contenedor no existe en el DOM todavía
     
-    const toast = document.createElement('div');
-    toast.style.cssText = `
-        margin: 8px 0;
-        padding: 12px 20px;
-        border-radius: 8px;
-        color: #fff;
-        font-size: 14px;
-        font-family: 'DM Sans', sans-serif;
-        font-weight: 500;
-        background: ${tipo === 'success' ? '#10b981' : '#ef4444'};
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        transition: opacity 0.3s, transform 0.3s;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    `;
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
     
-    const icono = tipo === 'success' ? '<i class="ti ti-circle-check"></i>' : '<i class="ti ti-circle-x"></i>';
-    toast.innerHTML = `${icono} <span>${mensaje}</span>`;
+    const icons = { success: 'ti-circle-check', error: 'ti-circle-x', info: 'ti-info-circle' };
     
-    container.appendChild(toast);
+    t.innerHTML = `<i class="ti ${icons[type] || 'ti-info-circle'}" style="font-size:16px; color:${type === 'success' ? 'var(--green)' : type === 'error' ? 'var(--red)' : 'var(--blue)'}"></i> ${msg}`;
     
-    setTimeout(() => { 
-        toast.style.opacity = '0'; 
-        toast.style.transform = 'translateY(-10px)';
-        setTimeout(() => toast.remove(), 300); 
-    }, 3500);
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
 }
 
 // Inicialización

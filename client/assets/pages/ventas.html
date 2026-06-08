@@ -26,7 +26,7 @@
       <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
       <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
       <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users"></i>clientes</div>
+      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users"></i>Clientes</div>
       <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
       <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
     </nav>
@@ -55,7 +55,7 @@
         <div class="section-header">
           <div>
             <div class="section-title">Ventas</div>
-            <div class="section-sub">Registro de transacciones</div>
+            <div class="section-sub">Registro de transacciones comerciales</div>
           </div>
           <button class="btn btn-primary" onclick="openModal('modal-venta')"><i class="ti ti-plus"></i> Nueva Venta</button>
         </div>
@@ -64,19 +64,30 @@
           <div class="table-toolbar">
             <div class="search-box">
               <i class="ti ti-search"></i>
-              <input type="text" id="buscar-venta" placeholder="Buscar por cliente, ID..." oninput="filtrarTabla('tb-ventas',this.value)">
+              <input type="text" id="buscar-venta" placeholder="Buscar por cliente, ID..." oninput="filtrarTablaVentas(this.value)">
             </div>
             <select class="filter-select" onchange="filtrarVentasPago(this.value)" aria-label="Filtrar por método de pago">
               <option value="">Todos los métodos</option>
               <option value="efectivo">Efectivo</option>
               <option value="tarjeta">Tarjeta</option>
               <option value="transferencia">Transferencia</option>
-              <option value="credito">Crédito</option>
+              <option value="otro">Otro</option>
             </select>
           </div>
 
           <table>
-            <thead><tr><th>#ID</th><th>Vendedor</th><th>Cliente</th><th>Total</th><th>Método Pago</th><th>Fecha</th><th>Acciones</th></tr></thead>
+            <thead>
+              <tr>
+                <th>#ID</th>
+                <th>Vendedor</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Método Pago</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
             <tbody id="tb-ventas"></tbody>
           </table>
         </div>
@@ -84,16 +95,19 @@
     </main>
   </div>
 
+  <!-- ==========================================
+       MODAL: NUEVA VENTA (con carrito de productos)
+  =========================================== -->
   <div class="modal-overlay" id="modal-venta">
-    <div class="modal">
+    <div class="modal" style="max-width:760px;width:95%;">
       <div class="modal-head">
-        <h2>Nueva Venta</h2>
-        <button class="icon-btn" onclick="closeModal('modal-venta')" aria-label="Cerrar modal">
-          <i class="ti ti-x"></i>
-        </button>
+        <h2><i class="ti ti-receipt" style="margin-right:8px;color:var(--primary)"></i>Nueva Venta</h2>
+        <button class="icon-btn" onclick="closeModal('modal-venta')" aria-label="Cerrar modal"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
-        <div class="form-grid form-grid-2">
+
+        <!-- Cabecera de la venta -->
+        <div class="form-grid form-grid-3" style="margin-bottom:20px;">
           <div class="form-group">
             <label for="v-vendedor">Vendedor</label>
             <select class="form-select" id="v-vendedor">
@@ -112,24 +126,185 @@
               <option value="efectivo">Efectivo</option>
               <option value="tarjeta">Tarjeta</option>
               <option value="transferencia">Transferencia</option>
-              <option value="credito">Crédito</option>
+              <option value="otro">Otro</option>
             </select>
           </div>
-          <div class="form-group">
-            <label for="v-total">Total ($)</label>
-            <input type="number" id="v-total" placeholder="0.00" step="0.01">
+        </div>
+
+        <!-- Buscador para agregar productos -->
+        <div style="background:var(--surface-secondary,#f8f9fa);border-radius:10px;padding:16px;margin-bottom:16px;">
+          <p style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--color-text-secondary)">AGREGAR PRODUCTO</p>
+          <div class="form-grid form-grid-3">
+            <div class="form-group" style="margin:0;">
+              <select class="form-select" id="v-producto-selector">
+                <option value="">Seleccionar producto...</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <input type="number" class="form-input" id="v-producto-cantidad" value="1" min="1" placeholder="Cantidad">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <button type="button" class="btn btn-primary" id="btn-agregar-item" style="width:100%;">
+                <i class="ti ti-plus"></i> Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de detalle (carrito) -->
+        <div class="table-wrap" style="margin-bottom:0;">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-right">Precio Unit.</th>
+                <th class="text-right">Subtotal</th>
+                <th class="text-center">Quitar</th>
+              </tr>
+            </thead>
+            <tbody id="tb-detalle-venta">
+              <tr id="tr-carrito-vacio">
+                <td colspan="5" style="text-align:center;padding:24px;color:var(--color-text-secondary);">
+                  <i class="ti ti-shopping-cart" style="font-size:28px;display:block;margin-bottom:8px;opacity:0.4;"></i>
+                  Añada productos usando el buscador de arriba
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Resumen de totales -->
+        <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+          <div style="min-width:260px;background:var(--surface-secondary,#f8f9fa);border-radius:10px;padding:16px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+              <span style="color:var(--color-text-secondary)">Subtotal</span>
+              <strong id="lbl-subtotal">$0.00</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+              <span style="color:var(--color-text-secondary)">IVA (19%)</span>
+              <strong id="lbl-impuestos">$0.00</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:16px;padding-top:10px;border-top:1px solid var(--border-color,#e5e7eb);">
+              <span style="font-weight:700;">TOTAL</span>
+              <strong id="lbl-total" style="color:var(--primary);font-size:18px;">$0.00</strong>
+            </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" onclick="closeModal('modal-venta')">Cancelar</button>
-        <button class="btn btn-primary" onclick="guardarVenta()"><i class="ti ti-check"></i> Registrar Venta</button>
+        <button class="btn btn-primary" id="btn-registrar-venta" onclick="guardarVenta()">
+          <i class="ti ti-check"></i> Registrar Venta
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL: VER DETALLE DE VENTA
+  =========================================== -->
+  <div class="modal-overlay" id="modal-detalle-venta">
+    <div class="modal" style="max-width:700px;width:95%;">
+      <div class="modal-head">
+        <h2><i class="ti ti-file-description" style="margin-right:8px;color:var(--primary)"></i>Detalle de Venta <span id="detalle-venta-id"></span></h2>
+        <button class="icon-btn" onclick="closeModal('modal-detalle-venta')" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Info cabecera de la venta -->
+        <div class="form-grid form-grid-3" style="margin-bottom:20px;">
+          <div>
+            <p style="font-size:11px;color:var(--color-text-secondary);font-weight:600;text-transform:uppercase;">Vendedor</p>
+            <p id="det-vendedor" style="font-weight:600;"></p>
+          </div>
+          <div>
+            <p style="font-size:11px;color:var(--color-text-secondary);font-weight:600;text-transform:uppercase;">Cliente</p>
+            <p id="det-cliente" style="font-weight:600;"></p>
+          </div>
+          <div>
+            <p style="font-size:11px;color:var(--color-text-secondary);font-weight:600;text-transform:uppercase;">Fecha</p>
+            <p id="det-fecha" style="font-weight:600;"></p>
+          </div>
+          <div>
+            <p style="font-size:11px;color:var(--color-text-secondary);font-weight:600;text-transform:uppercase;">Método de Pago</p>
+            <p id="det-metodo" style="font-weight:600;"></p>
+          </div>
+          <div>
+            <p style="font-size:11px;color:var(--color-text-secondary);font-weight:600;text-transform:uppercase;">Estado</p>
+            <p id="det-estado" style="font-weight:600;"></p>
+          </div>
+          <div>
+            <p style="font-size:11px;color:var(--color-text-secondary);font-weight:600;text-transform:uppercase;">Total</p>
+            <p id="det-total" style="font-weight:700;color:var(--primary);font-size:18px;"></p>
+          </div>
+        </div>
+
+        <!-- Tabla de productos de la venta -->
+        <div class="table-wrap" style="margin-bottom:0;">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-right">Precio Unit.</th>
+                <th class="text-right">Descuento</th>
+                <th class="text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="tb-detalle-items"></tbody>
+          </table>
+        </div>
+
+        <!-- Totales del detalle -->
+        <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+          <div style="min-width:260px;background:var(--surface-secondary,#f8f9fa);border-radius:10px;padding:16px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+              <span style="color:var(--color-text-secondary)">Subtotal</span>
+              <strong id="det-lbl-subtotal">—</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+              <span style="color:var(--color-text-secondary)">Descuento</span>
+              <strong id="det-lbl-descuento">—</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:14px;">
+              <span style="color:var(--color-text-secondary)">Impuestos</span>
+              <strong id="det-lbl-impuestos">—</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:16px;padding-top:10px;border-top:1px solid var(--border-color,#e5e7eb);">
+              <span style="font-weight:700;">TOTAL</span>
+              <strong id="det-lbl-total" style="color:var(--primary);font-size:18px;">—</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-detalle-venta')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación (reutilizable) -->
+  <div class="modal-overlay" id="modal-confirmacion">
+    <div class="modal" style="max-width:400px;">
+      <div class="modal-head">
+        <h2 id="confirm-titulo">Confirmar acción</h2>
+        <button class="icon-btn" onclick="closeModal('modal-confirmacion')"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body" style="text-align:center;padding:24px 32px;">
+        <div id="confirm-icon-container" style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;">
+          <i id="confirm-icon" class="ti ti-alert-triangle"></i>
+        </div>
+        <p id="confirm-mensaje" style="color:var(--color-text-secondary);line-height:1.6;"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-confirmacion')">Cancelar</button>
+        <button class="btn" id="confirm-btn-proceder">Confirmar</button>
       </div>
     </div>
   </div>
 
   <div class="toast-container" id="toasts"></div>
-
-  <script src="/client/assets/js/script.js"></script>
+  <script src="/client/assets/js/ventas.js"></script>
 </body>
 </html>

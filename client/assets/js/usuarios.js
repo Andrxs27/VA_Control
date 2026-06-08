@@ -6,6 +6,20 @@ let usuarioEditandoId = null;
 let accionConfirmadaCallback = null;
 
 // ==========================================
+// TOAST NOTIFICATION CONFIGURATION
+// ==========================================
+function toast(msg, type='info') {
+  const c = document.getElementById('toasts');
+  if (!c) return; // Validación por si el contenedor no existe en el DOM aún
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = {success:'ti-circle-check', error:'ti-circle-x', info:'ti-info-circle'};
+  t.innerHTML = `<i class="ti ${icons[type]||'ti-info-circle'}" style="font-size:16px;color:${type==='success'?'var(--green)':type==='error'?'var(--red)':'var(--blue)'}"></i>${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+// ==========================================
 // 1. CARGAR Y MOSTRAR USUARIOS
 // ==========================================
 async function cargarUsuarios() {
@@ -19,7 +33,7 @@ async function cargarUsuarios() {
         usuariosLista = await res.json();
         renderizarTabla(usuariosLista);
     } catch (error) {
-        mostrarToast(`Error: ${error.message}`, 'error');
+        toast(`Error: ${error.message}`, 'error');
     }
 }
 
@@ -85,7 +99,7 @@ function filtrarUsuarios() {
         return;
     }
 
-    // Filtrar coincidencias parciales por Nombre, Email o Rol mapeado
+    // Filtrar modificaciones parciales por Nombre, Email o Rol mapeado
     const usuariosFiltrados = usuariosLista.filter(u => {
         const nombre = u.nombre ? u.nombre.toLowerCase() : '';
         const email = u.email ? u.email.toLowerCase() : '';
@@ -102,7 +116,6 @@ function filtrarUsuarios() {
 // ==========================================
 // 2. PREPARAR FORMULARIO (CREAR / EDITAR)
 // ==========================================
-
 function prepararCreacion() {
     usuarioEditandoId = null;
 
@@ -152,12 +165,12 @@ async function guardarUsuario() {
     const password = document.getElementById('u-password').value;
 
     if (!nombre || !email) {
-        mostrarToast('Nombre y email son requeridos', 'error');
+        toast('Nombre y email son requeridos', 'error');
         return;
     }
 
     if (!usuarioEditandoId && !password) {
-        mostrarToast('La contraseña es requerida para nuevos usuarios', 'error');
+        toast('La contraseña es requerida para nuevos usuarios', 'error');
         return;
     }
 
@@ -183,11 +196,11 @@ async function guardarUsuario() {
             throw new Error(err.error || 'Error al guardar usuario');
         }
 
-        mostrarToast(usuarioEditandoId ? 'Usuario actualizado' : 'Usuario creado correctamente', 'success');
+        toast(usuarioEditandoId ? 'Usuario actualizado' : 'Usuario creado correctamente', 'success');
         closeModal('modal-usuario');
         cargarUsuarios();
     } catch (error) {
-        mostrarToast(error.message, 'error');
+        toast(error.message, 'error');
     }
 }
 
@@ -269,10 +282,10 @@ async function cambiarEstadoUsuario(id, nuevoEstado) {
             throw new Error(err.error || 'No se pudo cambiar el estado');
         }
 
-        mostrarToast(`Estado del usuario actualizado correctamente`, 'success');
+        toast(`Estado del usuario actualizado correctamente`, 'success');
         cargarUsuarios();
     } catch (error) {
-        mostrarToast(error.message, 'error');
+        toast(error.message, 'error');
     }
 }
 
@@ -285,24 +298,11 @@ async function eliminarUsuarioDefinitivo(id) {
         }
         
         const data = await res.json();
-        mostrarToast(data.mensaje || 'Usuario eliminado permanentemente', 'success');
+        toast(data.mensaje || 'Usuario eliminado permanentemente', 'success');
         cargarUsuarios();
     } catch (error) {
-        mostrarToast(error.message, 'error');
+        toast(error.message, 'error');
     }
-}
-
-// ==========================================
-// UTILS
-// ==========================================
-function mostrarToast(mensaje, tipo = 'success') {
-    const container = document.getElementById('toasts');
-    const toast = document.createElement('div');
-    toast.style.cssText = `margin:8px 0;padding:12px 20px;border-radius:8px;color:#fff;font-size:14px;
-        background:${tipo === 'success' ? '#10b981' : '#ef4444'};transition:opacity 0.3s`;
-    toast.innerText = mensaje;
-    container.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3500);
 }
 
 // ==========================================

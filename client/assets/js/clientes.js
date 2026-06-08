@@ -312,17 +312,25 @@ async function eliminarClienteDefinitivo(id) {
 }
 
 // ==========================================
-// UTILS
+// UTILS & TOAST SYSTEM
 // ==========================================
-function mostrarToast(mensaje, tipo = 'success') {
-    const container = document.getElementById('toasts');
-    if (!container) return;
-    const toast = document.createElement('div');
-    toast.style.cssText = `margin:8px 0;padding:12px 20px;border-radius:8px;color:#fff;font-size:14px;
-        background:${tipo === 'success' ? '#10b981' : '#ef4444'};transition:opacity 0.3s`;
-    toast.innerText = mensaje;
-    container.appendChild(toast);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3500);
+function mostrarToast(msg, type = 'info') {
+    const c = document.getElementById('toasts');
+    if (!c) return; // Validación por si el contenedor no existe en el DOM
+    
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    
+    const icons = {
+        success: 'ti-circle-check',
+        error: 'ti-circle-x',
+        info: 'ti-info-circle'
+    };
+    
+    t.innerHTML = `<i class="ti ${icons[type] || 'ti-info-circle'}" style="font-size:16px;color:${type === 'success' ? 'var(--green)' : type === 'error' ? 'var(--red)' : 'var(--blue)'}"></i>${msg}`;
+    
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
 }
 
 // ==========================================
