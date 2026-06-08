@@ -10,7 +10,7 @@ module.exports = {
         email VARCHAR(100) UNIQUE,
         telefono VARCHAR(20),
         direccion TEXT,
-        tipo_cliente VARCHAR(20) DEFAULT 'particular', -- Soporta 'particular' o 'empresa'
+        tipo VARCHAR(20) DEFAULT 'particular', -- Cambiado de 'tipo_cliente' a 'tipo' para coincidir con tu backend
         notas TEXT,
         activo BOOLEAN DEFAULT true,
         creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

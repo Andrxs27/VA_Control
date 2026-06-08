@@ -721,6 +721,7 @@ input[type=text],
 input[type=email],
 input[type=number],
 input[type=password],
+input[type=tel],
 input[type=date],
 textarea,
 select.form-select {
@@ -1200,3 +1201,4 @@ textarea::placeholder {
   margin-top: 10px; 
   padding: 5px 10px;
 }
+

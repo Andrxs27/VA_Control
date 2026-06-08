@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>InventarioPro — Clientes</title>
+  <title>VA Control — Clientes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
@@ -15,7 +15,7 @@
 
   <aside class="sidebar" id="sidebar">
     <div class="logo">
-      <h1>Inventario<span>Pro</span></h1>
+      <h1>VA <span>Control</span></h1>
       <p>Sistema de Gestión</p>
     </div>
     <nav>
@@ -30,9 +30,7 @@
       <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
       
       <span class="nav-section">Administración</span>
-      <!-- Clientes seleccionado como activo -->
       <div class="nav-item active" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
-      <!-- Usuarios ahora es un enlace normal para poder volver -->
       <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
       <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
     </nav>
@@ -99,7 +97,6 @@
     </main>
   </div>
 
-  <!-- Modal para Crear/Editar Cliente -->
   <div class="modal-overlay" id="modal-cliente">
     <div class="modal">
       <div class="modal-head">
@@ -111,19 +108,19 @@
       <div class="modal-body">
         <div class="form-grid form-grid-2">
           <div class="form-group">
-            <label for="c-identificacion">Identificación / NIT / RUT</label>
-            <input type="text" id="c-identificacion" placeholder="12345678-9">
+            <label for="c-identificacion">Identificación / NIT / RUT *</label>
+            <input type="text" id="c-identificacion" placeholder="12345678-9" required>
           </div>
           <div class="form-group">
-            <label for="c-nombre">Nombre o Razón Social</label>
-            <input type="text" id="c-nombre" placeholder="Juan Pérez o Empresa S.A.">
+            <label for="c-nombre">Nombre o Razón Social *</label>
+            <input type="text" id="c-nombre" placeholder="Juan Pérez o Empresa S.A." required>
           </div>
           <div class="form-group">
-            <label for="c-email">Email</label>
+            <label for="c-email">Email (Opcional)</label>
             <input type="email" id="c-email" placeholder="cliente@email.com">
           </div>
-          <div class="form-group">
-            <label for="c-telefono">Teléfono</label>
+          <div class="form-group"> 
+            <label for="c-telefono">Teléfono (Opcional)</label>
             <input type="tel" id="c-telefono" placeholder="+56 9 1234 5678">
           </div>
           <div class="form-group" style="grid-column: span 2;">
@@ -137,6 +134,11 @@
               <option value="empresa">Empresa / Corporativo</option>
             </select>
           </div>
+          
+          <div class="form-group" style="grid-column: span 2;">
+            <label for="c-notas">Notas / Observaciones Internas</label>
+            <textarea id="c-notas" rows="3" placeholder="Detalles comerciales, condiciones de pago, horarios de entrega o anotaciones importantes..." style="width: 100%; padding: 10px; border: 1px solid var(--border-color, #ccc); border-radius: 6px; resize: vertical; font-family: inherit; font-size: 14px;"></textarea>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -146,7 +148,6 @@
     </div>
   </div>
 
-  <!-- Modal de Confirmación -->
   <div class="modal-overlay" id="modal-confirmacion">
     <div class="modal modal-confirm">
       <div id="confirm-icon-container" class="confirm-icon-box">
