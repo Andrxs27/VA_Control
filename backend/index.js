@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -5,7 +6,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Rutas
+// --- AUTENTICACIÓN ---
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
+// --- RUTAS PRINCIPALES ---
 const usuariosRoutes = require('./routes/usuarios');
 const clientesRoutes = require('./routes/clientes');
 const productosRoutes = require('./routes/productos');
@@ -24,7 +29,7 @@ app.get('/', (req, res) => {
     res.json({ mensaje: 'Backend VA_Control funcionando' });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
