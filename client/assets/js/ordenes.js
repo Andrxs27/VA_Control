@@ -9,7 +9,7 @@ let tipoAccion = '';
 
 // cargar los datos de los selectores 
 async function cargarDatos() {
-    // CRUD - GET - aquí se busca la lista de usuarios en el servidor
+    // CRUD - GET - aquí se busca la lista de usuarios en el servidor 
     const resUsuarios = await fetch(`${API}/usuarios`);
     usuariosDB = await resUsuarios.json();
 

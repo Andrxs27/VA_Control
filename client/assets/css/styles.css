@@ -1331,7 +1331,7 @@ textarea::placeholder {
       background: var(--bg3);
       border: 1px solid var(--border2);
       border-radius: 8px;
-      padding: 11px 12px 11px 38px;
+      padding: 11px 42px 12px 42px;
       color: var(--text);
       font-family: var(--font-body);
       font-size: 14px;
@@ -1349,18 +1349,20 @@ textarea::placeholder {
     }
 
     .password-toggle {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--text3);
-      cursor: pointer;
-      padding: 4px;
-      font-size: 16px;
-      transition: color .2s;
-    }
+  position: absolute;
+  right: 25px; 
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 12px;
+  font-size: 16px;
+  transition: color .2s;
+  display: flex;        
+  align-items: center;   
+}
 
     .password-toggle:hover { color: var(--text2); }
 
@@ -1428,3 +1430,9 @@ textarea::placeholder {
       font-size: 12px;
       color: var(--text3);
     }
+
+    /* Ocultar el botón nativo de revelar contraseña de los navegadores */
+.input-wrap input::-ms-reveal,
+.input-wrap input::-ms-clear {
+  display: none;
+}

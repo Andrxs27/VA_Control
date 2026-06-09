@@ -134,9 +134,12 @@ function prepararCreacion() {
     document.getElementById('u-nombre').value = '';
     document.getElementById('u-email').value = '';
     document.getElementById('u-rol').value = 'admin';
-    document.getElementById('u-password').value = '';
+    
+    const passInput = document.getElementById('u-password');
+    passInput.value = '';
+    passInput.placeholder = '••••••••';
 
-    const passGroup = document.getElementById('u-password').closest('.form-group');
+    const passGroup = passInput.closest('.form-group');
     if (passGroup) passGroup.style.display = 'block';
 
     document.querySelector('#modal-usuario h2').innerText = 'Nuevo Usuario';
@@ -155,10 +158,13 @@ function prepararEdicion(id) {
     document.getElementById('u-nombre').value   = usuario.nombre;
     document.getElementById('u-email').value    = usuario.email;
     document.getElementById('u-rol').value      = usuario.rol;
-    document.getElementById('u-password').value = '';
+    
+    const passInput = document.getElementById('u-password');
+    passInput.value = '';
+    passInput.placeholder = 'Dejar en blanco para no cambiar';
 
-    const passGroup = document.getElementById('u-password').closest('.form-group');
-    if (passGroup) passGroup.style.display = 'none';
+    const passGroup = passInput.closest('.form-group');
+    if (passGroup) passGroup.style.display = 'block';
 
     document.querySelector('#modal-usuario h2').innerText = 'Editar Usuario';
     const btnGuardar = document.querySelector('#modal-usuario .modal-footer .btn-primary');
@@ -190,10 +196,17 @@ async function guardarUsuario() {
         let res;
 
         if (usuarioEditandoId) {
+            const datosActualizar = { nombre, email, rol };
+            
+            // Si el campo tiene texto, se añade al payload para que el backend lo actualice
+            if (password.trim() !== '') {
+                datosActualizar.password = password;
+            }
+
             res = await fetch(`${API}/usuarios/${usuarioEditandoId}`, {
                 method: 'PUT',
                 headers: getAuthHeaders(),
-                body: JSON.stringify({ nombre, email, rol })
+                body: JSON.stringify(datosActualizar)
             });
         } else {
             // Nota: Enviamos el password tal cual; el backend se encarga del hash con bcrypt
@@ -248,7 +261,7 @@ function solicitarCambioEstado(id, nuevoEstado) {
     const usuario = usuariosLista.find(u => u.id === id);
     const identificador = usuario ? ` de ${usuario.nombre}` : '';
 
-    abrirDialogoConfirmacion({
+     abrirDialogoConfirmacion({
         titulo: nuevoEstado ? '¿Activar cuenta de usuario?' : '¿Desactivar cuenta de usuario?',
         mensaje: nuevoEstado 
             ? `El usuario${identificador} recuperará el acceso a las operaciones normales de la plataforma.` 
@@ -266,7 +279,7 @@ function solicitarEliminacion(id) {
     const usuario = usuariosLista.find(u => u.id === id);
     const identificador = usuario ? `${usuario.nombre} (${usuario.email})` : 'este usuario';
 
-    abrirDialogoConfirmacion({
+     abrirDialogoConfirmacion({
         titulo: '¿Eliminar cuenta de usuario?',
         mensaje: `Al confirmar, la cuenta de ${identificador} se eliminará de forma permanente del sistema. Esta acción no se puede revertir.`,
         icono: 'ti-alert-triangle',

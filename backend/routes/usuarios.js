@@ -38,10 +38,15 @@ const validarUsuarioMiddleware = (req, res, next) => {
         return res.status(400).json({ error: 'El formato del correo electrónico no es válido.' });
     }
 
-    // 4. Validación de la CONTRASEÑA (Solo requerida al crear un usuario)
+    // 4. Validación de la CONTRASEÑA (Modificado para soportar edición opcional)
     if (req.method === 'POST') {
         if (!password || password.length < 6) {
             return res.status(400).json({ error: 'La contraseña es obligatoria y debe tener al menos 6 caracteres.' });
+        }
+    } else if (req.method === 'PUT') {
+        // En PUT la contraseña es opcional, pero si se envía, debe cumplir el mínimo de caracteres
+        if (password && password.trim() !== '' && password.length < 6) {
+            return res.status(400).json({ error: 'La nueva contraseña debe tener al menos 6 caracteres.' });
         }
     }
 
@@ -107,11 +112,11 @@ router.post('/', validarUsuarioMiddleware, async (req, res) => {
     }
 });
 
-// CRUD - PUT (Actualizar usuario)
+// CRUD - PUT (Actualizar usuario - Soporta cambio opcional de contraseña)
 router.put('/:id', validarUsuarioMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
-        const { nombre, email, rol } = req.body;
+        const { nombre, email, rol, password } = req.body; // <-- Extraemos el password del cuerpo de la petición
 
         // Evitar que use el correo de otro usuario existente
         const emailDuplicado = await pool.query('SELECT id FROM usuarios WHERE email = $1 AND id != $2', [email, id]);
@@ -119,10 +124,25 @@ router.put('/:id', validarUsuarioMiddleware, async (req, res) => {
             return res.status(400).json({ error: 'El correo electrónico ya está siendo usado por otro usuario.' });
         }
 
-        const result = await pool.query(
-            'UPDATE usuarios SET nombre=$1, email=$2, rol=$3, actualizado_en=NOW() WHERE id=$4 RETURNING id, nombre, email, rol, activo',
-            [nombre, email, rol, id]
-        );
+        let result;
+
+        // Evaluamos si el administrador envió una nueva contraseña desde el cliente
+        if (password && password.trim() !== '') {
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+            // Consulta ejecutada si se decide actualizar la contraseña además de los datos de perfil
+            result = await pool.query(
+                'UPDATE usuarios SET nombre=$1, email=$2, rol=$3, password=$4, actualizado_en=NOW() WHERE id=$5 RETURNING id, nombre, email, rol, activo',
+                [nombre, email, rol, hashedPassword, id]
+            );
+        } else {
+            // Consulta clásica ejecutada si el campo de contraseña se dejó en blanco
+            result = await pool.query(
+                'UPDATE usuarios SET nombre=$1, email=$2, rol=$3, actualizado_en=NOW() WHERE id=$4 RETURNING id, nombre, email, rol, activo',
+                [nombre, email, rol, id]
+            );
+        }
         
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Usuario no encontrado.' });
