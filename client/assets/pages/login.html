@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VA Control — Iniciar Sesión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="/client/assets/css/styles.css">
+</head>
+<body>
+
+  <div class="login-wrap">
+    <div class="login-brand">
+      <h1>VA <span>Control</span></h1>
+      <p>Sistema de Gestión Empresarial</p>
+    </div>
+
+    <div class="login-card">
+      <h2>Iniciar Sesión</h2>
+      <p class="subtitle">Ingresa tus credenciales para acceder</p>
+
+      <div class="error-msg" id="error-msg">
+        <i class="ti ti-alert-circle"></i>
+        <span id="error-text">Error al iniciar sesión</span>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <div class="input-wrap">
+          <i class="ti ti-mail"></i>
+          <input
+            type="email"
+            id="email"
+            placeholder="usuario@empresa.com"
+            autocomplete="email"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <div class="input-wrap">
+          <i class="ti ti-lock"></i>
+          <input
+            type="password"
+            id="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          >
+          <button class="password-toggle" type="button" id="toggle-pass" title="Mostrar/ocultar contraseña">
+            <i class="ti ti-eye" id="eye-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-login" id="btn-login" type="button">
+        <div class="spinner"></div>
+        <span class="btn-text"><i class="ti ti-login"></i> Entrar</span>
+      </button>
+    </div>
+
+    <p class="login-footer">VA Control &copy; 2026 — Solo personal autorizado</p>
+  </div>
+
+  <script src="/client/assets/js/login.js"></script>
+
+</body>
+</html>

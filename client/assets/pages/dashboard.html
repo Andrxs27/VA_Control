@@ -37,6 +37,9 @@
           <p>Admin User</p>
           <span>Administrador</span>
         </div>
+        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
+          <i class="ti ti-logout"></i>
+        </button>
       </div>
     </div>
   </aside>
@@ -300,6 +303,7 @@
 
   <div class="toast-container" id="toasts"></div>
 
+  <script src="/client/assets/js/auth.js"></script>
   <script src="/client/assets/js/script.js"></script>
 </body>
 </html>

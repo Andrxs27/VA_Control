@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); 
+const bcrypt = require('bcrypt'); // <-- IMPORTACIÓN DE BCRYPT AÑADIDA
 
 // MIDDLEWARE DE VALIDACIÓN 
 
@@ -90,9 +91,13 @@ router.post('/', validarUsuarioMiddleware, async (req, res) => {
             return res.status(400).json({ error: 'El correo electrónico ya se encuentra registrado.' });
         }
 
+        // ENCRIPTACIÓN DE CONTRASEÑA CON BCRYPT
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         const result = await pool.query(
             'INSERT INTO usuarios (nombre, email, password, rol, activo, creado_en, actualizado_en) VALUES ($1, $2, $3, $4, true, NOW(), NOW()) RETURNING id, nombre, email, rol, activo',
-            [nombre, email, password, rol]
+            [nombre, email, hashedPassword, rol] // <-- Se guarda la contraseña encriptada
         );
         
         res.status(201).json(result.rows[0]);
@@ -150,7 +155,7 @@ router.patch('/:id/estado', async (req, res) => {
     }
 });
 
-// CRUD - DELETE (Eliminar usuario permanentemente - Borrado físico definitivo empresarial)
+// CRUD - DELETE (Eliminar usuario permanentemente)
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

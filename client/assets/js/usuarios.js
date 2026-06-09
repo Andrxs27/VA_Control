@@ -5,12 +5,21 @@ let usuarioEditandoId = null;
 // Callback temporal para el modal de confirmación personalizada
 let accionConfirmadaCallback = null;
 
+// Helper opcional para obtener el token si tus rutas CRUD están protegidas
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token'); // O donde guardes tu JWT
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` })
+  };
+};
+
 // ==========================================
 // TOAST NOTIFICATION CONFIGURATION
 // ==========================================
 function toast(msg, type='info') {
   const c = document.getElementById('toasts');
-  if (!c) return; // Validación por si el contenedor no existe en el DOM aún
+  if (!c) return; 
   const t = document.createElement('div');
   t.className = `toast ${type}`;
   const icons = {success:'ti-circle-check', error:'ti-circle-x', info:'ti-info-circle'};
@@ -24,11 +33,12 @@ function toast(msg, type='info') {
 // ==========================================
 async function cargarUsuarios() {
     try {
-        // Limpiar el buscador cada vez que se refrescan los datos globales
         const inputBuscar = document.getElementById('buscar-usuario');
         if (inputBuscar) inputBuscar.value = '';
 
-        const res = await fetch(`${API}/usuarios`);
+        const res = await fetch(`${API}/usuarios`, {
+            headers: getAuthHeaders()
+        });
         if (!res.ok) throw new Error('Error al obtener usuarios');
         usuariosLista = await res.json();
         renderizarTabla(usuariosLista);
@@ -47,7 +57,6 @@ function renderizarTabla(lista) {
     }
 
     lista.forEach(u => {
-        // Configurar botón de cambiar estado dinámicamente según el valor actual de u.activo
         const botonEstado = u.activo 
             ? `<button class="btn btn-sm" style="background-color: #6b7280; color: white;" onclick="solicitarCambioEstado(${u.id}, false)" title="Desactivar">
                 <i class="ti ti-user-off"></i>
@@ -88,26 +97,29 @@ function rolBadge(rol) {
 }
 
 // ==========================================
-// NUEVA SECCIÓN: FILTRAR EN TIEMPO REAL
+// FILTRAR EN TIEMPO REAL (OPTIMIZADO)
 // ==========================================
 function filtrarUsuarios() {
     const textoBusqueda = document.getElementById('buscar-usuario').value.toLowerCase().trim();
 
-    // Si el buscador está vacío, volvemos a mostrar todo el arreglo original
     if (!textoBusqueda) {
         renderizarTabla(usuariosLista);
         return;
     }
 
-    // Filtrar modificaciones parciales por Nombre, Email o Rol mapeado
     const usuariosFiltrados = usuariosLista.filter(u => {
         const nombre = u.nombre ? u.nombre.toLowerCase() : '';
         const email = u.email ? u.email.toLowerCase() : '';
         const rol = u.rol ? u.rol.toLowerCase() : '';
+        
+        // Mapeo amigable para que busque también por lo que el usuario ve en pantalla
+        const traduccionesRol = { admin: 'admin administrador', tecnico: 'técnico tecnico', vendedor: 'vendedor' };
+        const rolTraducido = traduccionesRol[rol] || '';
 
         return nombre.includes(textoBusqueda) || 
                email.includes(textoBusqueda) || 
-               rol.includes(textoBusqueda);
+               rol.includes(textoBusqueda) ||
+               rolTraducido.includes(textoBusqueda);
     });
 
     renderizarTabla(usuariosFiltrados);
@@ -180,13 +192,14 @@ async function guardarUsuario() {
         if (usuarioEditandoId) {
             res = await fetch(`${API}/usuarios/${usuarioEditandoId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ nombre, email, rol })
             });
         } else {
+            // Nota: Enviamos el password tal cual; el backend se encarga del hash con bcrypt
             res = await fetch(`${API}/usuarios`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ nombre, email, password, rol })
             });
         }
@@ -205,7 +218,7 @@ async function guardarUsuario() {
 }
 
 // ==========================================
-// 4. PASO INTERMEDIO: CONFIRMACIONES BONITAS (CORPORATIVAS)
+// 4. PASO INTERMEDIO: CONFIRMACIONES
 // ==========================================
 function abrirDialogoConfirmacion({ titulo, mensaje, icono, colorFondo, colorIcono, textoBoton, colorBoton, callback }) {
     document.getElementById('confirm-titulo').innerText = titulo;
@@ -222,7 +235,6 @@ function abrirDialogoConfirmacion({ titulo, mensaje, icono, colorFondo, colorIco
     btnProceder.innerText = textoBoton;
     btnProceder.style.backgroundColor = colorBoton;
     
-    // Asignar el callback al botón dinámicamente
     accionConfirmadaCallback = () => {
         callback();
         closeModal('modal-confirmacion');
@@ -273,7 +285,7 @@ async function cambiarEstadoUsuario(id, nuevoEstado) {
     try {
         const res = await fetch(`${API}/usuarios/${id}/estado`, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders(),
             body: JSON.stringify({ activo: nuevoEstado })
         });
 
@@ -291,7 +303,10 @@ async function cambiarEstadoUsuario(id, nuevoEstado) {
 
 async function eliminarUsuarioDefinitivo(id) {
     try {
-        const res = await fetch(`${API}/usuarios/${id}`, { method: 'DELETE' });
+        const res = await fetch(`${API}/usuarios/${id}`, { 
+            method: 'DELETE',
+            headers: getAuthHeaders()
+        });
         if (!res.ok) {
             const err = await res.json();
             throw new Error(err.error || 'No se pudo eliminar el usuario');
