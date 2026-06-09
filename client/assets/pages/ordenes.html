@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VA Control — Órdenes de Servicio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="/client/assets/css/styles.css">
 </head>
@@ -22,16 +20,13 @@
     </div>
     <nav>
       <span class="nav-section">Principal</span>
-      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i
-          class="ti ti-layout-dashboard"></i>Dashboard</div>
+      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
       <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
       <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-boxes"></i>Inventario</div>
       <span class="nav-section">Operaciones</span>
       <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
-      <div class="nav-item active" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de
-        Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
-      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas
-      </div>
+      <div class="nav-item active" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
+      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
       <span class="nav-section">Administración</span>
       <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users"></i>clientes</div>
       <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
@@ -64,8 +59,7 @@
             <div class="section-title">Órdenes de Servicio</div>
             <div class="section-sub">Gestión de reparaciones y servicios técnicos</div>
           </div>
-          <button class="btn btn-primary" onclick="openModal('modal-orden')"><i class="ti ti-plus"></i> Nueva
-            Orden</button>
+          <button class="btn btn-primary" onclick="openModal('modal-orden')"><i class="ti ti-plus"></i> Nueva Orden</button>
         </div>
 
         <div class="tabs">
@@ -90,8 +84,7 @@
                 <th>Acciones</th>
               </tr>
             </thead>
-            <tbody id="tb-ordenes">
-            </tbody>
+            <tbody id="tb-ordenes"></tbody>
           </table>
         </div>
       </div>
@@ -102,8 +95,7 @@
     <div class="modal">
       <div class="modal-head">
         <h2>Nueva Orden de Servicio</h2>
-        <button class="icon-btn" onclick="closeModal('modal-orden')" title="Cerrar modal" aria-label="Cerrar modal"><i
-            class="ti ti-x"></i></button>
+        <button class="icon-btn" onclick="closeModal('modal-orden')" title="Cerrar modal" aria-label="Cerrar modal"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
@@ -159,24 +151,45 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="o-estado">Estado Inicial</label>
-            <select class="form-select" id="o-estado" title="Seleccionar estado inicial">
+            <label for="o-estado">Estado de la Orden</label>
+            <select class="form-select" id="o-estado" title="Seleccionar estado">
               <option value="pendiente">Pendiente</option>
               <option value="en_proceso">En Proceso</option>
+              <option value="completado">Completado</option>
+              <option value="entregado">Entregado</option>
+              <option value="cancelado">Cancelado</option>
             </select>
           </div>
         </div>
         <div class="modal-footer">
           <button class="btn btn-ghost" onclick="closeModal('modal-orden')">Cancelar</button>
-          <button class="btn btn-primary" onclick="guardarOrden()"><i class="ti ti-check"></i> Crear Orden</button>
+          <button class="btn btn-primary" onclick="guardarOrden()"><i class="ti ti-check"></i> Guardar Orden</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="toast-container" id="toasts"></div>
+  <div class="modal-overlay" id="modal-confirmacion">
+    <div class="modal modal-confirm">
+      <div class="confirm-icon-box">
+        <i class="ti ti-alert-triangle" id="confirm-icon"></i>
+      </div>
+      <h3 id="confirm-titulo" class="confirm-title">Confirmar Acción</h3>
+      <p id="confirm-mensaje" class="confirm-message">¿Estás seguro de realizar esta acción?</p>
+      
+      <div class="confirm-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modal-confirmacion')">Cancelar</button>
+        <button class="btn btn-danger" id="confirm-btn-proceder">Confirmar</button>
+      </div>
+    </div>
+  </div>
 
-    <script src="/client/assets/js/script.js"></script>
-    <script src="/client/assets/js/ordenes.js"></script>
+  <div class="toast-container" id="toasts"></div>
+
+  <script>
+  </script>
+  
+  <script src="/client/assets/js/script.js"></script>
+  <script src="/client/assets/js/ordenes.js"></script>
 </body>
-
 </html>
