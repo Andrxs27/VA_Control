@@ -1436,3 +1436,28 @@ textarea::placeholder {
 .input-wrap input::-ms-clear {
   display: none;
 }
+
+/* Estilos para el contenedor y los inputs de contraseña */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 40px;
+  width: 100%;
+}
+
+/* Botón para alternar visibilidad de la contraseña */
+.icon-btn-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}

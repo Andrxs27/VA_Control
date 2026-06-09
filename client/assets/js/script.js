@@ -75,75 +75,6 @@ function renderDashboard() {
   }
 }
 
-// ==================== PRODUCTOS ====================
-function renderProductos(filtro='', cat='') {
-  const data = DB.productos.filter(p => {
-    const m = filtro.toLowerCase();
-    const match = !filtro || p.nombre.toLowerCase().includes(m) || p.sku.toLowerCase().includes(m);
-    const catMatch = !cat || p.categoria === cat;
-    return match && catMatch;
-  });
-  document.getElementById('tb-productos').innerHTML = data.map(p => {
-    const pct = p.categoria==='servicios' ? 100 : Math.min(100, Math.round((p.stock/Math.max(p.stock_minimo*2,1))*100));
-    const cls = p.stock===0?'critical':p.stock<=p.stock_minimo?'low':'ok';
-    return `<tr>
-      <td><code style="font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--accent)">${p.sku}</code></td>
-      <td><div style="font-weight:500">${p.nombre}</div></td>
-      <td>${catBadge(p.categoria)}</td>
-      <td>
-        <div class="stock-bar">
-          <div style="font-size:12px;font-weight:500">${p.categoria==='servicios'?'∞':p.stock} uds.</div>
-          ${p.categoria!=='servicios'?`<div class="stock-track"><div class="stock-fill ${cls}" style="width:${pct}%"></div></div>`:''}
-        </div>
-      </td>
-      <td style="font-weight:500">${formatCOP(p.precio_venta)}</td>
-      <td><span class="badge ${p.active?'badge-green':'badge-gray'}">${p.active?'Activo':'Inactivo'}</span></td>
-      <td>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick="editarProducto(${p.id})"><i class="ti ti-edit"></i></button>
-          <button class="btn btn-danger btn-sm" onclick="toggleProducto(${p.id})"><i class="ti ti-${p.active?'trash':'restore'}"></i></button>
-        </div>
-      </td>
-    </tr>`;
-  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px">No hay productos</td></tr>';
-}
-
-function filtrarPorCategoria(cat) { renderProductos('', cat); }
-
-// ==================== INVENTARIO ====================
-function renderInventario(filtro='') {
-  const data = DB.productos.filter(p => p.active && p.categoria !== 'servicios' &&
-    (!filtro || p.nombre.toLowerCase().includes(filtro.toLowerCase()) || p.sku.toLowerCase().includes(filtro.toLowerCase())));
-  document.getElementById('tb-inventario').innerHTML = data.map(p => {
-    const pct = Math.min(100,Math.round((p.stock/Math.max(p.stock_minimo*2,1))*100));
-    const cls = p.stock===0?'critical':p.stock<=p.stock_minimo?'low':'ok';
-    const est = p.stock===0?['badge-red','Sin Stock']:p.stock<=p.stock_minimo?['badge-amber','Stock Bajo']:['badge-green','Normal'];
-    return `<tr>
-      <td><code style="font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--accent)">${p.sku}</code></td>
-      <td>${p.nombre}</td>
-      <td>
-        <div class="stock-bar">
-          <div style="font-size:14px;font-weight:600">${p.stock}</div>
-          <div class="stock-track" style="width:120px"><div class="stock-fill ${cls}" style="width:${pct}%"></div></div>
-        </div>
-      </td>
-      <td>${p.stock_minimo}</td>
-      <td><span class="badge ${est[0]}">${est[1]}</span></td>
-      <td class="td-muted">—</td>
-      <td><button class="btn btn-ghost btn-sm" onclick="ajustarStock(${p.id})"><i class="ti ti-arrows-up-down"></i> Ajustar</button></td>
-    </tr>`;
-  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:24px">No hay datos</td></tr>';
-  // Rellenar select de productos en modal movimiento
-  const sel = document.getElementById('mov-producto');
-  sel.innerHTML = '<option value="">Seleccionar producto</option>' +
-    DB.productos.filter(p=>p.active&&p.categoria!=='servicios').map(p=>`<option value="${p.id}">${p.nombre} (Stock: ${p.stock})</option>`).join('');
-}
-
-function ajustarStock(id) {
-  document.getElementById('mov-producto').value = id;
-  openModal('modal-movimiento');
-}
-
 // ==================== VENTAS ====================
 function renderVentas(filtro='', metodo='') {
   const data = DB.ventas.filter(v => {
@@ -508,6 +439,10 @@ function toast(msg, type='info') {
   c.appendChild(t);
   setTimeout(()=>t.remove(),3500);
 }
+
+
+
+
 
 // ==================== INIT ====================
 renderDashboard();

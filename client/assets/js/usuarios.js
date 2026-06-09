@@ -29,6 +29,33 @@ function toast(msg, type='info') {
 }
 
 // ==========================================
+// FUNCIÓN PARA MOSTRAR / OCULTAR CONTRASEÑA
+// ==========================================
+function togglePasswordVisibility(inputId, boton) {
+  const input = document.getElementById(inputId);
+  const icono = boton.querySelector('i');
+  
+  if (input.type === 'password') {
+    input.type = 'text';
+    icono.className = 'ti ti-eye-off';
+  } else {
+    input.type = 'password';
+    icono.className = 'ti ti-eye';
+  }
+}
+
+function restablecerVisibilidadPasswords() {
+  ['u-password', 'u-confirm-password'].forEach(id => {
+    const input = document.getElementById(id);
+    if (input) input.type = 'password';
+  });
+  
+  document.querySelectorAll('.password-wrapper .icon-btn-toggle i').forEach(icono => {
+    icono.className = 'ti ti-eye';
+  });
+}
+
+// ==========================================
 // 1. CARGAR Y MOSTRAR USUARIOS
 // ==========================================
 async function cargarUsuarios() {
@@ -139,8 +166,19 @@ function prepararCreacion() {
     passInput.value = '';
     passInput.placeholder = '••••••••';
 
+    const confirmPassInput = document.getElementById('u-confirm-password');
+    if (confirmPassInput) {
+        confirmPassInput.value = '';
+        confirmPassInput.placeholder = '••••••••';
+    }
+
+    restablecerVisibilidadPasswords();
+
     const passGroup = passInput.closest('.form-group');
     if (passGroup) passGroup.style.display = 'block';
+
+    const confirmGroup = document.getElementById('group-confirm-password');
+    if (confirmGroup) confirmGroup.style.display = 'block';
 
     document.querySelector('#modal-usuario h2').innerText = 'Nuevo Usuario';
     const btnGuardar = document.querySelector('#modal-usuario .modal-footer .btn-primary');
@@ -163,8 +201,19 @@ function prepararEdicion(id) {
     passInput.value = '';
     passInput.placeholder = 'Dejar en blanco para no cambiar';
 
+    const confirmPassInput = document.getElementById('u-confirm-password');
+    if (confirmPassInput) {
+        confirmPassInput.value = '';
+        confirmPassInput.placeholder = 'Dejar en blanco para no cambiar';
+    }
+
+    restablecerVisibilidadPasswords();
+
     const passGroup = passInput.closest('.form-group');
     if (passGroup) passGroup.style.display = 'block';
+
+    const confirmGroup = document.getElementById('group-confirm-password');
+    if (confirmGroup) confirmGroup.style.display = 'block';
 
     document.querySelector('#modal-usuario h2').innerText = 'Editar Usuario';
     const btnGuardar = document.querySelector('#modal-usuario .modal-footer .btn-primary');
@@ -177,10 +226,11 @@ function prepararEdicion(id) {
 // 3. PROCESAR GUARDADO (POST / PUT)
 // ==========================================
 async function guardarUsuario() {
-    const nombre   = document.getElementById('u-nombre').value.trim();
-    const email    = document.getElementById('u-email').value.trim();
-    const rol      = document.getElementById('u-rol').value;
-    const password = document.getElementById('u-password').value;
+    const nombre          = document.getElementById('u-nombre').value.trim();
+    const email           = document.getElementById('u-email').value.trim();
+    const rol             = document.getElementById('u-rol').value;
+    const password        = document.getElementById('u-password').value;
+    const confirmPassword = document.getElementById('u-confirm-password').value;
 
     if (!nombre || !email) {
         toast('Nombre y email son requeridos', 'error');
@@ -189,6 +239,12 @@ async function guardarUsuario() {
 
     if (!usuarioEditandoId && !password) {
         toast('La contraseña es requerida para nuevos usuarios', 'error');
+        return;
+    }
+
+    // Validación de coincidencia de contraseñas
+    if (password !== confirmPassword) {
+        toast('Las contraseñas no coinciden', 'error');
         return;
     }
 
@@ -281,6 +337,7 @@ function solicitarEliminacion(id) {
 
      abrirDialogoConfirmacion({
         titulo: '¿Eliminar cuenta de usuario?',
+        textomensaje: `Al confirmar, la cuenta de ${identificador} se eliminará de forma permanente del sistema. Esta acción no se puede revertir.`,
         mensaje: `Al confirmar, la cuenta de ${identificador} se eliminará de forma permanente del sistema. Esta acción no se puede revertir.`,
         icono: 'ti-alert-triangle',
         colorFondo: '#fee2e2',

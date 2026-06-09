@@ -1,11 +1,9 @@
 /**
  * auth.js — Guard de autenticación para VA Control
- * 
- * Incluir este script en TODAS las páginas protegidas (dashboard, productos, etc.)
+ * * Incluir este script en TODAS las páginas protegidas (dashboard, productos, etc.)
  * ANTES de cualquier otro script de la página.
- * 
- * Uso en HTML:
- *   <script src="/client/assets/js/auth.js"></script>
+ * * Uso en HTML:
+ * <script src="/client/assets/js/auth.js"></script>
  */
 
 const VA_API = 'http://localhost:3000/api';
@@ -39,15 +37,29 @@ function authHeaders() {
     };
 }
 
-// Guard principal: si no hay token, redirige al login
+// Guard principal: ejecuta las comprobaciones de ruta inmediatamente
 (function checkAuth() {
     const token = getToken();
+    
+    // 1. Si no hay token, directo al login
     if (!token) {
         window.location.href = '/client/assets/pages/login.html';
         return;
     }
 
-    // Verificar token con el servidor (opcional pero recomendado)
+    // 2. 🛡️ CONTROL DE ACCESO POR RUTA (PROTECCIÓN 401)
+    const usuario = getUsuario();
+    const esPaginaUsuarios = window.location.pathname.includes('usuarios.html');
+
+    if (esPaginaUsuarios && (!usuario || usuario.rol !== 'admin')) {
+        console.error("Error 401: Unauthorized - No tienes permisos para esta sección.");
+        
+        // Redirección limpia e inmediata a la página de error independiente
+        window.location.href = '/client/assets/pages/401.html';
+        return; 
+    }
+
+    // 3. Verificar token con el servidor en segundo plano
     fetch(`${VA_API}/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -58,13 +70,11 @@ function authHeaders() {
         }
     })
     .catch(() => {
-        // Si el servidor no responde, dejamos pasar (modo offline)
-        // Puedes cambiar esto por logout() si prefieres ser estricto
         console.warn('VA_Control: No se pudo verificar el token con el servidor.');
     });
 })();
 
-// Poblar el elemento del sidebar con los datos del usuario autenticado
+// Poblar elementos de la interfaz común (Sidebar) una vez cargue el DOM
 document.addEventListener('DOMContentLoaded', () => {
     const usuario = getUsuario();
     if (!usuario) return;
@@ -81,18 +91,18 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarEl.textContent = iniciales;
     }
 
-    // Nombre
+    // Nombre en el sidebar
     const nombreEl = document.querySelector('.user-info p');
     if (nombreEl) nombreEl.textContent = usuario.nombre;
 
-    // Rol
+    // Rol en el sidebar
     const rolEl = document.querySelector('.user-info span');
     if (rolEl) {
         const roles = { admin: 'Administrador', vendedor: 'Vendedor', tecnico: 'Técnico' };
         rolEl.textContent = roles[usuario.rol] || usuario.rol;
     }
 
-    // Mostrar/ocultar secciones según rol (solo admin ve Usuarios y Reportes completos)
+    // Ocultar accesos del menú lateral si no es administrador
     if (usuario.rol !== 'admin') {
         const navUsuarios = document.querySelector('.nav-item[onclick*="usuarios"]');
         if (navUsuarios) navUsuarios.style.display = 'none';

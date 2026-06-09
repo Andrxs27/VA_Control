@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VA Control — Usuarios</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="/client/assets/css/styles.css">
 </head>
@@ -20,16 +22,20 @@
     </div>
     <nav>
       <span class="nav-section">Principal</span>
-      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i
+          class="ti ti-layout-dashboard"></i>Dashboard</div>
       <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
       <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-boxes"></i>Inventario</div>
       <span class="nav-section">Operaciones</span>
       <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
-      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
-      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
+      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de
+        Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
+      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas
+      </div>
       <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users"></i>clientes</div>
-      <div class="nav-item active" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
+      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users"></i>Clientes</div>
+      <div class="nav-item active" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios
+      </div>
       <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
     </nav>
     <div class="sidebar-footer">
@@ -59,19 +65,15 @@
             <div class="section-title">Usuarios del Sistema</div>
             <div class="section-sub">Gestión de roles y permisos</div>
           </div>
-          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> Nuevo Usuario</button>
+          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> Nuevo
+            Usuario</button>
         </div>
 
         <div class="search-container">
           <div class="search-wrapper">
             <i class="ti ti-search search-icon"></i>
-            <input 
-              type="text" 
-              id="buscar-usuario" 
-              class="input-search"
-              placeholder="Buscar por nombre, email o rol..." 
-              oninput="filtrarUsuarios()"
-            >
+            <input type="text" id="buscar-usuario" class="input-search" placeholder="Buscar por nombre, email o rol..."
+              oninput="filtrarUsuarios()">
           </div>
         </div>
 
@@ -112,6 +114,30 @@
             <label for="u-email">Email</label>
             <input type="email" id="u-email" placeholder="usuario@email.com">
           </div>
+
+          <div class="form-group">
+            <label for="u-password">Contraseña</label>
+            <div class="password-wrapper">
+              <input type="password" id="u-password" placeholder="••••••••">
+              <button type="button" class="icon-btn-toggle" onclick="togglePasswordVisibility('u-password', this)"
+                aria-label="Mostrar contraseña" title="Mostrar contraseña">
+                <i class="ti ti-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group" id="group-confirm-password">
+            <label for="u-confirm-password">Confirmar Contraseña</label>
+            <div class="password-wrapper">
+              <input type="password" id="u-confirm-password" placeholder="••••••••">
+              <button type="button" class="icon-btn-toggle"
+                onclick="togglePasswordVisibility('u-confirm-password', this)" aria-label="Mostrar contraseña"
+                title="Mostrar contraseña">
+                <i class="ti ti-eye"></i>
+              </button>
+            </div>
+          </div>
+
           <div class="form-group">
             <label for="u-rol">Rol</label>
             <select class="form-select" id="u-rol">
@@ -120,10 +146,7 @@
               <option value="tecnico">Técnico</option>
             </select>
           </div>
-          <div class="form-group">
-            <label for="u-password">Contraseña</label>
-            <input type="password" id="u-password" placeholder="••••••••">
-          </div>
+
         </div>
       </div>
       <div class="modal-footer">
@@ -146,12 +169,13 @@
       </div>
     </div>
   </div>
-  
+
   <div class="toast-container" id="toasts"></div>
-  
+
   <script src="/client/assets/js/auth.js"></script>
   <script src="/client/assets/js/script.js"></script>
   <script src="/client/assets/js/usuarios.js"></script>
+  <script src="/client/assets/js/alertordenes.js"></script>
 </body>
 
 </html>
