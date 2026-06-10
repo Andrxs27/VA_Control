@@ -86,19 +86,41 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// CRUD - DELETE (Desactivación lógica)
-router.delete('/:id', async (req, res) => {
+// NUEVA RUTA: PATCH (Activar / Desactivar de forma lógica)
+router.patch('/:id/estado', async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await pool.query('UPDATE productos SET activo=false WHERE id=$1 RETURNING id', [id]);
+        const { activo } = req.body; // Recibe true o false desde el frontend
+
+        const result = await pool.query(
+            'UPDATE productos SET activo=$1, actualizado_en=NOW() WHERE id=$2 RETURNING *', 
+            [activo, id]
+        );
         
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'El producto seleccionado no existe' });
         }
-        res.json({ mensaje: 'Producto inactivado correctamente del sistema' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error("Error en PATCH /productos/:id/estado:", error);
+        res.status(500).json({ error: 'Error al actualizar el estado del producto' });
+    }
+});
+
+// CRUD - DELETE (Eliminación física real de la base de datos)
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        // Cambiado de UPDATE a DELETE real
+        const result = await pool.query('DELETE FROM productos WHERE id=$1 RETURNING id', [id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'El producto seleccionado no existe' });
+        }
+        res.json({ mensaje: 'Producto eliminado permanentemente del sistema' });
     } catch (error) {
         console.error("Error en DELETE /productos/:id:", error);
-        res.status(500).json({ error: 'Error al procesar la baja del producto' });
+        res.status(500).json({ error: 'Error al eliminar permanentemente el producto' });
     }
 });
 

@@ -7,6 +7,10 @@ let productoEditandoId = null;
 let filtroTexto = '';
 let filtroCategoria = '';
 
+// Variables globales temporales para el modal de confirmación unificado
+let idProductoAccion = null;
+let tipoAccionProducto = ''; // 'activar', 'desactivar' o 'eliminar'
+
 // ==========================================
 // 1. CARGAR Y RENDERIZAR PRODUCTOS
 // ==========================================
@@ -21,6 +25,14 @@ async function renderProductos(productosAMostrar = null) {
 
         let html = '';
         for (const p of productosAMostrar) {
+            const btnEstado = p.activo 
+                ? `<button class="btn btn-secondary btn-sm" onclick="solicitarCambioEstadoProducto(${p.id}, false)" title="Desactivar">
+                    <i class="ti ti-ban"></i>
+                   </button>`
+                : `<button class="btn btn-success btn-sm" onclick="solicitarCambioEstadoProducto(${p.id}, true)" title="Activar">
+                    <i class="ti ti-check"></i>
+                   </button>`;
+
             html += `<tr>
                 <td><code>${p.sku}</code></td>
                 <td>${p.nombre}</td>
@@ -36,7 +48,8 @@ async function renderProductos(productosAMostrar = null) {
                     <button class="btn btn-warning btn-sm" onclick="prepararEdicion(${p.id})" title="Editar">
                         <i class="ti ti-edit"></i>
                     </button>
-                    <button class="btn btn-danger btn-sm" onclick="desactivarProducto(${p.id})" title="Desactivar">
+                    ${btnEstado}
+                    <button class="btn btn-danger btn-sm" onclick="solicitarEliminacionProducto(${p.id})" title="Eliminar definitivamente">
                         <i class="ti ti-trash"></i>
                     </button>
                 </td>
@@ -52,20 +65,18 @@ async function renderProductos(productosAMostrar = null) {
 }
 
 // ==========================================
-// 2. SISTEMA DE FILTRADO DINÁMICO
+// 2. SISTEMA DE FILTRADO DINÁMICO COMBINADO
 // ==========================================
 function filtrarTabla(idTabla, valor) {
     filtroTexto = valor.toLowerCase().trim();
     aplicarFiltrosCombinados();
 }
 
-// Maneja el selector de categorías
 function filtrarPorCategoria(categoria) {
     filtroCategoria = categoria;
     aplicarFiltrosCombinados();
 }
 
-// Junta ambos filtros
 function aplicarFiltrosCombinados() {
     const productosFiltrados = productosListados.filter(p => {
         const coincideTexto = p.nombre.toLowerCase().includes(filtroTexto) || 
@@ -84,7 +95,6 @@ function aplicarFiltrosCombinados() {
 // ==========================================
 function prepararCreacion() {
     resetearFormulario();
-    
     if (typeof openModal === 'function') {
         openModal('modal-producto'); 
     } else {
@@ -106,9 +116,13 @@ function prepararEdicion(id) {
     productoEditandoId = id; 
 
     document.getElementById('p-sku').value = producto.sku || '';
+    document.getElementById('p-sku').disabled = true;
+
+    document.getElementById('p-categoria').value = producto.categoria || '';
+    document.getElementById('p-categoria').disabled = true;
+
     document.getElementById('p-nombre').value = producto.nombre || '';
     document.getElementById('p-descripcion').value = producto.descripcion || '';
-    document.getElementById('p-categoria').value = producto.categoria || '';
     document.getElementById('p-stock').value = producto.stock || 0;
     document.getElementById('p-stockmin').value = producto.stock_minimo || 5;
     document.getElementById('p-precio').value = producto.precio_venta || 0;
@@ -176,7 +190,6 @@ async function guardarProducto() {
             closeModal('modal-producto');
         }
         
-        // Reset de filtros visuales
         filtroTexto = '';
         filtroCategoria = '';
         const inputBuscar = document.querySelector('.search-box input');
@@ -191,24 +204,89 @@ async function guardarProducto() {
 }
 
 // ==========================================
-// 6. ELIMINAR / DESACTIVAR PRODUCTO
+// 6. CONTROL DE ESTADO Y ELIMINACIÓN (MODAL PREMIUM)
 // ==========================================
-async function desactivarProducto(id) {
-    if (confirm('¿Estás seguro de desactivar este producto del catálogo?')) {
-        try {
-            const res = await fetch(`${API}/productos/${id}`, { method: 'DELETE' });
-            
+
+function solicitarCambioEstadoProducto(id, nuevoEstado) {
+    idProductoAccion = id;
+    tipoAccionProducto = nuevoEstado ? 'activar' : 'desactivar';
+
+    const esDesactivar = !nuevoEstado;
+    const iconWrapper = document.getElementById('confirm-icon-wrapper');
+    const btnProceder = document.getElementById('confirm-btn-proceder');
+
+    document.getElementById('confirm-titulo').innerText = esDesactivar ? '¿Desactivar producto?' : '¿Reactivar producto?';
+    document.getElementById('confirm-mensaje').innerText = esDesactivar 
+        ? 'El producto dejará de estar visible de forma activa en el catálogo de ventas.' 
+        : 'El producto volverá a estar disponible en el catalogo de ventas.';
+    
+    if (esDesactivar) {
+        document.getElementById('confirm-icon').className = 'ti ti-ban';
+        iconWrapper.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'; 
+        iconWrapper.style.color = '#ef4444'; 
+        btnProceder.className = 'btn btn-secondary'; 
+    } else {
+        document.getElementById('confirm-icon').className = 'ti ti-circle-check';
+        iconWrapper.style.backgroundColor = 'rgba(16, 185, 129, 0.1)'; 
+        iconWrapper.style.color = '#10b981'; 
+        btnProceder.className = 'btn btn-success'; 
+    }
+    
+    btnProceder.onclick = ejecutarAccionConfirmadaProducto;
+    openModal('modal-confirmacion');
+}
+
+function solicitarEliminacionProducto(id) {
+    idProductoAccion = id;
+    tipoAccionProducto = 'eliminar'; 
+
+    const iconWrapper = document.getElementById('confirm-icon-wrapper');
+    const btnProceder = document.getElementById('confirm-btn-proceder');
+
+    document.getElementById('confirm-titulo').innerText = '¿Eliminar producto?';
+    document.getElementById('confirm-mensaje').innerText = 'Al confirmar, el producto se eliminará de forma permanente del sistema. Esta acción es irreversible.';
+    
+    document.getElementById('confirm-icon').className = 'ti ti-alert-triangle';
+    iconWrapper.style.backgroundColor = 'rgba(220, 38, 38, 0.15)'; 
+    iconWrapper.style.color = 'var(--red)'; 
+    btnProceder.className = 'btn btn-danger'; 
+    
+    btnProceder.onclick = ejecutarAccionConfirmadaProducto;
+    openModal('modal-confirmacion');
+}
+
+async function ejecutarAccionConfirmadaProducto() {
+    if (idProductoAccion === null || !tipoAccionProducto) return;
+
+    try {
+        if (tipoAccionProducto === 'eliminar') {
+            const res = await fetch(`${API}/productos/${idProductoAccion}`, { method: 'DELETE' });
             if (!res.ok) {
                 const errData = await res.json();
-                throw new Error(errData.error || 'No se pudo desactivar el producto');
+                throw new Error(errData.error || 'No se pudo eliminar el producto');
             }
-
             const data = await res.json();
-            toast(data.mensaje || 'Producto desactivado', 'success');
-            renderProductos();
-        } catch (error) {
-            toast(error.message, 'error');
+            toast(data.mensaje || 'Producto eliminado correctamente', 'success');
+        } else {
+            const nuevoEstado = (tipoAccionProducto === 'activar');
+            const res = await fetch(`${API}/productos/${idProductoAccion}/estado`, { 
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ activo: nuevoEstado })
+            });
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || 'No se pudo cambiar el estado del producto');
+            }
+            toast(`Producto ${nuevoEstado ? 'activado' : 'desactivado'} con éxito`, 'success');
         }
+    } catch (error) {
+        toast(error.message, 'error');
+    } finally {
+        closeModal('modal-confirmacion');
+        idProductoAccion = null;
+        tipoAccionProducto = '';
+        renderProductos();
     }
 }
 
@@ -218,30 +296,30 @@ async function desactivarProducto(id) {
 function resetearFormulario() {
     productoEditandoId = null;
     document.querySelector('#modal-producto h2').innerText = 'Nuevo Producto';
+    
     document.getElementById('p-sku').value = '';
+    document.getElementById('p-sku').disabled = false;
+    
+    document.getElementById('p-categoria').value = 'electronicos';
+    document.getElementById('p-categoria').disabled = false;
+
     document.getElementById('p-nombre').value = '';
     document.getElementById('p-descripcion').value = '';
-    document.getElementById('p-categoria').value = 'electronicos';
     document.getElementById('p-stock').value = '';
     const stockMin = document.getElementById('p-stockmin');
     if (stockMin) stockMin.value = '';
     document.getElementById('p-precio').value = '';
 }
 
-// Tu nueva función de notificaciones optimizada con clases CSS
 function toast(msg, type='info') {
-    const c = document.getElementById('toasts');
-    if (!c) return; // Validación por si el contenedor no existe en el DOM todavía
-    
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    
-    const icons = { success: 'ti-circle-check', error: 'ti-circle-x', info: 'ti-info-circle' };
-    
-    t.innerHTML = `<i class="ti ${icons[type] || 'ti-info-circle'}" style="font-size:16px; color:${type === 'success' ? 'var(--green)' : type === 'error' ? 'var(--red)' : 'var(--blue)'}"></i> ${msg}`;
-    
-    c.appendChild(t);
-    setTimeout(() => t.remove(), 3500);
+  const c = document.getElementById('toasts');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = {success:'ti-circle-check', error:'ti-circle-x', info:'ti-info-circle', warning:'ti-alert-triangle'};
+  t.innerHTML = `<i class="ti ${icons[type]||'ti-info-circle'}" style="font-size:16px;color:${type==='success'?'var(--green)':type==='error'?'var(--red)':'var(--blue)'}"></i>${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
 }
 
 // Inicialización
