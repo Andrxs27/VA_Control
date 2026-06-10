@@ -72,6 +72,9 @@ function filtrarTabla(idTabla, valor) {
     aplicarFiltrosCombinados();
 }
 
+// ==========================================
+// 3. PREPARAR FORMULARIO PARA CREACIÓN
+// ==========================================
 function filtrarPorCategoria(categoria) {
     filtroCategoria = categoria;
     aplicarFiltrosCombinados();
@@ -90,9 +93,6 @@ function aplicarFiltrosCombinados() {
     renderProductos(productosFiltrados);
 }
 
-// ==========================================
-// 3. PREPARAR FORMULARIO PARA CREACIÓN
-// ==========================================
 function prepararCreacion() {
     resetearFormulario();
     if (typeof openModal === 'function') {
@@ -115,15 +115,20 @@ function prepararEdicion(id) {
 
     productoEditandoId = id; 
 
+    // Bloquear SKU
     document.getElementById('p-sku').value = producto.sku || '';
     document.getElementById('p-sku').disabled = true;
 
     document.getElementById('p-categoria').value = producto.categoria || '';
-    document.getElementById('p-categoria').disabled = true;
 
     document.getElementById('p-nombre').value = producto.nombre || '';
     document.getElementById('p-descripcion').value = producto.descripcion || '';
+    
+    // Bloquear Stock Inicial durante la edición
     document.getElementById('p-stock').value = producto.stock || 0;
+    document.getElementById('p-stock').disabled = true;
+    
+
     document.getElementById('p-stockmin').value = producto.stock_minimo || 5;
     document.getElementById('p-precio').value = producto.precio_venta || 0;
     
@@ -297,15 +302,21 @@ function resetearFormulario() {
     productoEditandoId = null;
     document.querySelector('#modal-producto h2').innerText = 'Nuevo Producto';
     
+    // Rehabilitar SKU
     document.getElementById('p-sku').value = '';
     document.getElementById('p-sku').disabled = false;
     
+    // Asegurar que la categoría siempre comience activa y por defecto
     document.getElementById('p-categoria').value = 'electronicos';
     document.getElementById('p-categoria').disabled = false;
 
     document.getElementById('p-nombre').value = '';
     document.getElementById('p-descripcion').value = '';
+    
+    // Rehabilitar Stock Inicial
     document.getElementById('p-stock').value = '';
+    document.getElementById('p-stock').disabled = false;
+
     const stockMin = document.getElementById('p-stockmin');
     if (stockMin) stockMin.value = '';
     document.getElementById('p-precio').value = '';

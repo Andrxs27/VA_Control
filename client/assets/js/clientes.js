@@ -107,15 +107,26 @@ function filtrarClientes() {
 function prepararCreacion() {
     clienteEditandoId = null;
 
-    document.getElementById('c-identificacion').value = '';
+    const inputIdentificacion = document.getElementById('c-identificacion');
+    if (inputIdentificacion) {
+        inputIdentificacion.value = ''; // CORREGIDO: Se limpia el campo correctamente evitando el ReferenceError
+        inputIdentificacion.disabled = false;
+    }
     document.getElementById('c-nombre').value = '';
-    document.getElementById('c-email').value = '';
+    
+    // Resetear y asegurar que el correo esté habilitado para nuevos registros
+    const inputEmail = document.getElementById('c-email');
+    if (inputEmail) {
+        inputEmail.value = '';
+        inputEmail.disabled = false;
+    }
+
     document.getElementById('c-telefono').value = '';
     document.getElementById('c-direccion').value = '';
     document.getElementById('c-tipo').value = 'particular';
     
     // Limpieza del nuevo campo notas
-    const txtNotas = document.getElementById('c-notas');
+    const txtNotas = document.getElementById('c-notes') || document.getElementById('c-notas');
     if (txtNotas) txtNotas.value = '';
 
     document.getElementById('modal-cliente-titulo').innerText = 'Nuevo Cliente';
@@ -131,9 +142,21 @@ function prepararEdicion(id) {
 
     clienteEditandoId = id;
 
-    document.getElementById('c-identificacion').value = cliente.identificacion || '';
+    const inputIdentificacion = document.getElementById('c-identificacion');
+    if (inputIdentificacion) {
+        inputIdentificacion.value = cliente.identificacion || '';
+        inputIdentificacion.disabled = true;
+    }
+
     document.getElementById('c-nombre').value         = cliente.nombre || '';
-    document.getElementById('c-email').value          = cliente.email || '';
+    
+    // Cargar el correo y deshabilitar/bloquear el campo para edición
+    const inputEmail = document.getElementById('c-email');
+    if (inputEmail) {
+        inputEmail.value = cliente.email || '';
+        inputEmail.disabled = true;
+    }
+
     document.getElementById('c-telefono').value       = cliente.telefono || '';
     document.getElementById('c-direccion').value      = cliente.direccion || '';
     document.getElementById('c-tipo').value           = cliente.tipo || 'particular';
@@ -237,7 +260,6 @@ function abrirDialogoConfirmacion({ titulo, mensaje, icono, colorFondo, colorIco
     openModal('modal-confirmacion');
 }
 
-// Cambiar estado dinámicamente según el valor actual de c.activo
 function solicitarCambioEstado(id, nuevoEstado) {
     const cliente = clientesLista.find(c => c.id === id);
     const identificador = cliente ? ` de ${cliente.nombre}` : '';
@@ -316,7 +338,7 @@ async function eliminarClienteDefinitivo(id) {
 // ==========================================
 function mostrarToast(msg, type = 'info') {
     const c = document.getElementById('toasts');
-    if (!c) return; // Validación por si el contenedor no existe en el DOM
+    if (!c) return;
     
     const t = document.createElement('div');
     t.className = `toast ${type}`;
