@@ -60,20 +60,15 @@ function estadoBadge(e) {
 
 async function renderOrdenes(filtro = 'all') {
     try {
-        // Si el filtro obliga a recargar la API (all o true) o si la lista local está vacía
         if (filtro === 'all' || filtro === true || ordenesListados.length === 0) {
             const res = await fetch(`${API}/ordenes`);
             ordenesListados = await res.json();
         }
         
-        // Si el parámetro recibido es un estado de pestaña válido, actualizamos el filtro de estado global
         if (['all', 'pendiente', 'en_proceso', 'completado', 'entregado', 'cancelado'].includes(filtro)) {
             filtroEstado = filtro;
         }
         
-        // =========================================================================
-        // ACTUALIZACIÓN DE BADGE: Filtrar y contar órdenes en los 3 estados requeridos
-        // =========================================================================
         const ordenesActivas = ordenesListados.filter(o => 
             o.estado === 'pendiente' || 
             o.estado === 'en_proceso' || 
@@ -83,16 +78,13 @@ async function renderOrdenes(filtro = 'all') {
         const badgeOrdenes = document.getElementById('badge-ordenes');
         if (badgeOrdenes) {
             badgeOrdenes.innerText = ordenesActivas;
-            // Si no hay órdenes pendientes, en proceso o completadas, ocultamos el badge
             if (ordenesActivas === 0) {
                 badgeOrdenes.style.display = 'none';
             } else {
                 badgeOrdenes.style.display = 'inline-flex';
             }
         }
-        // =========================================================================
 
-        // Aplicación del sistema de filtrado combinado (Estado de pestaña + Texto de búsqueda)
         const data = ordenesListados.filter(o => {
             const coincideEstado = filtroEstado === 'all' || o.estado === filtroEstado;
             
@@ -207,6 +199,21 @@ async function ejecutarAccionConfirmada() {
     }
 }
 
+// Desbloquea todos los campos del modal
+function desbloquearTodosCampos() {
+    ['o-cliente', 'o-serial', 'o-marca', 'o-modelo',
+     'o-tecnico', 'o-equipo', 'o-fecha', 'o-costo',
+     'o-falla', 'o-diagnostico', 'o-notas', 'o-entrega', 'o-estado'
+    ].forEach(id => {
+        const el = document.getElementById(id);
+        el.disabled = false;
+        el.style.background = '';
+        el.style.color = '';
+        el.style.cursor = '';
+        el.style.opacity = '';
+    });
+}
+
 function nuevaOrden() {
     ordenEditandoId = null;
     
@@ -227,6 +234,9 @@ function nuevaOrden() {
     const modalTitle = document.querySelector('#modal-orden .modal-head h2');
     if (modalTitle) modalTitle.innerText = 'Nueva Orden de Servicio';
 
+    // Desbloquear todos los campos para nueva orden
+    desbloquearTodosCampos();
+
     openModal('modal-orden');
 }
 
@@ -243,8 +253,6 @@ async function guardarOrden() {
         const modelo = document.getElementById('o-modelo').value;
         const notas = document.getElementById('o-notas').value;
         const diagnostico = document.getElementById('o-diagnostico').value;
-
-        // ALINEACIÓN DE CLAVES EXTRAPTADAS CON EL BACKEND
         const serial_equipo = document.getElementById('o-serial').value;
         const costo_servicio = parseFloat(document.getElementById('o-costo').value) || 0;
 
@@ -304,10 +312,30 @@ async function prepararEdicion(id) {
         document.getElementById('o-modelo').value = orden.modelo || '';
         document.getElementById('o-notas').value = orden.notas || '';
         document.getElementById('o-diagnostico').value = orden.diagnostico || '';
-
-        // ALINEACIÓN DE CAMPOS DESDE LA RESPUESTA DE LA BASE DE DATOS
         document.getElementById('o-serial').value = orden.serial_equipo || '';
         document.getElementById('o-costo').value = orden.costo_servicio || '';
+
+        // Bloquear campos que no deben editarse
+        const camposBloqueados = ['o-cliente', 'o-serial', 'o-marca', 'o-modelo'];
+        const camposEditables = ['o-tecnico', 'o-equipo', 'o-fecha', 'o-costo', 'o-falla', 'o-diagnostico', 'o-notas', 'o-entrega', 'o-estado'];
+
+        camposBloqueados.forEach(id => {
+            const el = document.getElementById(id);
+            el.disabled = true;
+            el.style.background = 'var(--bg1)';
+            el.style.color = 'var(--text3)';
+            el.style.cursor = 'not-allowed';
+            el.style.opacity = '0.6';
+        });
+
+        camposEditables.forEach(id => {
+            const el = document.getElementById(id);
+            el.disabled = false;
+            el.style.background = '';
+            el.style.color = '';
+            el.style.cursor = '';
+            el.style.opacity = '';
+        });
 
         openModal('modal-orden');
     } catch (error) {
@@ -322,10 +350,9 @@ function filtrarOrdenes(estado, el) {
     renderOrdenes(estado);
 }
 
-// Función encargada de actualizar el filtro de texto y repintar al escribir
 function filtrarTablaOrdenes(valor) {
     filtroTexto = valor.toLowerCase().trim();
-    renderOrdenes(false); // Renderiza usando la lista en memoria instantáneamente
+    renderOrdenes(false);
 }
 
 cargarDatos().then(() => renderOrdenes('all'));

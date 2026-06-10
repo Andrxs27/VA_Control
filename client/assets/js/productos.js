@@ -116,18 +116,26 @@ function prepararEdicion(id) {
     productoEditandoId = id; 
 
     // Bloquear SKU
-    document.getElementById('p-sku').value = producto.sku || '';
-    document.getElementById('p-sku').disabled = true;
+    const elSku = document.getElementById('p-sku');
+    elSku.value = producto.sku || '';
+    elSku.disabled = true;
+    elSku.style.background = 'var(--bg1)';
+    elSku.style.color = 'var(--text3)';
+    elSku.style.cursor = 'not-allowed';
+    elSku.style.opacity = '0.6';
 
     document.getElementById('p-categoria').value = producto.categoria || '';
-
     document.getElementById('p-nombre').value = producto.nombre || '';
     document.getElementById('p-descripcion').value = producto.descripcion || '';
     
     // Bloquear Stock Inicial durante la edición
-    document.getElementById('p-stock').value = producto.stock || 0;
-    document.getElementById('p-stock').disabled = true;
-    
+    const elStock = document.getElementById('p-stock');
+    elStock.value = producto.stock || 0;
+    elStock.disabled = true;
+    elStock.style.background = 'var(--bg1)';
+    elStock.style.color = 'var(--text3)';
+    elStock.style.cursor = 'not-allowed';
+    elStock.style.opacity = '0.6';
 
     document.getElementById('p-stockmin').value = producto.stock_minimo || 5;
     document.getElementById('p-precio').value = producto.precio_venta || 0;
@@ -303,8 +311,13 @@ function resetearFormulario() {
     document.querySelector('#modal-producto h2').innerText = 'Nuevo Producto';
     
     // Rehabilitar SKU
-    document.getElementById('p-sku').value = '';
-    document.getElementById('p-sku').disabled = false;
+    const elSku = document.getElementById('p-sku');
+    elSku.value = '';
+    elSku.disabled = false;
+    elSku.style.background = '';
+    elSku.style.color = '';
+    elSku.style.cursor = '';
+    elSku.style.opacity = '';
     
     // Asegurar que la categoría siempre comience activa y por defecto
     document.getElementById('p-categoria').value = 'electronicos';
@@ -314,8 +327,13 @@ function resetearFormulario() {
     document.getElementById('p-descripcion').value = '';
     
     // Rehabilitar Stock Inicial
-    document.getElementById('p-stock').value = '';
-    document.getElementById('p-stock').disabled = false;
+    const elStock = document.getElementById('p-stock');
+    elStock.value = '';
+    elStock.disabled = false;
+    elStock.style.background = '';
+    elStock.style.color = '';
+    elStock.style.cursor = '';
+    elStock.style.opacity = '';
 
     const stockMin = document.getElementById('p-stockmin');
     if (stockMin) stockMin.value = '';

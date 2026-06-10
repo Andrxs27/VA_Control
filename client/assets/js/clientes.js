@@ -111,6 +111,11 @@ function prepararCreacion() {
     if (inputIdentificacion) {
         inputIdentificacion.value = ''; // CORREGIDO: Se limpia el campo correctamente evitando el ReferenceError
         inputIdentificacion.disabled = false;
+
+        inputIdentificacion.style.background = '';
+        inputIdentificacion.style.color = '';
+        inputIdentificacion.style.cursor = '';
+        inputIdentificacion.style.opacity = '';
     }
     document.getElementById('c-nombre').value = '';
     
@@ -119,6 +124,10 @@ function prepararCreacion() {
     if (inputEmail) {
         inputEmail.value = '';
         inputEmail.disabled = false;
+        inputEmail.style.background = '';
+        inputEmail.style.color = '';
+        inputEmail.style.cursor = '';
+        inputEmail.style.opacity = '';
     }
 
     document.getElementById('c-telefono').value = '';
@@ -143,20 +152,27 @@ function prepararEdicion(id) {
     clienteEditandoId = id;
 
     const inputIdentificacion = document.getElementById('c-identificacion');
-    if (inputIdentificacion) {
-        inputIdentificacion.value = cliente.identificacion || '';
-        inputIdentificacion.disabled = true;
-    }
+if (inputIdentificacion) {
+    inputIdentificacion.value = cliente.identificacion || '';
+    inputIdentificacion.disabled = true;
 
-    document.getElementById('c-nombre').value         = cliente.nombre || '';
+    inputIdentificacion.style.background = 'var(--bg1)';
+    inputIdentificacion.style.color = 'var(--text3)';
+    inputIdentificacion.style.cursor = 'not-allowed';
+    inputIdentificacion.style.opacity = '0.6';
+}
+    document.getElementById('c-nombre').value = cliente.nombre || '';
     
-    // Cargar el correo y deshabilitar/bloquear el campo para edición
     const inputEmail = document.getElementById('c-email');
-    if (inputEmail) {
-        inputEmail.value = cliente.email || '';
-        inputEmail.disabled = true;
-    }
+if (inputEmail) {
+    inputEmail.value = cliente.email || '';
+    inputEmail.disabled = true;
 
+    inputEmail.style.background = 'var(--bg1)';
+    inputEmail.style.color = 'var(--text3)';
+    inputEmail.style.cursor = 'not-allowed';
+    inputEmail.style.opacity = '0.6';
+}
     document.getElementById('c-telefono').value       = cliente.telefono || '';
     document.getElementById('c-direccion').value      = cliente.direccion || '';
     document.getElementById('c-tipo').value           = cliente.tipo || 'particular';
