@@ -25,7 +25,7 @@
       <div class="nav-item" onclick="window.location.href='dashboard.html'"><i
           class="ti ti-layout-dashboard"></i>Dashboard</div>
       <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
-      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-boxes"></i>Inventario</div>
+      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i>Inventario</div>
       <span class="nav-section">Operaciones</span>
       <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
       <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de
@@ -33,7 +33,7 @@
       <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas
       </div>
       <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users"></i>Clientes</div>
+      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
       <div class="nav-item active" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios
       </div>
       <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
@@ -45,6 +45,9 @@
           <p>Admin User</p>
           <span>Administrador</span>
         </div>
+        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
+          <i class="ti ti-logout"></i>
+        </button>
       </div>
     </div>
   </aside>

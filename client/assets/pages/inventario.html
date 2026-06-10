@@ -1,17 +1,19 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VA Control — Inventario</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
-  <link rel="stylesheet" href="/client/assets/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="/client/assets/css/styles.css" />
 </head>
 
 <body>
-
   <aside class="sidebar" id="sidebar">
     <div class="logo">
       <h1>VA <span>Control</span></h1>
@@ -19,48 +21,45 @@
     </div>
     <nav>
       <span class="nav-section">Principal</span>
-      <div class="nav-item" onclick="window.location.href='dashboard.html'">
+      <div class="nav-item" onclick="window.location.href = 'dashboard.html'">
         <i class="ti ti-layout-dashboard"></i>Dashboard
       </div>
-      <div class="nav-item" onclick="window.location.href='productos.html'">
+      <div class="nav-item" onclick="window.location.href = 'productos.html'">
         <i class="ti ti-package"></i>Productos
       </div>
-      <div class="nav-item active" onclick="window.location.href='inventario.html'">
-        <i class="ti ti-boxes"></i>Inventario
+      <div class="nav-item active" onclick="window.location.href = 'inventario.html'">
+        <i class="ti ti-clipboard-list"></i>Inventario
       </div>
       <span class="nav-section">Operaciones</span>
-      <div class="nav-item" onclick="window.location.href='ventas.html'">
+      <div class="nav-item" onclick="window.location.href = 'ventas.html'">
         <i class="ti ti-receipt"></i>Ventas
       </div>
-      <div class="nav-item" onclick="window.location.href='ordenes.html'">
+      <div class="nav-item" onclick="window.location.href = 'ordenes.html'">
         <i class="ti ti-tool"></i>Órdenes de Servicio
         <span class="nav-badge" id="badge-ordenes"></span>
       </div>
-      <div class="nav-item" onclick="window.location.href='facturas.html'">
+      <div class="nav-item" onclick="window.location.href = 'facturas.html'">
         <i class="ti ti-file-invoice"></i>Facturas
       </div>
       <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'">
-        <i class="ti ti-users"></i>Clientes
+      <div class="nav-item" onclick="window.location.href = 'clientes.html'">
+        <i class="ti ti-users-group"></i>Clientes
       </div>
-      <div class="nav-item" onclick="window.location.href='usuarios.html'">
+      <div class="nav-item" onclick="window.location.href = 'usuarios.html'">
         <i class="ti ti-users"></i>Usuarios
       </div>
-      <div class="nav-item" onclick="window.location.href='reportes.html'">
+      <div class="nav-item" onclick="window.location.href = 'reportes.html'">
         <i class="ti ti-chart-bar"></i>Reportes
       </div>
     </nav>
-    <div class="sidebar-footer">
+   <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">AD</div>
         <div class="user-info">
           <p>Admin User</p>
           <span>Administrador</span>
         </div>
-        <button onclick="logout()" title="Cerrar sesión"
-          style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s"
-          onmouseover="this.style.color='var(--red)'"
-          onmouseout="this.style.color='var(--text3)'">
+        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
           <i class="ti ti-logout"></i>
         </button>
       </div>
@@ -73,19 +72,22 @@
       <div class="topbar-right">
         <div class="icon-btn" title="Alertas de stock">
           <i class="ti ti-bell"></i>
-          <span class="badge-dot" id="inv-badge-alerta" style="display:none"></span>
+          <span class="badge-dot" id="inv-badge-alerta" style="display: none"></span>
         </div>
-        <div class="icon-btn" title="Configuración"><i class="ti ti-settings"></i></div>
+        <div class="icon-btn" title="Configuración">
+          <i class="ti ti-settings"></i>
+        </div>
       </div>
     </header>
 
     <main class="content">
       <div class="page active" id="page-inventario">
-
         <div class="section-header">
           <div>
             <div class="section-title">Control de Inventario</div>
-            <div class="section-sub">Movimientos, niveles de stock y alertas en tiempo real</div>
+            <div class="section-sub">
+              Movimientos, niveles de stock y alertas en tiempo real
+            </div>
           </div>
           <button class="btn btn-primary" onclick="abrirModalMovimiento()">
             <i class="ti ti-arrows-exchange"></i> Registrar Movimiento
@@ -97,9 +99,10 @@
             <div class="search-box">
               <i class="ti ti-search"></i>
               <input type="text" id="search-inventario" placeholder="Buscar por nombre o SKU..."
-                oninput="filtrarInventario(this.value)">
+                oninput="filtrarInventario(this.value)" />
             </div>
-            <select class="filter-select" onchange="filtrarPorEstadoStock(this.value)" aria-label="Filtrar por estado de stock">
+            <select class="filter-select" onchange="filtrarPorEstadoStock(this.value)"
+              aria-label="Filtrar por estado de stock">
               <option value="">Todos los estados</option>
               <option value="sin_stock">Sin stock</option>
               <option value="stock_bajo">Stock bajo</option>
@@ -121,15 +124,22 @@
             </thead>
             <tbody id="tb-inventario">
               <tr>
-                <td colspan="7" style="text-align:center;color:var(--text3);padding:32px">
-                  <i class="ti ti-loader" style="font-size:20px;margin-bottom:8px;display:block"></i>
+                <td colspan="7" style="
+                      text-align: center;
+                      color: var(--text3);
+                      padding: 32px;
+                    ">
+                  <i class="ti ti-loader" style="
+                        font-size: 20px;
+                        margin-bottom: 8px;
+                        display: block;
+                      "></i>
                   Cargando inventario...
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-
       </div>
     </main>
   </div>
@@ -144,7 +154,6 @@
       </div>
       <div class="modal-body">
         <div class="form-grid">
-
           <div class="form-group">
             <label for="mov-producto">Producto *</label>
             <select class="form-select" id="mov-producto" onchange="onCambioProductoMovimiento()">
@@ -156,27 +165,29 @@
           <div class="form-group">
             <label for="mov-tipo">Tipo de Movimiento *</label>
             <select class="form-select" id="mov-tipo" onchange="onCambioTipoMovimiento()">
-              <option value="entrada"> Entrada — Compra / recepción</option>
+              <option value="entrada">Entrada — Compra / recepción</option>
               <option value="salida">Salida — Uso / venta / pérdida</option>
-              <option value="ajuste">Ajuste — Corrección manual de stock</option>
+              <option value="ajuste">
+                Ajuste — Corrección manual de stock
+              </option>
             </select>
           </div>
 
           <div class="form-group">
             <label for="mov-cantidad" id="label-mov-cantidad">Cantidad *</label>
-            <input type="number" id="mov-cantidad" min="1" placeholder="0">
+            <input type="number" id="mov-cantidad" min="1" placeholder="0" />
           </div>
 
           <div class="form-group">
             <label for="mov-motivo">Motivo / Referencia</label>
-            <textarea id="mov-motivo" rows="2"
-              placeholder="Ej: Compra proveedor XYZ — Factura #123"></textarea>
+            <textarea id="mov-motivo" rows="2" placeholder="Ej: Compra proveedor XYZ — Factura #123"></textarea>
           </div>
-
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-movimiento')">Cancelar</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-movimiento')">
+          Cancelar
+        </button>
         <button class="btn btn-primary" onclick="guardarMovimiento()">
           <i class="ti ti-check"></i> Registrar
         </button>
@@ -185,15 +196,15 @@
   </div>
 
   <div class="modal-overlay" id="modal-historial">
-    <div class="modal" style="max-width:760px">
+    <div class="modal" style="max-width: 760px">
       <div class="modal-head">
         <h2 id="historial-titulo">Historial de Movimientos</h2>
         <button class="icon-btn" onclick="closeModal('modal-historial')" aria-label="Cerrar">
           <i class="ti ti-x"></i>
         </button>
       </div>
-      <div class="modal-body" style="padding:0">
-        <div class="table-wrap" style="border:none;border-radius:0;box-shadow:none">
+      <div class="modal-body" style="padding: 0">
+        <div class="table-wrap" style="border: none; border-radius: 0; box-shadow: none">
           <table>
             <thead>
               <tr>
@@ -209,8 +220,13 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-historial')">Cerrar</button>
-        <button class="btn btn-primary" onclick="closeModal('modal-historial');abrirModalMovimiento(productoDetalle?.id)">
+        <button class="btn btn-ghost" onclick="closeModal('modal-historial')">
+          Cerrar
+        </button>
+        <button class="btn btn-primary" onclick="
+              closeModal('modal-historial');
+              abrirModalMovimiento(productoDetalle?.id);
+            ">
           <i class="ti ti-plus"></i> Nuevo Movimiento
         </button>
       </div>
@@ -223,4 +239,5 @@
   <script src="/client/assets/js/inventario.js"></script>
   <script src="/client/assets/js/alertordenes.js"></script>
 </body>
+
 </html>
