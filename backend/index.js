@@ -17,6 +17,7 @@ const productosRoutes = require('./routes/productos');
 const ventasRoutes = require('./routes/ventas');
 const ordenesRoutes = require('./routes/ordenes');
 const facturasRoutes = require('./routes/facturas');
+const inventarioRoutes = require('./routes/inventario');
 
 app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/clientes', clientesRoutes);
@@ -24,6 +25,7 @@ app.use('/api/productos', productosRoutes);
 app.use('/api/ventas', ventasRoutes);
 app.use('/api/ordenes', ordenesRoutes);
 app.use('/api/facturas', facturasRoutes);
+app.use('/api/inventario', inventarioRoutes);
 
 app.get('/', (req, res) => {
     res.json({ mensaje: 'Backend VA_Control funcionando' });
