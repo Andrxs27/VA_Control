@@ -96,11 +96,11 @@ async function renderOrdenes(filtro = 'all') {
             const idFormateado = `#${idStr.padStart(4, '0')}`;
 
             const coincideTexto = nombreCliente.includes(filtroTexto) ||
-                                  nombreTecnico.includes(filtroTexto) ||
-                                  equipo.includes(filtroTexto) ||
-                                  falla.includes(filtroTexto) ||
-                                  idStr.includes(filtroTexto) ||
-                                  idFormateado.includes(filtroTexto);
+                nombreTecnico.includes(filtroTexto) ||
+                equipo.includes(filtroTexto) ||
+                falla.includes(filtroTexto) ||
+                idStr.includes(filtroTexto) ||
+                idFormateado.includes(filtroTexto);
 
             return coincideEstado && coincideTexto;
         });
@@ -148,6 +148,7 @@ function solicitarCambioEstado(id, nuevoEstado) {
     tipoAccion = nuevoEstado;
 
     const esDesactivar = nuevoEstado === 'cancelado';
+    const btnProceder = document.getElementById('confirm-btn-proceder');
 
     document.getElementById('confirm-titulo').innerText = esDesactivar ? '¿Desactivar orden de servicio?' : '¿Reactivar orden de servicio?';
     document.getElementById('confirm-mensaje').innerText = esDesactivar 
@@ -155,7 +156,14 @@ function solicitarCambioEstado(id, nuevoEstado) {
         : 'La orden volverá a estar activa en el sistema.';
     
     document.getElementById('confirm-icon').className = esDesactivar ? 'ti ti-ban' : 'ti ti-refresh';
-    document.getElementById('confirm-btn-proceder').onclick = ejecutarAccionConfirmada;
+
+const iconWrapper = document.getElementById('confirm-icon-wrapper');
+iconWrapper.style.backgroundColor = esDesactivar ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)';
+iconWrapper.style.color = esDesactivar ? '#ef4444' : '#10b981';
+
+    btnProceder.className = esDesactivar ? 'btn btn-secondary' : 'btn btn-success';
+
+    btnProceder.onclick = ejecutarAccionConfirmada;
     openModal('modal-confirmacion');
 }
 
@@ -166,6 +174,10 @@ function solicitarEliminacion(id) {
     document.getElementById('confirm-titulo').innerText = '¿Eliminar orden de servicio?';
     document.getElementById('confirm-mensaje').innerText = 'Al confirmar, la orden se eliminará de forma permanente del sistema. Esta acción no se puede revertir.';
     document.getElementById('confirm-icon').className = 'ti ti-alert-triangle';
+const iconWrapper = document.getElementById('confirm-icon-wrapper');
+iconWrapper.style.backgroundColor = 'rgba(220, 38, 38, 0.15)';
+iconWrapper.style.color = 'var(--red)';
+document.getElementById('confirm-btn-proceder').className = 'btn btn-danger';
 
     document.getElementById('confirm-btn-proceder').onclick = ejecutarAccionConfirmada;
     openModal('modal-confirmacion');
@@ -202,8 +214,8 @@ async function ejecutarAccionConfirmada() {
 // Desbloquea todos los campos del modal
 function desbloquearTodosCampos() {
     ['o-cliente', 'o-serial', 'o-marca', 'o-modelo',
-     'o-tecnico', 'o-equipo', 'o-fecha', 'o-costo',
-     'o-falla', 'o-diagnostico', 'o-notas', 'o-entrega', 'o-estado'
+    'o-tecnico', 'o-equipo', 'o-fecha', 'o-costo',
+    'o-falla', 'o-diagnostico', 'o-notas', 'o-entrega', 'o-estado'
     ].forEach(id => {
         const el = document.getElementById(id);
         el.disabled = false;

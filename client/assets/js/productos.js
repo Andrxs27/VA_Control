@@ -26,11 +26,11 @@ async function renderProductos(productosAMostrar = null) {
         let html = '';
         for (const p of productosAMostrar) {
             const btnEstado = p.activo 
-                ? `<button class="btn btn-secondary btn-sm" onclick="solicitarCambioEstadoProducto(${p.id}, false)" title="Desactivar">
+                ? `<button class="btn btn-sm" style="background:#6b7280;color:white" onclick="solicitarCambioEstadoProducto(${p.id}, false)" title="Desactivar">
                     <i class="ti ti-ban"></i>
                    </button>`
-                : `<button class="btn btn-success btn-sm" onclick="solicitarCambioEstadoProducto(${p.id}, true)" title="Activar">
-                    <i class="ti ti-check"></i>
+                : `<button class="btn btn-sm" style="background:#10b981;color:white" onclick="solicitarCambioEstadoProducto(${p.id}, true)" title="Activar">
+                    <i class="ti ti-refresh"></i>
                    </button>`;
 
             html += `<tr>
@@ -341,14 +341,14 @@ function resetearFormulario() {
 }
 
 function toast(msg, type='info') {
-  const c = document.getElementById('toasts');
-  if (!c) return;
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  const icons = {success:'ti-circle-check', error:'ti-circle-x', info:'ti-info-circle', warning:'ti-alert-triangle'};
-  t.innerHTML = `<i class="ti ${icons[type]||'ti-info-circle'}" style="font-size:16px;color:${type==='success'?'var(--green)':type==='error'?'var(--red)':'var(--blue)'}"></i>${msg}`;
-  c.appendChild(t);
-  setTimeout(()=>t.remove(), 3500);
+    const c = document.getElementById('toasts');
+    if (!c) return;
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    const icons = {success:'ti-circle-check', error:'ti-circle-x', info:'ti-info-circle', warning:'ti-alert-triangle'};
+    t.innerHTML = `<i class="ti ${icons[type]||'ti-info-circle'}" style="font-size:16px;color:${type==='success'?'var(--green)':type==='error'?'var(--red)':'var(--blue)'}"></i>${msg}`;
+    c.appendChild(t);
+    setTimeout(()=>t.remove(), 3500);
 }
 
 // Inicialización

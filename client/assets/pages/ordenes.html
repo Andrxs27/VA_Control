@@ -180,19 +180,23 @@
   </div>
 
   <div class="modal-overlay" id="modal-confirmacion">
-    <div class="modal modal-confirm">
-      <div class="confirm-icon-box">
-        <i class="ti ti-alert-triangle" id="confirm-icon"></i>
+  <div class="modal" style="max-width: 400px; border-radius: 16px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);">
+    
+    <div class="modal-body" style="text-align: center; padding: 8px 0 16px 0;">
+      <div id="confirm-icon-wrapper" style="width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 28px;">
+        <i id="confirm-icon" class="ti ti-alert-triangle"></i>
       </div>
-      <h3 id="confirm-titulo" class="confirm-title">Confirmar Acción</h3>
-      <p id="confirm-mensaje" class="confirm-message">¿Estás seguro de realizar esta acción?</p>
-      
-      <div class="confirm-actions">
-        <button class="btn btn-ghost" onclick="closeModal('modal-confirmacion')">Cancelar</button>
-        <button class="btn btn-danger" id="confirm-btn-proceder">Confirmar</button>
-      </div>
+      <h3 id="confirm-titulo" style="font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text1); margin-bottom: 8px;">Confirmar Acción</h3>
+      <p id="confirm-mensaje" style="font-size: 14px; color: var(--text3); line-height: 1.6; padding: 0 12px; margin: 0;"></p>
     </div>
+    
+    <div class="modal-footer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border: none; padding: 0; margin-top: 8px;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-confirmacion')" style="width: 100%; justify-content: center; font-weight: 500;">Cancelar</button>
+      <button class="btn" id="confirm-btn-proceder" style="width: 100%; justify-content: center; font-weight: 600;">Confirmar</button>
+    </div>
+
   </div>
+</div>
 
   <div class="toast-container" id="toasts"></div>
 
