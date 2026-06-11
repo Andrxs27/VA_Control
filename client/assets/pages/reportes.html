@@ -55,38 +55,113 @@
 
     <main class="content">
       <div class="page active" id="page-reportes">
+
+        <!-- ── Encabezado + filtros ── -->
         <div class="section-header">
           <div>
             <div class="section-title">Reportes y Análisis</div>
-            <div class="section-sub">Métricas de negocio</div>
+            <div class="section-sub">Métricas de negocio en tiempo real</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="date" id="rep-desde" class="form-input" style="font-size:13px;padding:6px 10px" title="Fecha desde">
+            <input type="date" id="rep-hasta" class="form-input" style="font-size:13px;padding:6px 10px" title="Fecha hasta">
+            <button class="btn btn-primary btn-sm" onclick="aplicarFiltroFechas()"><i class="ti ti-filter"></i> Filtrar</button>
+            <button class="btn btn-ghost btn-sm" onclick="limpiarFiltros()"><i class="ti ti-x"></i> Limpiar</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportarCSV()" title="Exportar ventas a CSV"><i class="ti ti-download"></i> CSV</button>
+            <button class="btn btn-ghost btn-sm" onclick="cargarReportes()" title="Actualizar datos"><i class="ti ti-refresh"></i></button>
           </div>
         </div>
 
+        <!-- ── KPIs ── -->
         <div class="kpi-grid">
-          <div class="kpi-card kpi-green"><div class="kpi-label">Ingresos del Mes</div><div class="kpi-value" id="rep-ingresos">$0</div><i class="ti ti-cash kpi-icon"></i></div>
-          <div class="kpi-card kpi-blue"><div class="kpi-label">Órdenes Completadas</div><div class="kpi-value" id="rep-ordenes-comp">0</div><i class="ti ti-check kpi-icon"></i></div>
-          <div class="kpi-card kpi-amber"><div class="kpi-label">Productos Sin Stock</div><div class="kpi-value" id="rep-sin-stock">0</div><i class="ti ti-alert-triangle kpi-icon"></i></div>
-          <div class="kpi-card kpi-red"><div class="kpi-label">Facturas Emitidas</div><div class="kpi-value" id="rep-facturas">0</div><i class="ti ti-file-invoice kpi-icon"></i></div>
+          <div class="kpi-card kpi-green">
+            <div class="kpi-label">Ingresos del Período</div>
+            <div class="kpi-value" id="rep-ingresos">...</div>
+            <i class="ti ti-cash kpi-icon"></i>
+          </div>
+          <div class="kpi-card kpi-blue">
+            <div class="kpi-label">Órdenes Completadas</div>
+            <div class="kpi-value" id="rep-ordenes-comp">...</div>
+            <i class="ti ti-check kpi-icon"></i>
+          </div>
+          <div class="kpi-card kpi-amber">
+            <div class="kpi-label">Productos Sin Stock</div>
+            <div class="kpi-value" id="rep-sin-stock">...</div>
+            <i class="ti ti-alert-triangle kpi-icon"></i>
+          </div>
+          <div class="kpi-card kpi-red">
+            <div class="kpi-label">Facturas Emitidas</div>
+            <div class="kpi-value" id="rep-facturas">...</div>
+            <i class="ti ti-file-invoice kpi-icon"></i>
+          </div>
         </div>
 
+        <!-- ── Gráfica ventas por mes (últimos 6 meses) ── -->
+        <div class="panel" style="margin-bottom:16px">
+          <div class="panel-title"><i class="ti ti-chart-bar"></i> Ventas de los últimos 6 meses</div>
+          <div id="rep-grafica-meses" class="chart-bars" style="height:120px;margin-top:8px"></div>
+        </div>
+
+        <!-- ── Fila: métodos de pago + órdenes por estado ── -->
         <div class="panel-grid">
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-chart-pie"></i> Ventas por categoría</div>
-            <div id="rep-categorias"></div>
+            <div class="panel-title"><i class="ti ti-credit-card"></i> Ventas por método de pago</div>
+            <div id="rep-metodos" style="margin-top:8px"></div>
           </div>
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-users"></i> Top vendedores</div>
-            <div id="rep-vendedores"></div>
+            <div class="panel-title"><i class="ti ti-tool"></i> Órdenes por estado</div>
+            <div id="rep-ordenes-estado" style="margin-top:8px"></div>
           </div>
         </div>
 
-        <div class="section-header section-header--mt-spaced">
-          <div class="section-title">SQL recomendado para este módulo</div>
+        <!-- ── Fila: categorías + top vendedores ── -->
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-title"><i class="ti ti-chart-pie"></i> Inventario por categoría (valor)</div>
+            <div id="rep-categorias" style="margin-top:8px"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title"><i class="ti ti-award"></i> Top vendedores del período</div>
+            <div id="rep-vendedores" style="margin-top:8px"></div>
+          </div>
         </div>
 
-        <div class="table-wrap table-wrap--padded">
-          <pre class="sql-pre-code"><code id="sql-output"></code></pre>
+        <!-- ── Fila: top clientes + stock crítico ── -->
+        <div class="panel-grid">
+          <div class="panel">
+            <div class="panel-title"><i class="ti ti-users-group"></i> Top clientes del período</div>
+            <div id="rep-top-clientes" style="margin-top:8px"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title" style="color:var(--amber)"><i class="ti ti-alert-triangle"></i> Stock crítico</div>
+            <div class="table-wrap" style="margin-top:8px;max-height:220px;overflow-y:auto">
+              <table>
+                <thead>
+                  <tr><th>Producto</th><th>SKU</th><th>Estado</th><th>Stock/Mín.</th><th>Faltantes</th></tr>
+                </thead>
+                <tbody id="rep-stock-critico">
+                  <tr><td colspan="5" style="text-align:center;color:var(--text3);padding:16px">Cargando...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
+
+        <!-- ── Ventas recientes del período ── -->
+        <div class="section-header" style="margin-top:8px">
+          <div class="section-title">Ventas del período</div>
+        </div>
+        <div class="table-wrap" style="margin-bottom:24px">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Vendedor</th><th>Cliente</th><th>Total</th><th>Método</th><th>Fecha</th></tr>
+            </thead>
+            <tbody id="rep-tabla-ventas">
+              <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:16px">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
       </div>
     </main>
   </div>
@@ -366,7 +441,7 @@
 
   <div class="toast-container" id="toasts"></div>
   <script src="/client/assets/js/auth.js"></script>
-  <script src="/client/assets/js/script.js"></script>
   <script src="/client/assets/js/alertordenes.js"></script>
+  <script src="/client/assets/js/reportes.js"></script>
 </body>
 </html>
