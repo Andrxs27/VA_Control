@@ -99,7 +99,7 @@ function renderKPIs(ventas, ordenes, facturas, productos) {
   set('rep-facturas', facturas.length);
 }
 
-// ── Gráfica ventas últimos 6 meses ───────────────────────────────────────────
+// ── Gráfica ventas últimos 6 meses (CON DISEÑO DE DASHBOARD) ─────────────────
 function renderGraficaVentasMes(todasVentas) {
   const meses = [];
   for (let i = 5; i >= 0; i--) {
@@ -122,17 +122,31 @@ function renderGraficaVentasMes(todasVentas) {
   const el = document.getElementById('rep-grafica-meses');
   if (!el) return;
 
-  el.className = 'chart-bars';
-  el.innerHTML = meses.map(m => {
-    const pct = Math.round((m.total / maxV) * 100);
-    const esActual = m.key === hoy();
-    const color = esActual ? 'var(--accent)' : 'var(--border2)';
-    return `
-      <div class="bar-item" title="${m.label}: ${formatCOP(m.total)}">
-        <div class="bar" style="height:${Math.max(pct,2)}%;background:${color};min-height:3px;border-radius:3px 3px 0 0;transition:height .5s"></div>
-        <span class="bar-label">${m.label}</span>
-      </div>`;
-  }).join('');
+  el.innerHTML = `
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; width:100%; height:140px; padding:0 4px; box-sizing:border-box; margin-top:24px;">
+        ${meses.map((m, i) => {
+            const esActual = m.key === hoy();
+            const altura = m.total > 0 ? Math.max((m.total / maxV) * 95, 15) : 4;
+            
+            const color = m.total > 0 ? (esActual ? 'var(--blue)' : 'var(--amber)') : 'var(--border)';
+            
+            return `
+                <div style="flex:1; max-width:52px; display:flex; flex-direction:column; align-items:center; gap:6px;" title="${m.label}: ${formatCOP(m.total)}">
+                    
+                    <span style="font-size:10px; font-weight:600; color:${m.total > 0 ? 'var(--text1)' : 'transparent'}; height:14px; white-space:nowrap;">
+                        ${m.total > 0 ? formatCOP(m.total) : ''}
+                    </span>
+                    
+                    <div style="width:100%; height:${altura}px; background:${color}; border-radius:4px; transition: all 0.3s ease;"></div>
+                    
+                    <span style="font-size:11px; color:${esActual ? 'var(--blue)' : 'var(--text3)'}; font-weight:${esActual ? '600' : '200'}; text-transform:capitalize;">
+                        ${m.label.replace('.', '')}
+                    </span>
+                </div>
+            `;
+        }).join('')}
+    </div>
+  `;
 }
 
 // ── Ventas por método de pago ─────────────────────────────────────────────────
@@ -175,19 +189,14 @@ function renderVentasPorMetodo(ventas) {
 
 // ── Ventas por categoría ──────────────────────────────────────────────────────
 function renderCategorias(ventas, productos) {
-  // Construir mapa producto → categoría
   const catMap = {};
   productos.forEach(p => { catMap[p.id] = p.categoria || 'sin_categoría'; });
 
   const totalesCat = {};
-  // Sin detalle de venta en el fetch básico, simular con proporciones reales de productos
-  // Si hay detalles disponibles, usarlos; sino agrupar por vendedor
   ventas.forEach(v => {
-    // Usamos el total de la venta y lo asignamos a "general" si no hay detalle
     totalesCat['ventas'] = (totalesCat['ventas'] || 0) + parseFloat(v.total || 0);
   });
 
-  // Calcular stock por categoría como indicador
   const stockCat = {};
   productos.filter(p => p.activo).forEach(p => {
     const c = p.categoria || 'otros';
@@ -426,6 +435,7 @@ function aplicarFiltroFechas() {
   cargarReportes();
 }
 
+// ── Limpiar Filtros ───────────────────────────────────────────────────────────
 function limpiarFiltros() {
   const elDesde = document.getElementById('rep-desde');
   const elHasta = document.getElementById('rep-hasta');
@@ -436,45 +446,165 @@ function limpiarFiltros() {
   cargarReportes();
 }
 
-// ── Exportar CSV ──────────────────────────────────────────────────────────────
+// ── Exportar Excel (.xlsx) con formato ───────────────────────────────────────
 async function exportarCSV() {
+  if (typeof XLSX === 'undefined') {
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
   try {
-    const [ventas, usuarios, clientes] = await Promise.all([
+    const [ventas, ordenes, facturas, productos, usuarios, clientes] = await Promise.all([
       fetch(`${API}/ventas`).then(r => r.json()),
+      fetch(`${API}/ordenes`).then(r => r.json()),
+      fetch(`${API}/facturas`).then(r => r.json()),
+      fetch(`${API}/productos`).then(r => r.json()),
       fetch(`${API}/usuarios`).then(r => r.json()),
       fetch(`${API}/clientes`).then(r => r.json()),
     ]);
 
     const ventasFiltradas = filtrarPorFecha(ventas, 'creado_en');
+    const ordenesFiltradas = filtrarPorFecha(ordenes, 'creado_en');
+    const facturasFiltradas = filtrarPorFecha(facturas, 'fecha_emision');
 
-    const cabeceras = ['ID', 'Fecha', 'Vendedor', 'Cliente', 'Subtotal', 'Descuento', 'Impuestos', 'Total', 'Método de Pago', 'Estado'];
-    const filas = ventasFiltradas.map(v => {
-      const vendedor = v.vendedor_nombre || usuarios.find(u => u.id == v.vendedor_id)?.nombre || '';
-      const cliente = v.cliente_nombre || clientes.find(c => c.id == v.cliente_id)?.nombre || '';
-      return [
-        `#${String(v.id).padStart(4, '0')}`,
-        v.creado_en ? v.creado_en.slice(0, 10) : '',
-        vendedor,
-        cliente,
-        v.subtotal || 0,
-        v.descuento || 0,
-        v.impuestos || 0,
-        v.total || 0,
-        v.metodo_pago || '',
-        v.estado || ''
-      ].map(c => `"${c}"`).join(',');
+    const wb = XLSX.utils.book_new();
+
+    // ── HOJA 1: Ventas ────────────────────────────────────────────────────────
+    const hdrVentas = ['ID', 'Fecha', 'Vendedor', 'Cliente', 'Subtotal', 'Descuento', 'Impuestos', 'Total', 'Método de Pago', 'Estado'];
+    const filasVentas = ventasFiltradas
+      .sort((a, b) => new Date(b.creado_en) - new Date(a.creado_en))
+      .map(v => {
+        const vendedor = v.vendedor_nombre || usuarios.find(u => u.id == v.vendedor_id)?.nombre || '—';
+        const cliente  = v.cliente_nombre  || clientes.find(c => c.id == v.cliente_id)?.nombre  || '—';
+        return [
+          `#${String(v.id).padStart(4, '0')}`,
+          v.creado_en ? v.creado_en.slice(0, 10) : '—',
+          vendedor,
+          cliente,
+          parseFloat(v.subtotal  || 0),
+          parseFloat(v.descuento || 0),
+          parseFloat(v.impuestos || 0),
+          parseFloat(v.total     || 0),
+          v.metodo_pago || '—',
+          v.estado      || '—',
+        ];
+      });
+
+    const sumar = col => filasVentas.reduce((s, r) => s + (r[col] || 0), 0);
+    const filaTotal = ['', '', '', 'TOTAL', sumar(4), sumar(5), sumar(6), sumar(7), '', ''];
+
+    const wsVentas = XLSX.utils.aoa_to_sheet([hdrVentas, ...filasVentas, filaTotal]);
+    wsVentas['!cols'] = [
+      { wch: 8 }, { wch: 12 }, { wch: 22 }, { wch: 22 }, { wch: 14 },
+      { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 18 }, { wch: 14 }
+    ];
+
+    const nFmt = '#,##0.00';
+    const numCols = [4, 5, 6, 7];
+    for (let r = 1; r <= filasVentas.length + 1; r++) {
+      numCols.forEach(c => {
+        const addr = XLSX.utils.encode_cell({ r, c });
+        if (wsVentas[addr]) wsVentas[addr].z = nFmt;
+      });
+    }
+    XLSX.utils.book_append_sheet(wb, wsVentas, 'Ventas');
+
+    // ── HOJA 2: Órdenes de Servicio ───────────────────────────────────────────
+    const hdrOrdenes = ['ID', 'Cliente ID', 'Equipo', 'Estado', 'Tipo Entrega', 'Costo Servicio', 'Fecha Promesa', 'Creado En'];
+    const filasOrdenes = ordenesFiltradas
+      .sort((a, b) => new Date(b.creado_en) - new Date(a.creado_en))
+      .map(o => [
+        `#${String(o.id).padStart(4, '0')}`,
+        o.cliente_id || '—',
+        `${o.equipo || ''}${o.marca ? ' ' + o.marca : ''}${o.modelo ? ' ' + o.modelo : ''}`.trim() || '—',
+        o.estado || '—',
+        o.tipo_entrega || '—',
+        parseFloat(o.costo_servicio || 0),
+        o.fecha_promesa ? o.fecha_promesa.slice(0, 10) : '—',
+        o.creado_en ? o.creado_en.slice(0, 10) : '—',
+      ]);
+
+    const wsOrdenes = XLSX.utils.aoa_to_sheet([hdrOrdenes, ...filasOrdenes]);
+    wsOrdenes['!cols'] = [
+      { wch: 8 }, { wch: 12 }, { wch: 26 }, { wch: 14 },
+      { wch: 16 }, { wch: 16 }, { wch: 14 }, { wch: 14 },
+    ];
+    for (let r = 1; r <= filasOrdenes.length; r++) {
+      const addr = XLSX.utils.encode_cell({ r, c: 5 });
+      if (wsOrdenes[addr]) wsOrdenes[addr].z = nFmt;
+    }
+    XLSX.utils.book_append_sheet(wb, wsOrdenes, 'Órdenes');
+
+    // ── HOJA 3: Stock Crítico ─────────────────────────────────────────────────
+    const criticos = productos
+      .filter(p => p.activo && p.categoria !== 'servicios' && p.stock <= p.stock_minimo)
+      .sort((a, b) => a.stock - b.stock);
+
+    const hdrStock = ['SKU', 'Nombre', 'Categoría', 'Stock Actual', 'Stock Mínimo', 'Faltantes', 'Precio Venta', 'Valor en Riesgo'];
+    const filasStock = criticos.map(p => {
+      const faltantes = Math.max(0, p.stock_minimo - p.stock);
+      const precioVenta = parseFloat(p.precio_venta || 0);
+      return [p.sku || '—', p.nombre, p.categoria, p.stock, p.stock_minimo, faltantes, precioVenta, faltantes * precioVenta];
     });
 
-    const csv = [cabeceras.join(','), ...filas].join('\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `reporte_ventas_${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const wsStock = XLSX.utils.aoa_to_sheet([hdrStock, ...filasStock]);
+    wsStock['!cols'] = [
+      { wch: 14 }, { wch: 28 }, { wch: 14 }, { wch: 14 },
+      { wch: 14 }, { wch: 12 }, { wch: 14 }, { wch: 16 },
+    ];
+    for (let r = 1; r <= filasStock.length; r++) {
+      [6, 7].forEach(c => {
+        const addr = XLSX.utils.encode_cell({ r, c });
+        if (wsStock[addr]) wsStock[addr].z = nFmt;
+      });
+    }
+    XLSX.utils.book_append_sheet(wb, wsStock, 'Stock Crítico');
+
+    // ── HOJA 4: Resumen General ───────────────────────────────────────────────
+    const desde = repFiltroDesde || '(todo)';
+    const hasta  = repFiltroHasta || '(todo)';
+    const totalVentas   = ventasFiltradas.reduce((s, v) => s + parseFloat(v.total || 0), 0);
+    const totalOrdenes  = ordenesFiltradas.reduce((s, o) => s + parseFloat(o.costo_servicio || 0), 0);
+    const ordenesComp   = ordenesFiltradas.filter(o => o.estado === 'completado' || o.estado === 'entregado').length;
+    const productosSinStock = productos.filter(p => p.activo && p.stock === 0 && p.categoria !== 'servicios').length;
+
+    const resumenData = [
+      ['Reporte Generado', new Date().toLocaleString('es-CO')],
+      ['Período Desde',    desde],
+      ['Período Hasta',    hasta],
+      [],
+      ['INDICADOR', 'VALOR'],
+      ['Total Ingresos (Ventas)',       totalVentas],
+      ['Número de Ventas',              ventasFiltradas.length],
+      ['Ticket Promedio',               ventasFiltradas.length ? totalVentas / ventasFiltradas.length : 0],
+      ['Total Órdenes de Servicio',     ordenesFiltradas.length],
+      ['Órdenes Completadas',           ordenesComp],
+      ['Ingresos por Servicios',        totalOrdenes],
+      ['Facturas Emitidas',             facturasFiltradas.length],
+      ['Productos Sin Stock',           productosSinStock],
+      ['Productos en Stock Crítico',    criticos.length],
+    ];
+
+    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
+    wsResumen['!cols'] = [{ wch: 28 }, { wch: 20 }];
+    [5, 7, 11].forEach(r => {
+      const addr = XLSX.utils.encode_cell({ r, c: 1 });
+      if (wsResumen[addr]) wsResumen[addr].z = nFmt;
+    });
+    XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen');
+
+    // ── Descargar ─────────────────────────────────────────────────────────────
+    const fecha = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `VA_Control_Reporte_${fecha}.xlsx`);
+
   } catch (err) {
-    console.error('Error exportando CSV:', err);
+    console.error('Error exportando Excel:', err);
+    alert('No se pudo generar el reporte. Verifica que el servidor esté activo.');
   }
 }
 
