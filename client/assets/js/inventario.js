@@ -222,6 +222,61 @@ function onCambioTipoMovimiento() {
   if (productoId) _actualizarInfoStock(productoId);
 }
 
+// ==================== NUEVA FUNCIÓN: EXPORTAR A EXCEL ====================
+async function exportarExcel() {
+  if (typeof XLSX === 'undefined') {
+    toast('La librería de Excel aún se está cargando. Inténtalo de nuevo.', 'warning');
+    return;
+  }
+  if (!inventarioListado || inventarioListado.length === 0) {
+    toast('No hay datos en el inventario para exportar', 'warning');
+    return;
+  }
+
+  try {
+    toast('Generando archivo Excel...', 'info');
+
+    // Mapeamos los datos limpios para el reporte en español
+    const datosExportar = inventarioListado.map(p => {
+      let estadoTexto = 'Normal';
+      if (p.estado_stock === 'sin_stock') estadoTexto = 'Sin Stock';
+      if (p.estado_stock === 'stock_bajo') estadoTexto = 'Stock Bajo';
+
+      return {
+        'SKU': p.sku,
+        'Producto': p.nombre,
+        'Stock Actual': p.stock,
+        'Stock Mínimo': p.stock_minimo,
+        'Estado': estadoTexto,
+        'Último Movimiento': p.ultimo_movimiento ? _formatFecha(p.ultimo_movimiento) : '—'
+      };
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(datosExportar);
+
+    // Ajustar automáticamente el ancho de las columnas según su contenido
+    const maxAncho = datosExportar.reduce((acc, row) => {
+      Object.keys(row).forEach((key, i) => {
+        const valStr = row[key] ? row[key].toString() : '';
+        acc[i] = Math.max(acc[i] || 10, valStr.length, key.length);
+      });
+      return acc;
+    }, []);
+    ws['!cols'] = maxAncho.map(w => ({ wch: w + 4 }));
+
+    XLSX.utils.book_append_sheet(wb, ws, "Inventario Completo");
+
+    const fechaHoy = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `Inventario_VA_Control_${fechaHoy}.xlsx`);
+
+    toast('Excel descargado correctamente', 'success');
+  } catch (err) {
+    console.error("Error exportando a Excel:", err);
+    toast('Error al exportar Excel: ' + err.message, 'error');
+  }
+}
+
 function onCambioProductoMovimiento() {
   const productoId = document.getElementById('mov-producto')?.value;
   if (productoId) {
@@ -376,6 +431,7 @@ window.onCambioTipoMovimiento = onCambioTipoMovimiento;
 window.onCambioProductoMovimiento = onCambioProductoMovimiento;
 window.filtrarInventario = filtrarInventario;
 window.filtrarPorEstadoStock = filtrarPorEstadoStock;
+window.exportarExcel = exportarExcel;
 
 // Inicialización de eventos al cargar la página
 document.addEventListener('DOMContentLoaded', () => {

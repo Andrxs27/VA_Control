@@ -11,6 +11,8 @@
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css" />
   <link rel="stylesheet" href="/client/assets/css/styles.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -52,14 +54,16 @@
         <i class="ti ti-chart-bar"></i>Reportes
       </div>
     </nav>
-   <div class="sidebar-footer">
+    <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">AD</div>
         <div class="user-info">
           <p>Admin User</p>
           <span>Administrador</span>
         </div>
-        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
+        <button onclick="logout()" title="Cerrar sesión"
+          style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;"
+          onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
           <i class="ti ti-logout"></i>
         </button>
       </div>
@@ -89,9 +93,16 @@
               Movimientos, niveles de stock y alertas en tiempo real
             </div>
           </div>
-          <button class="btn btn-primary" onclick="abrirModalMovimiento()">
-            <i class="ti ti-arrows-exchange"></i> Registrar Movimiento
-          </button>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="btn" onclick="exportarExcel()"
+              style="background-color: #107c41; color: white; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: background .2s; border: 1px solid transparent;"
+              onmouseover="this.style.backgroundColor='#0e6c38'" onmouseout="this.style.backgroundColor='#107c41'">
+              <i class="ti ti-file-spreadsheet"></i> Exportar Excel
+            </button>
+            <button class="btn btn-primary" onclick="abrirModalMovimiento()">
+              <i class="ti ti-arrows-exchange"></i> Registrar Movimiento
+            </button>
+          </div>
         </div>
 
         <div class="table-wrap">
@@ -124,16 +135,8 @@
             </thead>
             <tbody id="tb-inventario">
               <tr>
-                <td colspan="7" style="
-                      text-align: center;
-                      color: var(--text3);
-                      padding: 32px;
-                    ">
-                  <i class="ti ti-loader" style="
-                        font-size: 20px;
-                        margin-bottom: 8px;
-                        display: block;
-                      "></i>
+                <td colspan="7" style="text-align: center; color: var(--text3); padding: 32px;">
+                  <i class="ti ti-loader" style="font-size: 20px; margin-bottom: 8px; display: block;"></i>
                   Cargando inventario...
                 </td>
               </tr>
