@@ -23,7 +23,7 @@
       <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i>Inventario</div>
       <span class="nav-section">Operaciones</span>
       <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
-      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
+      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes"></span></div>
       <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
       <span class="nav-section">Administración</span>
       <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
@@ -57,49 +57,53 @@
     </header>
 
     <main class="content">
-
       <div class="page active" id="page-dashboard">
+
+        <div style="margin-bottom:20px;">
+          <div style="font-size:13px; color:var(--text3)" id="dash-fecha"></div>
+        </div>
+
         <div class="kpi-grid">
-          <div class="kpi-card kpi-green">
-            <div class="kpi-label">Ventas Hoy</div>
-            <div class="kpi-value" id="kpi-ventas">$0</div>
-            <div class="kpi-sub"><i class="ti ti-trending-up icon-trend"></i> 12 transacciones</div>
-            <i class="ti ti-receipt kpi-icon"></i>
-          </div>
           <div class="kpi-card kpi-blue">
             <div class="kpi-label">Productos Activos</div>
-            <div class="kpi-value" id="kpi-productos">0</div>
+            <div class="kpi-value" id="kpi-productos">—</div>
             <div class="kpi-sub"><i class="ti ti-package"></i> en catálogo</div>
             <i class="ti ti-package kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-amber">
             <div class="kpi-label">Stock Bajo</div>
-            <div class="kpi-value" id="kpi-stockbajo">0</div>
+            <div class="kpi-value" id="kpi-stockbajo">—</div>
             <div class="kpi-sub"><i class="ti ti-alert-triangle icon-alert"></i> requieren reposición</div>
             <i class="ti ti-alert-triangle kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-red">
             <div class="kpi-label">Órdenes Pendientes</div>
-            <div class="kpi-value" id="kpi-ordenes">0</div>
-            <div class="kpi-sub"><i class="ti ti-tool"></i> en proceso</div>
+            <div class="kpi-value" id="kpi-ordenes">—</div>
+            <div class="kpi-sub"><i class="ti ti-tool"></i> pendientes y en proceso</div>
             <i class="ti ti-tool kpi-icon"></i>
+          </div>
+          <div class="kpi-card kpi-green">
+            <div class="kpi-label">Órdenes Entregadas</div>
+            <div class="kpi-value" id="kpi-entregadas">—</div>
+            <div class="kpi-sub"><i class="ti ti-check"></i> completadas y entregadas</div>
+            <i class="ti ti-check kpi-icon"></i>
           </div>
         </div>
 
         <div class="panel-grid">
-          <div class="panel">
-            <div class="panel-title"><i class="ti ti-chart-bar"></i> Ventas últimos 7 días</div>
+          <div class="panel" style="height:fit-content;">
+            <div class="panel-title"><i class="ti ti-chart-bar"></i> Órdenes últimos 7 días</div>
             <div class="chart-bars" id="chart-ventas"></div>
           </div>
-          <div class="panel">
+          <div class="panel" style="height:fit-content;">
             <div class="panel-title"><i class="ti ti-activity"></i> Actividad reciente</div>
             <div id="activity-list"></div>
           </div>
         </div>
 
         <div id="alertas-stock-section"></div>
-      </div>
 
+      </div>
     </main>
   </div>
 
@@ -140,9 +144,6 @@
         <button class="icon-btn" onclick="closeModal('modal-movimiento')" aria-label="Cerrar"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
-        <div class="alert alert-info shadow-sm">
-          <i class="ti ti-info-circle"></i>Se recomienda tabla <code>movimientos_inventario(id, producto_id, tipo ENUM('entrada','salida','ajuste'), cantidad, motivo, usuario_id, creado_en)</code>
-        </div>
         <div class="form-grid">
           <div class="form-group">
             <label for="mov-producto">Producto *</label>
@@ -157,7 +158,7 @@
             </select>
           </div>
           <div class="form-group"><label for="mov-cantidad">Cantidad</label><input type="number" id="mov-cantidad" min="1" placeholder="1"></div>
-          <div class="form-group"><label for="mov-motivo">Motivo / Referencia</label><textarea id="mov-motivo" placeholder="Ej: Compra proveedor XYZ, factura #123"></textarea></div>
+          <div class="form-group"><label for="mov-motivo">Motivo / Referencia</label><textarea id="mov-motivo" placeholder="Ej: Compra proveedor XYZ"></textarea></div>
         </div>
       </div>
       <div class="modal-footer">
@@ -306,5 +307,6 @@
   <script src="/client/assets/js/auth.js"></script>
   <script src="/client/assets/js/script.js"></script>
   <script src="/client/assets/js/alertordenes.js"></script>
+  <script src="/client/assets/js/dashboard.js"></script>
 </body>
 </html>
