@@ -8,6 +8,48 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="/client/assets/css/styles.css">
+
+  <style>
+    .panel-grid .panel {
+      height: 300px;            
+      display: flex;
+      flex-direction: column;
+    }
+
+  
+    #chart-ventas {
+      flex: 1;
+      min-height: 0;
+    }
+
+    
+    #activity-list {
+      flex: 1;
+      min-height: 0;            
+      overflow-y: auto;        
+      overflow-x: hidden;       
+      padding-right: 8px;       
+    }
+
+
+    #activity-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #activity-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+    }
+
+    #activity-list::-webkit-scrollbar-thumb {
+      background: #3b82f6;      
+      border-radius: 10px;
+    }
+
+    #activity-list::-webkit-scrollbar-thumb:hover {
+      background: #2563eb;
+    }
+  </style>
 </head>
 <body>
 
@@ -91,12 +133,12 @@
         </div>
 
         <div class="panel-grid">
-          <div class="panel" style="height:fit-content;">
-            <div class="panel-title"><i class="ti ti-chart-bar"></i> Órdenes últimos 7 días</div>
+          <div class="panel">
+            <div class="panel-title"><i class="ti ti-chart-bar"></i> Actividad últimos 7 días</div>
             <div class="chart-bars" id="chart-ventas"></div>
           </div>
-          <div class="panel" style="height:fit-content;">
-            <div class="panel-title"><i class="ti ti-activity"></i> Actividad reciente</div>
+          <div class="panel">
+            <div class="panel-title"><i class="ti ti-activity"></i> Órdenes recientes</div>
             <div id="activity-list"></div>
           </div>
         </div>
