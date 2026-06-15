@@ -14,45 +14,44 @@
   <aside class="sidebar" id="sidebar">
     <div class="logo">
       <h1>VA <span>Control</span></h1>
-      <p>Sistema de Gestión</p>
+      <p data-i18n="logo_sub">Sistema de Gestión</p>
     </div>
     <nav>
-      <span class="nav-section">Principal</span>
-      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
-      <div class="nav-item active" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
-      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i>Inventario</div>
-      <span class="nav-section">Operaciones</span>
-      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
-      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
-      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
-      <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
-      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
-      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
+      <span class="nav-section" data-i18n="nav_principal">Principal</span>
+      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i><span data-i18n="nav_dashboard">Dashboard</span></div>
+      <div class="nav-item active" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i><span data-i18n="nav_productos">Productos</span></div>
+      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i><span data-i18n="nav_inventario">Inventario</span></div>
+      <span class="nav-section" data-i18n="nav_operaciones">Operaciones</span>
+      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i><span data-i18n="nav_ventas">Ventas</span></div>
+      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i><span data-i18n="nav_ordenes">Órdenes de Servicio</span><span class="nav-badge" id="badge-ordenes">3</span></div>
+      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i><span data-i18n="nav_facturas">Facturas</span></div>
+      <span class="nav-section" data-i18n="nav_administracion">Administración</span>
+      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i><span data-i18n="nav_clientes">Clientes</span></div>
+      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i><span data-i18n="nav_usuarios">Usuarios</span></div>
+      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i><span data-i18n="nav_reportes">Reportes</span></div>
     </nav>
     <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">AD</div>
         <div class="user-info">
           <p>Admin User</p>
-          <span>Administrador</span>
+          <span data-i18n="rol_admin">Administrador</span>
         </div>
-        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
-          <i class="ti ti-logout"></i>
-        </button>
       </div>
     </div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <div class="page-title" id="page-title">Productos</div>
+      <div class="page-title" id="page-title" data-i18n="titulo_productos">Productos</div>
       <div class="topbar-right">
-        <div class="icon-btn" title="Alertas de stock">
+        <div class="icon-btn" data-i18n="topbar_alertas" data-i18n-type="title" title="Alertas de stock">
           <i class="ti ti-bell"></i>
           <span class="badge-dot"></span>
         </div>
-        <div class="icon-btn" title="Configuración"><i class="ti ti-settings"></i></div>
+        <div class="icon-btn" id="btn-config" data-i18n="topbar_config" data-i18n-type="title" title="Configuración">
+          <i class="ti ti-settings"></i>
+        </div>
       </div>
     </header>
 
@@ -60,36 +59,35 @@
       <div class="page active" id="page-productos">
         <div class="section-header">
           <div>
-            <div class="section-title">Catálogo de Productos</div>
-            <div class="section-sub">Gestión de SKUs, precios y categorías</div>
+            <div class="section-title" data-i18n="sec_catalogo_titulo">Catálogo de Productos</div>
+            <div class="section-sub" data-i18n="sec_catalogo_sub">Gestión de SKUs, precios y categorías</div>
           </div>
-          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-plus"></i> Nuevo Producto</button>
+          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-plus"></i> <span data-i18n="btn_nuevo_producto">Nuevo Producto</span></button>
         </div>
 
         <div class="table-wrap">
           <div class="table-toolbar">
             <div class="search-box">
               <i class="ti ti-search"></i>
-              <input type="text" placeholder="Buscar por nombre, SKU..." oninput="filtrarTabla('tb-productos', this.value)">
+              <input type="text" data-i18n="buscar_producto" data-i18n-type="placeholder" placeholder="Buscar por nombre, SKU..." oninput="filtrarTabla('tb-productos', this.value)">
             </div>
             <select class="filter-select" onchange="filtrarPorCategoria(this.value)" aria-label="Filtrar productos por categoría">
-              <option value="">Todas las categorías</option>
-              <option value="electronicos">Electronicos</option>
-              <option value="repuestos">Repuestos</option>
-              <option value="servicios">Servicios</option>
+              <option value="" data-i18n="filtro_categorias">Todas las categorías</option>
+              <option value="electronicos" data-i18n="opt_electronicos">Electrónicos</option>
+              <option value="repuestos" data-i18n="opt_repuestos">Repuestos</option>
+              <option value="servicios" data-i18n="opt_servicios">Servicios</option>
             </select>
           </div>
-
           <table>
             <thead>
               <tr>
-                <th>SKU</th>
-                <th>Producto</th>
-                <th>Categoría</th>
-                <th>Stock</th>
-                <th>Precio Venta</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th data-i18n="th_sku">SKU</th>
+                <th data-i18n="th_producto">Producto</th>
+                <th data-i18n="th_categoria">Categoría</th>
+                <th data-i18n="th_stock">Stock</th>
+                <th data-i18n="th_precio">Precio Venta</th>
+                <th data-i18n="th_estado">Estado</th>
+                <th data-i18n="th_acciones">Acciones</th>
               </tr>
             </thead>
             <tbody id="tb-productos"></tbody>
@@ -102,59 +100,72 @@
   <div class="modal-overlay" id="modal-producto">
     <div class="modal">
       <div class="modal-head">
-        <h2>Nuevo Producto</h2>
+        <h2 data-i18n="modal_nuevo_producto">Nuevo Producto</h2>
         <button class="icon-btn" onclick="closeModal('modal-producto')" aria-label="Cerrar modal"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
-          <div class="form-group"><label>SKU *</label><input type="text" id="p-sku" placeholder="EJ: ELEC-001"></div>
-          <div class="form-group"><label>Nombre *</label><input type="text" id="p-nombre" placeholder="Nombre del producto"></div>
-          <div class="form-group"><label for="p-categoria">Categoría</label>
+          <div class="form-group">
+            <label data-i18n="lbl_sku">SKU *</label>
+            <input type="text" id="p-sku" data-i18n="ph_sku" data-i18n-type="placeholder" placeholder="EJ: ELEC-001">
+          </div>
+          <div class="form-group">
+            <label data-i18n="lbl_nombre_producto">Nombre *</label>
+            <input type="text" id="p-nombre" data-i18n="ph_nombre_producto" data-i18n-type="placeholder" placeholder="Nombre del producto">
+          </div>
+          <div class="form-group">
+            <label for="p-categoria" data-i18n="th_categoria">Categoría</label>
             <select class="form-select" id="p-categoria">
-              <option value="electronicos">Electronicos</option>
-              <option value="repuestos">Repuestos</option>
-              <option value="servicios">Servicios</option>
+              <option value="electronicos" data-i18n="opt_electronicos">Electrónicos</option>
+              <option value="repuestos" data-i18n="opt_repuestos">Repuestos</option>
+              <option value="servicios" data-i18n="opt_servicios">Servicios</option>
             </select>
           </div>
           <div class="form-grid full-width">
-            <label for="p-descripcion">Descripción</label>
-            <textarea id="p-descripcion" placeholder="Detalles o especificaciones del producto" rows="2"></textarea>
+            <label for="p-descripcion" data-i18n="lbl_descripcion">Descripción</label>
+            <textarea id="p-descripcion" data-i18n="ph_descripcion" data-i18n-type="placeholder" placeholder="Detalles o especificaciones del producto" rows="2"></textarea>
           </div>
-          <div class="form-group"><label>Precio de Venta</label><input type="text" id="p-precio" placeholder="0.00"></div>
-          <div class="form-group"><label>Stock Inicial</label><input type="number" id="p-stock" placeholder="0" min="0"></div>
-          <div class="form-group"><label>Stock Mínimo</label><input type="number" id="p-stockmin" placeholder="5" min="0"></div>
+          <div class="form-group">
+            <label data-i18n="lbl_precio_venta">Precio de Venta</label>
+            <input type="text" id="p-precio" data-i18n="ph_precio" data-i18n-type="placeholder" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label data-i18n="lbl_stock_inicial">Stock Inicial</label>
+            <input type="number" id="p-stock" data-i18n="ph_stock" data-i18n-type="placeholder" placeholder="0" min="0">
+          </div>
+          <div class="form-group">
+            <label data-i18n="lbl_stock_minimo">Stock Mínimo</label>
+            <input type="number" id="p-stockmin" data-i18n="ph_stock_min" data-i18n-type="placeholder" placeholder="5" min="0">
+          </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-producto')">Cancelar</button>
-        <button class="btn btn-primary" onclick="guardarProducto()"><i class="ti ti-check"></i> Guardar</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-producto')" data-i18n="btn_cancelar">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarProducto()"><i class="ti ti-check"></i> <span data-i18n="btn_guardar">Guardar</span></button>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="modal-confirmacion">
-    <div class="modal" style="max-width: 400px; border-radius: 16px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);">
-      
-      <div class="modal-body" style="text-align: center; padding: 8px 0 16px 0;">
-        <div id="confirm-icon-wrapper" style="width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 28px;">
+    <div class="modal" style="max-width:400px;border-radius:16px;padding:24px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.15);">
+      <div class="modal-body" style="text-align:center;padding:8px 0 16px 0;">
+        <div id="confirm-icon-wrapper" style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px auto;font-size:28px;">
           <i id="confirm-icon" class="ti ti-alert-triangle"></i>
         </div>
-        
-        <h3 id="confirm-titulo" style="font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text1); margin-bottom: 8px;">Confirmar Acción</h3>
-        <p id="confirm-mensaje" style="font-size: 14px; color: var(--text3); line-height: 1.6; padding: 0 12px; margin: 0;"></p>
+        <h3 id="confirm-titulo" style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px;" data-i18n="modal_confirmar">Confirmar Acción</h3>
+        <p id="confirm-mensaje" style="font-size:14px;color:var(--text3);line-height:1.6;padding:0 12px;margin:0;"></p>
       </div>
-      
-      <div class="modal-footer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border: none; padding: 0; margin-top: 8px;">
-        <button class="btn btn-ghost" onclick="closeModal('modal-confirmacion')" style="width: 100%; justify-content: center; font-weight: 500;">Cancelar</button>
-        <button class="btn" id="confirm-btn-proceder" style="width: 100%; justify-content: center; font-weight: 600;">Confirmar</button>
+      <div class="modal-footer" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;border:none;padding:0;margin-top:8px;">
+        <button class="btn btn-ghost" onclick="closeModal('modal-confirmacion')" style="width:100%;justify-content:center;font-weight:500;" data-i18n="btn_cancelar">Cancelar</button>
+        <button class="btn" id="confirm-btn-proceder" style="width:100%;justify-content:center;font-weight:600;" data-i18n="btn_confirmar">Confirmar</button>
       </div>
-
     </div>
   </div>
 
   <div class="toast-container" id="toasts"></div>
-  
+
   <script src="/client/assets/js/auth.js"></script>
+  <script src="/client/assets/js/config.js"></script>
   <script src="/client/assets/js/script.js"></script>
   <script src="/client/assets/js/productos.js"></script>
   <script src="/client/assets/js/alertordenes.js"></script>

@@ -1,63 +1,56 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VA Control — Usuarios</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="/client/assets/css/styles.css">
 </head>
-
 <body>
 
   <aside class="sidebar" id="sidebar">
     <div class="logo">
       <h1>VA <span>Control</span></h1>
-      <p>Sistema de Gestión</p>
+      <p data-i18n="logo_sub">Sistema de Gestión</p>
     </div>
     <nav>
-      <span class="nav-section">Principal</span>
-      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i
-          class="ti ti-layout-dashboard"></i>Dashboard</div>
-      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
-      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i>Inventario</div>
-      <span class="nav-section">Operaciones</span>
-      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
-      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de
-        Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
-      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas
-      </div>
-      <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
-      <div class="nav-item active" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios
-      </div>
-      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
+      <span class="nav-section" data-i18n="nav_principal">Principal</span>
+      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i><span data-i18n="nav_dashboard">Dashboard</span></div>
+      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i><span data-i18n="nav_productos">Productos</span></div>
+      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i><span data-i18n="nav_inventario">Inventario</span></div>
+      <span class="nav-section" data-i18n="nav_operaciones">Operaciones</span>
+      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i><span data-i18n="nav_ventas">Ventas</span></div>
+      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i><span data-i18n="nav_ordenes">Órdenes de Servicio</span><span class="nav-badge" id="badge-ordenes">3</span></div>
+      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i><span data-i18n="nav_facturas">Facturas</span></div>
+      <span class="nav-section" data-i18n="nav_administracion">Administración</span>
+      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i><span data-i18n="nav_clientes">Clientes</span></div>
+      <div class="nav-item active" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i><span data-i18n="nav_usuarios">Usuarios</span></div>
+      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i><span data-i18n="nav_reportes">Reportes</span></div>
     </nav>
     <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">AD</div>
         <div class="user-info">
           <p>Admin User</p>
-          <span>Administrador</span>
+          <span data-i18n="rol_admin">Administrador</span>
         </div>
-        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
-          <i class="ti ti-logout"></i>
-        </button>
       </div>
     </div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <div class="page-title" id="page-title">Usuarios</div>
+      <div class="page-title" id="page-title" data-i18n="titulo_usuarios">Usuarios</div>
       <div class="topbar-right">
-        <div class="icon-btn" title="Alertas de stock"><i class="ti ti-bell"></i><span class="badge-dot"></span></div>
-        <div class="icon-btn" title="Configuración"><i class="ti ti-settings"></i></div>
+        <div class="icon-btn" data-i18n="topbar_alertas" data-i18n-type="title" title="Alertas de stock">
+          <i class="ti ti-bell"></i><span class="badge-dot"></span>
+        </div>
+        <div class="icon-btn" id="btn-config" data-i18n="topbar_config" data-i18n-type="title" title="Configuración">
+          <i class="ti ti-settings"></i>
+        </div>
       </div>
     </header>
 
@@ -65,17 +58,18 @@
       <div class="page active" id="page-usuarios">
         <div class="section-header">
           <div>
-            <div class="section-title">Usuarios del Sistema</div>
-            <div class="section-sub">Gestión de roles y permisos</div>
+            <div class="section-title" data-i18n="sec_usuarios_titulo">Usuarios del Sistema</div>
+            <div class="section-sub" data-i18n="sec_usuarios_sub">Gestión de roles y permisos</div>
           </div>
-          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> Nuevo
-            Usuario</button>
+          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> <span data-i18n="btn_nuevo_usuario">Nuevo Usuario</span></button>
         </div>
 
         <div class="search-container">
           <div class="search-wrapper">
             <i class="ti ti-search search-icon"></i>
-            <input type="text" id="buscar-usuario" class="input-search" placeholder="Buscar por nombre, email o rol..."
+            <input type="text" id="buscar-usuario" class="input-search"
+              data-i18n="buscar_usuario" data-i18n-type="placeholder"
+              placeholder="Buscar por nombre, email o rol..."
               oninput="filtrarUsuarios()">
           </div>
         </div>
@@ -84,12 +78,12 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th data-i18n="th_id">ID</th>
+                <th data-i18n="th_nombre">Nombre</th>
+                <th data-i18n="th_email">Email</th>
+                <th data-i18n="th_rol">Rol</th>
+                <th data-i18n="th_estado">Estado</th>
+                <th data-i18n="th_acciones">Acciones</th>
               </tr>
             </thead>
             <tbody id="tb-usuarios"></tbody>
@@ -102,59 +96,50 @@
   <div class="modal-overlay" id="modal-usuario">
     <div class="modal">
       <div class="modal-head">
-        <h2>Nuevo Usuario</h2>
-        <button class="icon-btn" onclick="closeModal('modal-usuario')" aria-label="Cerrar modal">
-          <i class="ti ti-x"></i>
-        </button>
+        <h2 data-i18n="modal_nuevo_usuario">Nuevo Usuario</h2>
+        <button class="icon-btn" onclick="closeModal('modal-usuario')" aria-label="Cerrar modal"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
           <div class="form-group">
-            <label for="u-nombre">Nombre Completo</label>
-            <input type="text" id="u-nombre" placeholder="Juan Pérez">
+            <label for="u-nombre" data-i18n="lbl_nombre_completo">Nombre Completo</label>
+            <input type="text" id="u-nombre" data-i18n="ph_nombre_completo" data-i18n-type="placeholder" placeholder="Juan Pérez">
           </div>
           <div class="form-group">
-            <label for="u-email">Email</label>
-            <input type="email" id="u-email" placeholder="usuario@email.com">
+            <label for="u-email" data-i18n="th_email">Email</label>
+            <input type="email" id="u-email" data-i18n="ph_email_usuario" data-i18n-type="placeholder" placeholder="usuario@email.com">
           </div>
-
           <div class="form-group">
-            <label for="u-password">Contraseña</label>
+            <label for="u-password" data-i18n="lbl_password">Contraseña</label>
             <div class="password-wrapper">
-              <input type="password" id="u-password" placeholder="••••••••">
-              <button type="button" class="icon-btn-toggle" onclick="togglePasswordVisibility('u-password', this)"
-                aria-label="Mostrar contraseña" title="Mostrar contraseña">
+              <input type="password" id="u-password" data-i18n="ph_password" data-i18n-type="placeholder" placeholder="••••••••">
+              <button type="button" class="icon-btn-toggle" onclick="togglePasswordVisibility('u-password', this)" aria-label="Mostrar contraseña" title="Mostrar contraseña">
                 <i class="ti ti-eye"></i>
               </button>
             </div>
           </div>
-
           <div class="form-group" id="group-confirm-password">
-            <label for="u-confirm-password">Confirmar Contraseña</label>
+            <label for="u-confirm-password" data-i18n="lbl_confirm_password">Confirmar Contraseña</label>
             <div class="password-wrapper">
-              <input type="password" id="u-confirm-password" placeholder="••••••••">
-              <button type="button" class="icon-btn-toggle"
-                onclick="togglePasswordVisibility('u-confirm-password', this)" aria-label="Mostrar contraseña"
-                title="Mostrar contraseña">
+              <input type="password" id="u-confirm-password" data-i18n="ph_password" data-i18n-type="placeholder" placeholder="••••••••">
+              <button type="button" class="icon-btn-toggle" onclick="togglePasswordVisibility('u-confirm-password', this)" aria-label="Mostrar contraseña" title="Mostrar contraseña">
                 <i class="ti ti-eye"></i>
               </button>
             </div>
           </div>
-
           <div class="form-group">
-            <label for="u-rol">Rol</label>
+            <label for="u-rol" data-i18n="th_rol">Rol</label>
             <select class="form-select" id="u-rol">
-              <option value="admin">Administrador</option>
-              <option value="vendedor">Vendedor</option>
-              <option value="tecnico">Técnico</option>
+              <option value="admin" data-i18n="rol_admin">Administrador</option>
+              <option value="vendedor" data-i18n="rol_vendedor">Vendedor</option>
+              <option value="tecnico" data-i18n="rol_tecnico">Técnico</option>
             </select>
           </div>
-
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-usuario')">Cancelar</button>
-        <button class="btn btn-primary" onclick="guardarUsuario()"><i class="ti ti-check"></i> Crear Usuario</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-usuario')" data-i18n="btn_cancelar">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarUsuario()"><i class="ti ti-check"></i> <span data-i18n="btn_crear_usuario">Crear Usuario</span></button>
       </div>
     </div>
   </div>
@@ -164,11 +149,11 @@
       <div id="confirm-icon-container" class="confirm-icon-box">
         <i class="ti" id="confirm-icon"></i>
       </div>
-      <h3 id="confirm-titulo" class="confirm-title">Confirmar Acción</h3>
-      <p id="confirm-mensaje" class="confirm-message">¿Estás seguro de realizar esta acción?</p>
+      <h3 id="confirm-titulo" class="confirm-title" data-i18n="modal_confirmar">Confirmar Acción</h3>
+      <p id="confirm-mensaje" class="confirm-message"></p>
       <div class="confirm-actions">
-        <button class="btn btn-ghost btn-flex" onclick="closeModal('modal-confirmacion')">Cancelar</button>
-        <button class="btn btn-flex" id="confirm-btn-proceder">Confirmar</button>
+        <button class="btn btn-ghost btn-flex" onclick="closeModal('modal-confirmacion')" data-i18n="btn_cancelar">Cancelar</button>
+        <button class="btn btn-flex" id="confirm-btn-proceder" data-i18n="btn_confirmar">Confirmar</button>
       </div>
     </div>
   </div>
@@ -176,9 +161,9 @@
   <div class="toast-container" id="toasts"></div>
 
   <script src="/client/assets/js/auth.js"></script>
+  <script src="/client/assets/js/config.js"></script>
   <script src="/client/assets/js/script.js"></script>
   <script src="/client/assets/js/usuarios.js"></script>
   <script src="/client/assets/js/alertordenes.js"></script>
 </body>
-
 </html>

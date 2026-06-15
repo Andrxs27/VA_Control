@@ -8,47 +8,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="/client/assets/css/styles.css">
-
   <style>
     .panel-grid .panel {
-      height: 300px;            
+      height: 300px;
       display: flex;
       flex-direction: column;
     }
-
-  
     #chart-ventas {
       flex: 1;
       min-height: 0;
     }
-
-    
     #activity-list {
       flex: 1;
-      min-height: 0;            
-      overflow-y: auto;        
-      overflow-x: hidden;       
-      padding-right: 8px;       
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 8px;
     }
-
-
-    #activity-list::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    #activity-list::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 10px;
-    }
-
-    #activity-list::-webkit-scrollbar-thumb {
-      background: #3b82f6;      
-      border-radius: 10px;
-    }
-
-    #activity-list::-webkit-scrollbar-thumb:hover {
-      background: #2563eb;
-    }
+    #activity-list::-webkit-scrollbar { width: 6px; }
+    #activity-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 10px; }
+    #activity-list::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+    #activity-list::-webkit-scrollbar-thumb:hover { background: #2563eb; }
   </style>
 </head>
 <body>
@@ -56,45 +36,44 @@
   <aside class="sidebar" id="sidebar">
     <div class="logo">
       <h1>VA <span>Control</span></h1>
-      <p>Sistema de Gestión</p>
+      <p data-i18n="logo_sub">Sistema de Gestión</p>
     </div>
     <nav>
-      <span class="nav-section">Principal</span>
-      <div class="nav-item active" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
-      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
-      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i>Inventario</div>
-      <span class="nav-section">Operaciones</span>
-      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
-      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes"></span></div>
-      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
-      <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
-      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
-      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
+      <span class="nav-section" data-i18n="nav_principal">Principal</span>
+      <div class="nav-item active" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i><span data-i18n="nav_dashboard">Dashboard</span></div>
+      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i><span data-i18n="nav_productos">Productos</span></div>
+      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i><span data-i18n="nav_inventario">Inventario</span></div>
+      <span class="nav-section" data-i18n="nav_operaciones">Operaciones</span>
+      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i><span data-i18n="nav_ventas">Ventas</span></div>
+      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i><span data-i18n="nav_ordenes">Órdenes de Servicio</span><span class="nav-badge" id="badge-ordenes"></span></div>
+      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i><span data-i18n="nav_facturas">Facturas</span></div>
+      <span class="nav-section" data-i18n="nav_administracion">Administración</span>
+      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i><span data-i18n="nav_clientes">Clientes</span></div>
+      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i><span data-i18n="nav_usuarios">Usuarios</span></div>
+      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i><span data-i18n="nav_reportes">Reportes</span></div>
     </nav>
     <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">AD</div>
         <div class="user-info">
           <p>Admin User</p>
-          <span>Administrador</span>
+          <span data-i18n="rol_admin">Administrador</span>
         </div>
-        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
-          <i class="ti ti-logout"></i>
-        </button>
       </div>
     </div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="page-title" id="page-title" data-i18n="titulo_dashboard">Dashboard</div>
       <div class="topbar-right">
-        <div class="icon-btn" title="Alertas de stock">
+        <div class="icon-btn" data-i18n="topbar_alertas" data-i18n-type="title" title="Alertas de stock">
           <i class="ti ti-bell"></i>
           <span class="badge-dot"></span>
         </div>
-        <div class="icon-btn" title="Configuración"><i class="ti ti-settings"></i></div>
+        <div class="icon-btn" id="btn-config" data-i18n="topbar_config" data-i18n-type="title" title="Configuración">
+          <i class="ti ti-settings"></i>
+        </div>
       </div>
     </header>
 
@@ -107,38 +86,38 @@
 
         <div class="kpi-grid">
           <div class="kpi-card kpi-blue">
-            <div class="kpi-label">Productos Activos</div>
+            <div class="kpi-label" data-i18n="kpi_productos">Productos Activos</div>
             <div class="kpi-value" id="kpi-productos">—</div>
-            <div class="kpi-sub"><i class="ti ti-package"></i> en catálogo</div>
+            <div class="kpi-sub"><i class="ti ti-package"></i> <span data-i18n="kpi_en_catalogo">en catálogo</span></div>
             <i class="ti ti-package kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-amber">
-            <div class="kpi-label">Stock Bajo</div>
+            <div class="kpi-label" data-i18n="kpi_stock_bajo">Stock Bajo</div>
             <div class="kpi-value" id="kpi-stockbajo">—</div>
-            <div class="kpi-sub"><i class="ti ti-alert-triangle icon-alert"></i> requieren reposición</div>
+            <div class="kpi-sub"><i class="ti ti-alert-triangle"></i> <span data-i18n="kpi_rep_repos">requieren reposición</span></div>
             <i class="ti ti-alert-triangle kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-red">
-            <div class="kpi-label">Órdenes Pendientes</div>
+            <div class="kpi-label" data-i18n="kpi_ordenes_pend">Órdenes Pendientes</div>
             <div class="kpi-value" id="kpi-ordenes">—</div>
-            <div class="kpi-sub"><i class="ti ti-tool"></i> pendientes y en proceso</div>
+            <div class="kpi-sub"><i class="ti ti-tool"></i> <span data-i18n="kpi_pend_proc">pendientes y en proceso</span></div>
             <i class="ti ti-tool kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-green">
-            <div class="kpi-label">Órdenes Entregadas</div>
+            <div class="kpi-label" data-i18n="kpi_ordenes_ent">Órdenes Entregadas</div>
             <div class="kpi-value" id="kpi-entregadas">—</div>
-            <div class="kpi-sub"><i class="ti ti-check"></i> completadas y entregadas</div>
+            <div class="kpi-sub"><i class="ti ti-check"></i> <span data-i18n="kpi_comp_ent">completadas y entregadas</span></div>
             <i class="ti ti-check kpi-icon"></i>
           </div>
         </div>
 
         <div class="panel-grid">
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-chart-bar"></i> Actividad últimos 7 días</div>
+            <div class="panel-title"><i class="ti ti-chart-bar"></i> <span data-i18n="dash_actividad">Actividad últimos 7 días</span></div>
             <div class="chart-bars" id="chart-ventas"></div>
           </div>
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-activity"></i> Órdenes recientes</div>
+            <div class="panel-title"><i class="ti ti-activity"></i> <span data-i18n="dash_ordenes_rec">Órdenes recientes</span></div>
             <div id="activity-list"></div>
           </div>
         </div>
@@ -149,10 +128,10 @@
     </main>
   </div>
 
-
   <div class="toast-container" id="toasts"></div>
 
   <script src="/client/assets/js/auth.js"></script>
+  <script src="/client/assets/js/config.js"></script>
   <script src="/client/assets/js/script.js"></script>
   <script src="/client/assets/js/alertordenes.js"></script>
   <script src="/client/assets/js/dashboard.js"></script>

@@ -1,72 +1,51 @@
 const API = 'http://localhost:3000/api';
-let usuariosLista = [];
-let usuarioEditandoId = null;
-
-// Callback temporal para el modal de confirmación personalizada
+let usuariosLista        = [];
+let usuarioEditandoId    = null;
 let accionConfirmadaCallback = null;
 
-// Helper opcional para obtener el token si tus rutas CRUD están protegidas
+function _en()      { return localStorage.getItem('va_idioma') === 'en'; }
+function _t(es, en) { return _en() ? en : es; }
+
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('token'); // O donde guardes tu JWT
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
-  };
+    const token = localStorage.getItem('va_token');
+    return { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
 };
 
-// ==========================================
-// TOAST NOTIFICATION CONFIGURATION
-// ==========================================
-function toast(msg, type='info') {
-  const c = document.getElementById('toasts');
-  if (!c) return; 
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  const icons = {success:'ti-circle-check', error:'ti-circle-x', info:'ti-info-circle'};
-  t.innerHTML = `<i class="ti ${icons[type]||'ti-info-circle'}" style="font-size:16px;color:${type==='success'?'var(--green)':type==='error'?'var(--red)':'var(--blue)'}"></i>${msg}`;
-  c.appendChild(t);
-  setTimeout(()=>t.remove(), 3500);
+// ── TOAST ────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'info') {
+    const c = document.getElementById('toasts');
+    if (!c) return;
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    const icons = { success:'ti-circle-check', error:'ti-circle-x', info:'ti-info-circle' };
+    el.innerHTML = `<i class="ti ${icons[type]||'ti-info-circle'}" style="font-size:16px;color:${type==='success'?'var(--green)':type==='error'?'var(--red)':'var(--blue)'}"></i>${msg}`;
+    c.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
 }
 
-// ==========================================
-// FUNCIÓN PARA MOSTRAR / OCULTAR CONTRASEÑA
-// ==========================================
+// ── PASSWORD TOGGLE ──────────────────────────────────────────────────────────
 function togglePasswordVisibility(inputId, boton) {
-  const input = document.getElementById(inputId);
-  const icono = boton.querySelector('i');
-  
-  if (input.type === 'password') {
-    input.type = 'text';
-    icono.className = 'ti ti-eye-off';
-  } else {
-    input.type = 'password';
-    icono.className = 'ti ti-eye';
-  }
+    const input = document.getElementById(inputId);
+    const icono = boton.querySelector('i');
+    if (input.type === 'password') { input.type = 'text';     icono.className = 'ti ti-eye-off'; }
+    else                           { input.type = 'password'; icono.className = 'ti ti-eye'; }
 }
 
 function restablecerVisibilidadPasswords() {
-  ['u-password', 'u-confirm-password'].forEach(id => {
-    const input = document.getElementById(id);
-    if (input) input.type = 'password';
-  });
-  
-  document.querySelectorAll('.password-wrapper .icon-btn-toggle i').forEach(icono => {
-    icono.className = 'ti ti-eye';
-  });
+    ['u-password','u-confirm-password'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.type = 'password';
+    });
+    document.querySelectorAll('.password-wrapper .icon-btn-toggle i').forEach(i => { i.className = 'ti ti-eye'; });
 }
 
-// ==========================================
-// 1. CARGAR Y MOSTRAR USUARIOS
-// ==========================================
+// ── 1. CARGAR USUARIOS ───────────────────────────────────────────────────────
 async function cargarUsuarios() {
     try {
         const inputBuscar = document.getElementById('buscar-usuario');
         if (inputBuscar) inputBuscar.value = '';
-
-        const res = await fetch(`${API}/usuarios`, {
-            headers: getAuthHeaders()
-        });
-        if (!res.ok) throw new Error('Error al obtener usuarios');
+        const res = await fetch(`${API}/usuarios`, { headers: getAuthHeaders() });
+        if (!res.ok) throw new Error(_t('Error al obtener usuarios','Error fetching users'));
         usuariosLista = await res.json();
         renderizarTabla(usuariosLista);
     } catch (error) {
@@ -74,23 +53,37 @@ async function cargarUsuarios() {
     }
 }
 
+function rolBadge(rol) {
+    const en = _en();
+    const map = {
+        admin:    ['badge-red',   en ? 'Admin'       : 'Admin'],
+        vendedor: ['badge-blue',  en ? 'Seller'      : 'Vendedor'],
+        tecnico:  ['badge-amber', en ? 'Technician'  : 'Técnico'],
+    };
+    const [cls, label] = map[rol] || ['badge-gray', rol];
+    return `<span class="badge ${cls}">${label}</span>`;
+}
+
 function renderizarTabla(lista) {
     const tbody = document.getElementById('tb-usuarios');
     tbody.innerHTML = '';
 
     if (lista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--color-text-secondary)">No hay usuarios registrados</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3)">${_t('No hay usuarios registrados','No registered users')}</td></tr>`;
         return;
     }
 
+    const activo   = _t('Activo','Active');
+    const inactivo = _t('Inactivo','Inactive');
+    const desact   = _t('Desactivar','Deactivate');
+    const activar  = _t('Activate','Activate');
+    const editar   = _t('Editar','Edit');
+    const eliminar = _t('Eliminar','Delete');
+
     lista.forEach(u => {
-        const botonEstado = u.activo 
-            ? `<button class="btn btn-sm" style="background-color: #6b7280; color: white;" onclick="solicitarCambioEstado(${u.id}, false)" title="Desactivar">
-                <i class="ti ti-user-off"></i>
-               </button>`
-            : `<button class="btn btn-sm" style="background-color: #10b981; color: white;" onclick="solicitarCambioEstado(${u.id}, true)" title="Activar">
-                <i class="ti ti-user-check"></i>
-               </button>`;
+        const botonEstado = u.activo
+            ? `<button class="btn btn-sm" style="background:#6b7280;color:white" onclick="solicitarCambioEstado(${u.id},false)" title="${desact}"><i class="ti ti-user-off"></i></button>`
+            : `<button class="btn btn-sm" style="background:#10b981;color:white" onclick="solicitarCambioEstado(${u.id},true)"  title="${activar}"><i class="ti ti-user-check"></i></button>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -98,91 +91,46 @@ function renderizarTabla(lista) {
             <td>${u.nombre}</td>
             <td>${u.email}</td>
             <td>${rolBadge(u.rol)}</td>
-            <td><span class="badge ${u.activo ? 'badge-green' : 'badge-gray'}">${u.activo ? 'Activo' : 'Inactivo'}</span></td>
+            <td><span class="badge ${u.activo ? 'badge-green' : 'badge-gray'}">${u.activo ? activo : inactivo}</span></td>
             <td>
-                <button class="btn btn-warning btn-sm" onclick="prepararEdicion(${u.id})" title="Editar">
-                    <i class="ti ti-edit"></i>
-                </button>
+                <button class="btn btn-warning btn-sm" onclick="prepararEdicion(${u.id})" title="${editar}"><i class="ti ti-edit"></i></button>
                 ${botonEstado}
-                <button class="btn btn-danger btn-sm" onclick="solicitarEliminacion(${u.id})" title="Eliminar Permanentemente">
-                    <i class="ti ti-trash"></i>
-                </button>
-            </td>
-        `;
+                <button class="btn btn-danger btn-sm" onclick="solicitarEliminacion(${u.id})" title="${eliminar}"><i class="ti ti-trash"></i></button>
+            </td>`;
         tbody.appendChild(tr);
     });
 }
 
-function rolBadge(rol) {
-    const map = {
-        admin:    ['badge-red',   'Admin'],
-        vendedor: ['badge-blue',  'Vendedor'],
-        tecnico:  ['badge-amber', 'Técnico'],
-    };
-    const [cls, label] = map[rol] || ['badge-gray', rol];
-    return `<span class="badge ${cls}">${label}</span>`;
-}
-
-// ==========================================
-// FILTRAR EN TIEMPO REAL (OPTIMIZADO)
-// ==========================================
+// ── FILTRAR ──────────────────────────────────────────────────────────────────
 function filtrarUsuarios() {
-    const textoBusqueda = document.getElementById('buscar-usuario').value.toLowerCase().trim();
-
-    if (!textoBusqueda) {
-        renderizarTabla(usuariosLista);
-        return;
-    }
-
-    const usuariosFiltrados = usuariosLista.filter(u => {
-        const nombre = u.nombre ? u.nombre.toLowerCase() : '';
-        const email = u.email ? u.email.toLowerCase() : '';
-        const rol = u.rol ? u.rol.toLowerCase() : '';
-        
-        // Mapeo amigable para que busque también por lo que el usuario ve en pantalla
-        const traduccionesRol = { admin: 'admin administrador', tecnico: 'técnico tecnico', vendedor: 'vendedor' };
-        const rolTraducido = traduccionesRol[rol] || '';
-
-        return nombre.includes(textoBusqueda) || 
-               email.includes(textoBusqueda) || 
-               rol.includes(textoBusqueda) ||
-               rolTraducido.includes(textoBusqueda);
-    });
-
-    renderizarTabla(usuariosFiltrados);
+    const texto = document.getElementById('buscar-usuario').value.toLowerCase().trim();
+    if (!texto) { renderizarTabla(usuariosLista); return; }
+    renderizarTabla(usuariosLista.filter(u =>
+        (u.nombre || '').toLowerCase().includes(texto) ||
+        (u.email  || '').toLowerCase().includes(texto) ||
+        (u.rol    || '').toLowerCase().includes(texto)
+    ));
 }
 
-// ==========================================
-// 2. PREPARAR FORMULARIO (CREAR / EDITAR)
-// ==========================================
+// ── 2. FORMULARIO CREAR / EDITAR ─────────────────────────────────────────────
 function prepararCreacion() {
     usuarioEditandoId = null;
-
     document.getElementById('u-nombre').value = '';
-    document.getElementById('u-email').value = '';
-    document.getElementById('u-rol').value = 'admin';
-    
+    document.getElementById('u-email').value  = '';
+    document.getElementById('u-rol').value    = 'admin';
+
     const passInput = document.getElementById('u-password');
-    passInput.value = '';
+    passInput.value       = '';
     passInput.placeholder = '••••••••';
 
-    const confirmPassInput = document.getElementById('u-confirm-password');
-    if (confirmPassInput) {
-        confirmPassInput.value = '';
-        confirmPassInput.placeholder = '••••••••';
-    }
+    const confirmPass = document.getElementById('u-confirm-password');
+    if (confirmPass) { confirmPass.value = ''; confirmPass.placeholder = '••••••••'; }
 
     restablecerVisibilidadPasswords();
 
-    const passGroup = passInput.closest('.form-group');
-    if (passGroup) passGroup.style.display = 'block';
-
-    const confirmGroup = document.getElementById('group-confirm-password');
-    if (confirmGroup) confirmGroup.style.display = 'block';
-
-    document.querySelector('#modal-usuario h2').innerText = 'Nuevo Usuario';
-    const btnGuardar = document.querySelector('#modal-usuario .modal-footer .btn-primary');
-    if (btnGuardar) btnGuardar.innerHTML = '<i class="ti ti-check"></i> Crear Usuario';
+    document.querySelector('#modal-usuario h2').innerText = _t('Nuevo Usuario','New User');
+    const btn = document.querySelector('#modal-usuario .modal-footer .btn-primary');
+    if (btn) btn.innerHTML = `<i class="ti ti-check"></i> ${_t('Crear Usuario','Create User')}`;
 
     openModal('modal-usuario');
 }
@@ -190,207 +138,122 @@ function prepararCreacion() {
 function prepararEdicion(id) {
     const usuario = usuariosLista.find(u => u.id === id);
     if (!usuario) return;
-
     usuarioEditandoId = id;
 
-    document.getElementById('u-nombre').value   = usuario.nombre;
-    document.getElementById('u-email').value    = usuario.email;
-    document.getElementById('u-rol').value      = usuario.rol;
-    
-    const passInput = document.getElementById('u-password');
-    passInput.value = '';
-    passInput.placeholder = 'Dejar en blanco para no cambiar';
+    document.getElementById('u-nombre').value = usuario.nombre;
+    document.getElementById('u-email').value  = usuario.email;
+    document.getElementById('u-rol').value    = usuario.rol;
 
-    const confirmPassInput = document.getElementById('u-confirm-password');
-    if (confirmPassInput) {
-        confirmPassInput.value = '';
-        confirmPassInput.placeholder = 'Dejar en blanco para no cambiar';
-    }
+    const passInput = document.getElementById('u-password');
+    passInput.value       = '';
+    passInput.placeholder = _t('Dejar en blanco para no cambiar','Leave blank to keep unchanged');
+
+    const confirmPass = document.getElementById('u-confirm-password');
+    if (confirmPass) { confirmPass.value = ''; confirmPass.placeholder = _t('Dejar en blanco para no cambiar','Leave blank to keep unchanged'); }
 
     restablecerVisibilidadPasswords();
 
-    const passGroup = passInput.closest('.form-group');
-    if (passGroup) passGroup.style.display = 'block';
-
-    const confirmGroup = document.getElementById('group-confirm-password');
-    if (confirmGroup) confirmGroup.style.display = 'block';
-
-    document.querySelector('#modal-usuario h2').innerText = 'Editar Usuario';
-    const btnGuardar = document.querySelector('#modal-usuario .modal-footer .btn-primary');
-    if (btnGuardar) btnGuardar.innerHTML = '<i class="ti ti-check"></i> Guardar Cambios';
+    document.querySelector('#modal-usuario h2').innerText = _t('Editar Usuario','Edit User');
+    const btn = document.querySelector('#modal-usuario .modal-footer .btn-primary');
+    if (btn) btn.innerHTML = `<i class="ti ti-check"></i> ${_t('Guardar Cambios','Save Changes')}`;
 
     openModal('modal-usuario');
 }
 
-// ==========================================
-// 3. PROCESAR GUARDADO (POST / PUT)
-// ==========================================
+// ── 3. GUARDAR ───────────────────────────────────────────────────────────────
 async function guardarUsuario() {
-    const nombre          = document.getElementById('u-nombre').value.trim();
-    const email           = document.getElementById('u-email').value.trim();
-    const rol             = document.getElementById('u-rol').value;
-    const password        = document.getElementById('u-password').value;
+    const nombre         = document.getElementById('u-nombre').value.trim();
+    const email          = document.getElementById('u-email').value.trim();
+    const rol            = document.getElementById('u-rol').value;
+    const password       = document.getElementById('u-password').value;
     const confirmPassword = document.getElementById('u-confirm-password').value;
 
-    if (!nombre || !email) {
-        toast('Nombre y email son requeridos', 'error');
-        return;
-    }
-
-    if (!usuarioEditandoId && !password) {
-        toast('La contraseña es requerida para nuevos usuarios', 'error');
-        return;
-    }
-
-    // Validación de coincidencia de contraseñas
-    if (password !== confirmPassword) {
-        toast('Las contraseñas no coinciden', 'error');
-        return;
-    }
+    if (!nombre || !email) { toast(_t('Nombre y email son requeridos','Name and email are required'), 'error'); return; }
+    if (!usuarioEditandoId && !password) { toast(_t('La contraseña es requerida para nuevos usuarios','Password is required for new users'), 'error'); return; }
+    if (password !== confirmPassword) { toast(_t('Las contraseñas no coinciden','Passwords do not match'), 'error'); return; }
 
     try {
         let res;
-
         if (usuarioEditandoId) {
-            const datosActualizar = { nombre, email, rol };
-            
-            // Si el campo tiene texto, se añade al payload para que el backend lo actualice
-            if (password.trim() !== '') {
-                datosActualizar.password = password;
-            }
-
-            res = await fetch(`${API}/usuarios/${usuarioEditandoId}`, {
-                method: 'PUT',
-                headers: getAuthHeaders(),
-                body: JSON.stringify(datosActualizar)
-            });
+            const datos = { nombre, email, rol };
+            if (password.trim() !== '') datos.password = password;
+            res = await fetch(`${API}/usuarios/${usuarioEditandoId}`, { method: 'PUT', headers: getAuthHeaders(), body: JSON.stringify(datos) });
         } else {
-            // Nota: Enviamos el password tal cual; el backend se encarga del hash con bcrypt
-            res = await fetch(`${API}/usuarios`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify({ nombre, email, password, rol })
-            });
+            res = await fetch(`${API}/usuarios`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify({ nombre, email, password, rol }) });
         }
-
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error || 'Error al guardar usuario');
-        }
-
-        toast(usuarioEditandoId ? 'Usuario actualizado' : 'Usuario creado correctamente', 'success');
+        if (!res.ok) { const err = await res.json(); throw new Error(err.error || _t('Error al guardar usuario','Error saving user')); }
+        toast(usuarioEditandoId ? _t('Usuario actualizado','User updated') : _t('Usuario creado correctamente','User created successfully'), 'success');
         closeModal('modal-usuario');
         cargarUsuarios();
-    } catch (error) {
-        toast(error.message, 'error');
-    }
+    } catch (error) { toast(error.message, 'error'); }
 }
 
-// ==========================================
-// 4. PASO INTERMEDIO: CONFIRMACIONES
-// ==========================================
+// ── 4. CONFIRMACIONES ────────────────────────────────────────────────────────
 function abrirDialogoConfirmacion({ titulo, mensaje, icono, colorFondo, colorIcono, textoBoton, colorBoton, callback }) {
-    document.getElementById('confirm-titulo').innerText = titulo;
+    document.getElementById('confirm-titulo').innerText  = titulo;
     document.getElementById('confirm-mensaje').innerText = mensaje;
-    
     const iconContainer = document.getElementById('confirm-icon-container');
     iconContainer.style.backgroundColor = colorFondo;
-    iconContainer.style.color = colorIcono;
-    
-    const iconElem = document.getElementById('confirm-icon');
-    iconElem.className = `ti ${icono}`;
-    
-    const btnProceder = document.getElementById('confirm-btn-proceder');
-    btnProceder.innerText = textoBoton;
+    iconContainer.style.color           = colorIcono;
+    document.getElementById('confirm-icon').className   = `ti ${icono}`;
+    const btnProceder       = document.getElementById('confirm-btn-proceder');
+    btnProceder.innerText   = textoBoton;
     btnProceder.style.backgroundColor = colorBoton;
-    
-    accionConfirmadaCallback = () => {
-        callback();
-        closeModal('modal-confirmacion');
-    };
-    
+    accionConfirmadaCallback = () => { callback(); closeModal('modal-confirmacion'); };
     btnProceder.onclick = accionConfirmadaCallback;
     openModal('modal-confirmacion');
 }
 
 function solicitarCambioEstado(id, nuevoEstado) {
-    const usuario = usuariosLista.find(u => u.id === id);
-    const identificador = usuario ? ` de ${usuario.nombre}` : '';
-
-     abrirDialogoConfirmacion({
-        titulo: nuevoEstado ? '¿Activar cuenta de usuario?' : '¿Desactivar cuenta de usuario?',
-        mensaje: nuevoEstado 
-            ? `El usuario${identificador} recuperará el acceso a las operaciones normales de la plataforma.` 
-            : `El usuario${identificador} será inhabilitado de forma temporal y no podrá iniciar sesión en el sistema.`,
-        icono: nuevoEstado ? 'ti-user-check' : 'ti-user-off',
+    const usuario      = usuariosLista.find(u => u.id === id);
+    const identificador = usuario ? ` ${_t('de','of')} ${usuario.nombre}` : '';
+    abrirDialogoConfirmacion({
+        titulo:     nuevoEstado ? _t('¿Activar cuenta de usuario?','Activate user account?') : _t('¿Desactivar cuenta de usuario?','Deactivate user account?'),
+        mensaje:    nuevoEstado
+            ? _t(`El usuario${identificador} recuperará el acceso al sistema.`, `User${identificador} will regain access to the system.`)
+            : _t(`El usuario${identificador} será inhabilitado temporalmente.`, `User${identificador} will be temporarily disabled.`),
+        icono:      nuevoEstado ? 'ti-user-check' : 'ti-user-off',
         colorFondo: nuevoEstado ? '#e6f4ea' : '#f3f4f6',
         colorIcono: nuevoEstado ? '#10b981' : '#4b5563',
-        textoBoton: 'Confirmar',
+        textoBoton: _t('Confirmar','Confirm'),
         colorBoton: nuevoEstado ? '#10b981' : '#6b7280',
-        callback: () => cambiarEstadoUsuario(id, nuevoEstado)
+        callback:   () => cambiarEstadoUsuario(id, nuevoEstado)
     });
 }
 
 function solicitarEliminacion(id) {
-    const usuario = usuariosLista.find(u => u.id === id);
-    const identificador = usuario ? `${usuario.nombre} (${usuario.email})` : 'este usuario';
-
-     abrirDialogoConfirmacion({
-        titulo: '¿Eliminar cuenta de usuario?',
-        textomensaje: `Al confirmar, la cuenta de ${identificador} se eliminará de forma permanente del sistema. Esta acción no se puede revertir.`,
-        mensaje: `Al confirmar, la cuenta de ${identificador} se eliminará de forma permanente del sistema. Esta acción no se puede revertir.`,
-        icono: 'ti-alert-triangle',
+    const usuario      = usuariosLista.find(u => u.id === id);
+    const identificador = usuario ? `${usuario.nombre} (${usuario.email})` : _t('este usuario','this user');
+    abrirDialogoConfirmacion({
+        titulo:     _t('¿Eliminar cuenta de usuario?','Delete user account?'),
+        mensaje:    _t(`La cuenta de ${identificador} se eliminará permanentemente.`, `The account of ${identificador} will be permanently deleted.`),
+        icono:      'ti-alert-triangle',
         colorFondo: '#fee2e2',
         colorIcono: '#ef4444',
-        textoBoton: 'Confirmar',
+        textoBoton: _t('Confirmar','Confirm'),
         colorBoton: '#ef4444',
-        callback: () => eliminarUsuarioDefinitivo(id)
+        callback:   () => eliminarUsuarioDefinitivo(id)
     });
 }
 
-// ==========================================
-// 5. OPERACIONES AJAX DEFINITIVAS
-// ==========================================
+// ── 5. OPERACIONES AJAX ──────────────────────────────────────────────────────
 async function cambiarEstadoUsuario(id, nuevoEstado) {
     try {
-        const res = await fetch(`${API}/usuarios/${id}/estado`, {
-            method: 'PATCH',
-            headers: getAuthHeaders(),
-            body: JSON.stringify({ activo: nuevoEstado })
-        });
-
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error || 'No se pudo cambiar el estado');
-        }
-
-        toast(`Estado del usuario actualizado correctamente`, 'success');
+        const res = await fetch(`${API}/usuarios/${id}/estado`, { method: 'PATCH', headers: getAuthHeaders(), body: JSON.stringify({ activo: nuevoEstado }) });
+        if (!res.ok) { const err = await res.json(); throw new Error(err.error || _t('No se pudo cambiar el estado','Could not change status')); }
+        toast(_t('Estado del usuario actualizado','User status updated'), 'success');
         cargarUsuarios();
-    } catch (error) {
-        toast(error.message, 'error');
-    }
+    } catch (error) { toast(error.message, 'error'); }
 }
 
 async function eliminarUsuarioDefinitivo(id) {
     try {
-        const res = await fetch(`${API}/usuarios/${id}`, { 
-            method: 'DELETE',
-            headers: getAuthHeaders()
-        });
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error || 'No se pudo eliminar el usuario');
-        }
-        
+        const res = await fetch(`${API}/usuarios/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+        if (!res.ok) { const err = await res.json(); throw new Error(err.error || _t('No se pudo eliminar el usuario','Could not delete user')); }
         const data = await res.json();
-        toast(data.mensaje || 'Usuario eliminado permanentemente', 'success');
+        toast(data.mensaje || _t('Usuario eliminado permanentemente','User permanently deleted'), 'success');
         cargarUsuarios();
-    } catch (error) {
-        toast(error.message, 'error');
-    }
+    } catch (error) { toast(error.message, 'error'); }
 }
 
-// ==========================================
-// INICIALIZAR
-// ==========================================
 cargarUsuarios();

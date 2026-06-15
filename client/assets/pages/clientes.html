@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,50 +9,48 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="/client/assets/css/styles.css">
 </head>
-
 <body>
 
   <aside class="sidebar" id="sidebar">
     <div class="logo">
       <h1>VA <span>Control</span></h1>
-      <p>Sistema de Gestión</p>
+      <p data-i18n="logo_sub">Sistema de Gestión</p>
     </div>
     <nav>
-      <span class="nav-section">Principal</span>
-      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
-      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
-      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i>Inventario</div>
-      
-      <span class="nav-section">Operaciones</span>
-      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
-      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
-      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
-      
-      <span class="nav-section">Administración</span>
-      <div class="nav-item active" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
-      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
-      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
+      <span class="nav-section" data-i18n="nav_principal">Principal</span>
+      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i><span data-i18n="nav_dashboard">Dashboard</span></div>
+      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i><span data-i18n="nav_productos">Productos</span></div>
+      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i><span data-i18n="nav_inventario">Inventario</span></div>
+      <span class="nav-section" data-i18n="nav_operaciones">Operaciones</span>
+      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i><span data-i18n="nav_ventas">Ventas</span></div>
+      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i><span data-i18n="nav_ordenes">Órdenes de Servicio</span><span class="nav-badge" id="badge-ordenes">3</span></div>
+      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i><span data-i18n="nav_facturas">Facturas</span></div>
+      <span class="nav-section" data-i18n="nav_administracion">Administración</span>
+      <div class="nav-item active" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i><span data-i18n="nav_clientes">Clientes</span></div>
+      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i><span data-i18n="nav_usuarios">Usuarios</span></div>
+      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i><span data-i18n="nav_reportes">Reportes</span></div>
     </nav>
     <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">AD</div>
         <div class="user-info">
           <p>Admin User</p>
-          <span>Administrador</span>
+          <span data-i18n="rol_admin">Administrador</span>
         </div>
-        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
-          <i class="ti ti-logout"></i>
-        </button>
       </div>
     </div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <div class="page-title" id="page-title">Clientes</div>
+      <div class="page-title" id="page-title" data-i18n="titulo_clientes">Clientes</div>
       <div class="topbar-right">
-        <div class="icon-btn" title="Alertas de stock"><i class="ti ti-bell"></i><span class="badge-dot"></span></div>
-        <div class="icon-btn" title="Configuración"><i class="ti ti-settings"></i></div>
+        <div class="icon-btn" data-i18n="topbar_alertas" data-i18n-type="title" title="Alertas de stock">
+          <i class="ti ti-bell"></i><span class="badge-dot"></span>
+        </div>
+        <div class="icon-btn" id="btn-config" data-i18n="topbar_config" data-i18n-type="title" title="Configuración">
+          <i class="ti ti-settings"></i>
+        </div>
       </div>
     </header>
 
@@ -61,22 +58,19 @@
       <div class="page active" id="page-clientes">
         <div class="section-header">
           <div>
-            <div class="section-title">Clientes del Sistema</div>
-            <div class="section-sub">Gestión de la cartera de clientes y cuentas</div>
+            <div class="section-title" data-i18n="sec_clientes_titulo">Clientes del Sistema</div>
+            <div class="section-sub" data-i18n="sec_clientes_sub">Gestión de la cartera de clientes y cuentas</div>
           </div>
-          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> Nuevo Cliente</button>
+          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> <span data-i18n="btn_nuevo_cliente">Nuevo Cliente</span></button>
         </div>
 
         <div class="search-container">
           <div class="search-wrapper">
             <i class="ti ti-search search-icon"></i>
-            <input 
-              type="text" 
-              id="buscar-cliente" 
-              class="input-search"
-              placeholder="Buscar por nombre, identificación, email o teléfono..." 
-              oninput="filtrarClientes()"
-            >
+            <input type="text" id="buscar-cliente" class="input-search"
+              data-i18n="buscar_cliente" data-i18n-type="placeholder"
+              placeholder="Buscar por nombre, identificación, email o teléfono..."
+              oninput="filtrarClientes()">
           </div>
         </div>
 
@@ -84,13 +78,13 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Identificación / RUT</th>
-                <th>Nombre / Razón Social</th>
-                <th>Email</th>
+                <th data-i18n="th_id">ID</th>
+                <th data-i18n="th_identificacion">Identificación / RUT</th>
+                <th data-i18n="th_razon_social">Nombre / Razón Social</th>
+                <th data-i18n="th_email">Email</th>
                 <th>Teléfono</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th data-i18n="th_estado">Estado</th>
+                <th data-i18n="th_acciones">Acciones</th>
               </tr>
             </thead>
             <tbody id="tb-clientes"></tbody>
@@ -103,50 +97,50 @@
   <div class="modal-overlay" id="modal-cliente">
     <div class="modal">
       <div class="modal-head">
-        <h2 id="modal-cliente-titulo">Nuevo Cliente</h2>
-        <button class="icon-btn" onclick="closeModal('modal-cliente')" aria-label="Cerrar modal">
-          <i class="ti ti-x"></i>
-        </button>
+        <h2 id="modal-cliente-titulo" data-i18n="modal_nuevo_cliente">Nuevo Cliente</h2>
+        <button class="icon-btn" onclick="closeModal('modal-cliente')" aria-label="Cerrar modal"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
           <div class="form-group">
-            <label for="c-identificacion">Identificación / NIT / RUT *</label>
-            <input type="text" id="c-identificacion" placeholder="12345678-9" required>
+            <label for="c-identificacion" data-i18n="lbl_identificacion">Identificación / NIT / RUT *</label>
+            <input type="text" id="c-identificacion" data-i18n="ph_identificacion" data-i18n-type="placeholder" placeholder="12345678-9" required>
           </div>
           <div class="form-group">
-            <label for="c-nombre">Nombre o Razón Social *</label>
-            <input type="text" id="c-nombre" placeholder="Juan Pérez o Empresa S.A." required>
+            <label for="c-nombre" data-i18n="lbl_nombre_razon">Nombre o Razón Social *</label>
+            <input type="text" id="c-nombre" data-i18n="ph_nombre_razon" data-i18n-type="placeholder" placeholder="Juan Pérez o Empresa S.A." required>
           </div>
           <div class="form-group">
-            <label for="c-email">Email (Opcional)</label>
-            <input type="email" id="c-email" placeholder="cliente@email.com">
-          </div>
-          <div class="form-group"> 
-            <label for="c-telefono">Teléfono (Opcional)</label>
-            <input type="tel" id="c-telefono" placeholder="+56 9 1234 5678">
-          </div>
-          <div class="form-group" style="grid-column: span 2;">
-            <label for="c-direccion">Dirección</label>
-            <input type="text" id="c-direccion" placeholder="Av. Principal 123, Ciudad">
+            <label for="c-email" data-i18n="lbl_email_opcional">Email (Opcional)</label>
+            <input type="email" id="c-email" data-i18n="ph_email" data-i18n-type="placeholder" placeholder="cliente@email.com">
           </div>
           <div class="form-group">
-            <label for="c-tipo">Tipo de Cliente</label>
+            <label for="c-telefono" data-i18n="lbl_telefono">Teléfono (Opcional)</label>
+            <input type="tel" id="c-telefono" data-i18n="ph_telefono" data-i18n-type="placeholder" placeholder="+56 9 1234 5678">
+          </div>
+          <div class="form-group" style="grid-column:span 2;">
+            <label for="c-direccion" data-i18n="lbl_direccion">Dirección</label>
+            <input type="text" id="c-direccion" data-i18n="ph_direccion" data-i18n-type="placeholder" placeholder="Av. Principal 123, Ciudad">
+          </div>
+          <div class="form-group">
+            <label for="c-tipo" data-i18n="lbl_tipo_cliente">Tipo de Cliente</label>
             <select class="form-select" id="c-tipo">
-              <option value="particular">Persona Natural / Particular</option>
-              <option value="empresa">Empresa / Corporativo</option>
+              <option value="particular" data-i18n="opt_particular">Persona Natural / Particular</option>
+              <option value="empresa" data-i18n="opt_empresa">Empresa / Corporativo</option>
             </select>
           </div>
-          
-          <div class="form-group" style="grid-column: span 2;">
-            <label for="c-notas">Notas / Observaciones Internas</label>
-            <textarea id="c-notas" rows="3" placeholder="Detalles comerciales, condiciones de pago, horarios de entrega o anotaciones importantes..." style="width: 100%; padding: 10px; border: 1px solid var(--border-color, #ccc); border-radius: 6px; resize: vertical; font-family: inherit; font-size: 14px;"></textarea>
+          <div class="form-group" style="grid-column:span 2;">
+            <label for="c-notas" data-i18n="lbl_notas">Notas / Observaciones Internas</label>
+            <textarea id="c-notas" rows="3" data-i18n="ph_notas" data-i18n-type="placeholder"
+              placeholder="Detalles comerciales, condiciones de pago..."
+              style="width:100%;padding:10px;border:1px solid var(--border);border-radius:6px;resize:vertical;font-family:inherit;font-size:14px;background:var(--bg3);color:var(--text);">
+            </textarea>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="closeModal('modal-cliente')">Cancelar</button>
-        <button class="btn btn-primary" onclick="guardarCliente()"><i class="ti ti-check"></i> Crear Cliente</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-cliente')" data-i18n="btn_cancelar">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarCliente()"><i class="ti ti-check"></i> <span data-i18n="btn_crear_cliente">Crear Cliente</span></button>
       </div>
     </div>
   </div>
@@ -156,21 +150,21 @@
       <div id="confirm-icon-container" class="confirm-icon-box">
         <i class="ti" id="confirm-icon"></i>
       </div>
-      <h3 id="confirm-titulo" class="confirm-title">Confirmar Acción</h3>
-      <p id="confirm-mensaje" class="confirm-message">¿Estás seguro de realizar esta acción?</p>
+      <h3 id="confirm-titulo" class="confirm-title" data-i18n="modal_confirmar">Confirmar Acción</h3>
+      <p id="confirm-mensaje" class="confirm-message"></p>
       <div class="confirm-actions">
-        <button class="btn btn-ghost btn-flex" onclick="closeModal('modal-confirmacion')">Cancelar</button>
-        <button class="btn btn-flex" id="confirm-btn-proceder">Confirmar</button>
+        <button class="btn btn-ghost btn-flex" onclick="closeModal('modal-confirmacion')" data-i18n="btn_cancelar">Cancelar</button>
+        <button class="btn btn-flex" id="confirm-btn-proceder" data-i18n="btn_confirmar">Confirmar</button>
       </div>
     </div>
   </div>
-  
+
   <div class="toast-container" id="toasts"></div>
-  
+
   <script src="/client/assets/js/auth.js"></script>
+  <script src="/client/assets/js/config.js"></script>
   <script src="/client/assets/js/script.js"></script>
   <script src="/client/assets/js/clientes.js"></script>
   <script src="/client/assets/js/alertordenes.js"></script>
 </body>
-
 </html>
