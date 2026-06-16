@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js",
+    "start": "node index.js --omit=dev",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "hash-passwords": "node scripts/hash-passwords.js"
