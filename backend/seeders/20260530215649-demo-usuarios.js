@@ -29,7 +29,19 @@ module.exports = {
         activo: true,
         creado_en: new Date(),
         actualizado_en: new Date()
+      },
+
+      {
+        nombre: 'Andres Saenz',
+        email: 'andrecrack1110@gmail.com',
+        password: '$2b$10$xSXdT9gtQEHUKvd3quvlEO5qcjKzDDf.XuYDwPTWmiVD3c4YQeQwO',
+        rol: 'admin',
+        activo: true,
+        creado_en: new Date(),
+        actualizado_en: new Date()
       }
+
+
     ]);
   },
   async down(queryInterface, Sequelize) {
