@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
     res.json({ mensaje: 'Backend VA_Control funcionando' });
 });
 
-const PORT = process.env.PORT || 8080; 
+const PORT = process.env.PORT || 5432; 
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
