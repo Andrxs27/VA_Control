@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,48 +9,48 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="/client/assets/css/styles.css">
 </head>
-
 <body>
 
   <aside class="sidebar" id="sidebar">
     <div class="logo">
       <h1>VA <span>Control</span></h1>
-      <p>Sistema de Gestión</p>
+      <p data-i18n="logo_sub">Sistema de Gestión</p>
     </div>
     <nav>
-      <span class="nav-section">Principal</span>
-      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
-      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
-      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i>Inventario</div>
-      <span class="nav-section">Operaciones</span>
-      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
-      <div class="nav-item active" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes"></span></div>
-      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
-      <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
-      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
-      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
+      <span class="nav-section" data-i18n="nav_principal">Principal</span>
+      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i><span data-i18n="nav_dashboard">Dashboard</span></div>
+      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i><span data-i18n="nav_productos">Productos</span></div>
+      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i><span data-i18n="nav_inventario">Inventario</span></div>
+      <span class="nav-section" data-i18n="nav_operaciones">Operaciones</span>
+      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i><span data-i18n="nav_ventas">Ventas</span></div>
+      <div class="nav-item active" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i><span data-i18n="nav_ordenes">Órdenes de Servicio</span><span class="nav-badge" id="badge-ordenes"></span></div>
+      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i><span data-i18n="nav_facturas">Facturas</span></div>
+      <span class="nav-section" data-i18n="nav_administracion">Administración</span>
+      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i><span data-i18n="nav_clientes">Clientes</span></div>
+      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i><span data-i18n="nav_usuarios">Usuarios</span></div>
+      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i><span data-i18n="nav_reportes">Reportes</span></div>
     </nav>
-   <div class="sidebar-footer">
+    <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">AD</div>
         <div class="user-info">
           <p>Admin User</p>
-          <span>Administrador</span>
+          <span data-i18n="rol_admin">Administrador</span>
         </div>
-        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
-          <i class="ti ti-logout"></i>
-        </button>
       </div>
     </div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <div class="page-title" id="page-title">Órdenes de Servicio</div>
+      <div class="page-title" id="page-title" data-i18n="titulo_ordenes">Órdenes de Servicio</div>
       <div class="topbar-right">
-        <div class="icon-btn" title="Alertas de stock"><i class="ti ti-bell"></i><span class="badge-dot"></span></div>
-        <div class="icon-btn" title="Configuración"><i class="ti ti-settings"></i></div>
+        <div class="icon-btn" data-i18n="topbar_alertas" data-i18n-type="title" title="Alertas de stock">
+          <i class="ti ti-bell"></i><span class="badge-dot"></span>
+        </div>
+        <div class="icon-btn" data-i18n="topbar_config" data-i18n-type="title" title="Configuración">
+          <i class="ti ti-settings"></i>
+        </div>
       </div>
     </header>
 
@@ -59,38 +58,40 @@
       <div class="page active" id="page-ordenes">
         <div class="section-header">
           <div>
-            <div class="section-title">Órdenes de Servicio</div>
-            <div class="section-sub">Gestión de reparaciones y servicios técnicos</div>
+            <div class="section-title" data-i18n="sec_ordenes_titulo">Órdenes de Servicio</div>
+            <div class="section-sub" data-i18n="sec_ordenes_sub">Gestión de reparaciones y servicios técnicos</div>
           </div>
-          <button class="btn btn-primary" onclick="nuevaOrden()"><i class="ti ti-plus"></i> Nueva Orden</button>
+          <button class="btn btn-primary" onclick="nuevaOrden()">
+            <i class="ti ti-plus"></i> <span data-i18n="btn_nueva_orden">Nueva Orden</span>
+          </button>
         </div>
 
         <div class="tabs">
-          <div class="tab active" onclick="filtrarOrdenes('all',this)">Todas</div>
-          <div class="tab" onclick="filtrarOrdenes('pendiente',this)">Pendientes</div>
-          <div class="tab" onclick="filtrarOrdenes('en_proceso',this)">En Proceso</div>
-          <div class="tab" onclick="filtrarOrdenes('completado',this)">Completadas</div>
-          <div class="tab" onclick="filtrarOrdenes('entregado',this)">Entregadas</div>
+          <div class="tab active" onclick="filtrarOrdenes('all',this)" data-i18n="tab_todas">Todas</div>
+          <div class="tab" onclick="filtrarOrdenes('pendiente',this)" data-i18n="tab_pendientes">Pendientes</div>
+          <div class="tab" onclick="filtrarOrdenes('en_proceso',this)" data-i18n="tab_en_proceso">En Proceso</div>
+          <div class="tab" onclick="filtrarOrdenes('completado',this)" data-i18n="tab_completadas">Completadas</div>
+          <div class="tab" onclick="filtrarOrdenes('entregado',this)" data-i18n="tab_entregadas">Entregadas</div>
         </div>
 
         <div class="table-wrap">
           <div class="table-toolbar">
             <div class="search-box">
               <i class="ti ti-search"></i>
-              <input type="text" placeholder="Buscar por ID, cliente, técnico, equipo..." oninput="filtrarTablaOrdenes(this.value)">
+              <input type="text" data-i18n="buscar_orden" data-i18n-type="placeholder" placeholder="Buscar por ID, cliente, técnico, equipo..." oninput="filtrarTablaOrdenes(this.value)">
             </div>
           </div>
           <table>
             <thead>
               <tr>
-                <th>#ID</th>
-                <th>Cliente</th>
-                <th>Técnico</th>
-                <th>Equipo / Falla</th>
-                <th>Estado</th>
-                <th>Entrega</th>
-                <th>Fecha Promesa</th>
-                <th>Acciones</th>
+                <th data-i18n="th_id_venta">#ID</th>
+                <th data-i18n="th_cliente">Cliente</th>
+                <th data-i18n="th_tecnico">Técnico</th>
+                <th data-i18n="th_equipo_falla">Equipo / Falla</th>
+                <th data-i18n="th_estado">Estado</th>
+                <th data-i18n="th_entrega">Entrega</th>
+                <th data-i18n="th_fecha_promesa">Fecha Promesa</th>
+                <th data-i18n="th_acciones">Acciones</th>
               </tr>
             </thead>
             <tbody id="tb-ordenes"></tbody>
@@ -100,111 +101,107 @@
     </main>
   </div>
 
+  <!-- Modal Nueva/Editar Orden -->
   <div class="modal-overlay" id="modal-orden">
     <div class="modal">
       <div class="modal-head">
-        <h2>Nueva Orden de Servicio</h2>
-        <button class="icon-btn" onclick="closeModal('modal-orden')" title="Cerrar modal" aria-label="Cerrar modal"><i class="ti ti-x"></i></button>
+        <h2 data-i18n="modal_nueva_orden">Nueva Orden de Servicio</h2>
+        <button class="icon-btn" onclick="closeModal('modal-orden')" aria-label="Cerrar"><i class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
           <div class="form-group">
-            <label for="o-cliente">Cliente *</label>
-            <select class="form-select" id="o-cliente" title="Seleccionar cliente">
-              <option value="">Seleccionar...</option>
-            </select>
+            <label data-i18n="lbl_cliente">Cliente *</label>
+            <select class="form-select" id="o-cliente"><option value="">Seleccionar...</option></select>
           </div>
           <div class="form-group">
-            <label for="o-tecnico">Técnico Asignado</label>
-            <select class="form-select" id="o-tecnico" title="Asignar técnico">
-              <option value="">Asignar técnico...</option>
-            </select>
+            <label data-i18n="lbl_tecnico">Técnico Asignado</label>
+            <select class="form-select" id="o-tecnico"><option value="">Asignar técnico...</option></select>
           </div>
           <div class="form-group">
-            <label for="o-equipo">Equipo *</label>
-            <input type="text" id="o-equipo" placeholder="Ej: iPhone 13 Pro">
+            <label data-i18n="lbl_equipo">Equipo *</label>
+            <input type="text" id="o-equipo" data-i18n="ph_equipo" data-i18n-type="placeholder" placeholder="Ej: iPhone 13 Pro">
           </div>
           <div class="form-group">
-            <label for="o-fecha">Fecha Promesa</label>
+            <label data-i18n="lbl_fecha_promesa">Fecha Promesa</label>
             <input type="date" id="o-fecha">
           </div>
           <div class="form-group">
-            <label for="o-marca">Marca</label>
-            <input type="text" id="o-marca" placeholder="Ej: Apple, Samsung">
+            <label data-i18n="lbl_marca">Marca</label>
+            <input type="text" id="o-marca" data-i18n="ph_marca" data-i18n-type="placeholder" placeholder="Ej: Apple, Samsung">
           </div>
           <div class="form-group">
-            <label for="o-modelo">Modelo</label>
-            <input type="text" id="o-modelo" placeholder="Ej: A2483, SM-G991B">
+            <label data-i18n="lbl_modelo">Modelo</label>
+            <input type="text" id="o-modelo" data-i18n="ph_modelo" data-i18n-type="placeholder" placeholder="Ej: A2483, SM-G991B">
           </div>
           <div class="form-group">
-            <label for="o-serial">Serial del Equipo</label>
-            <input type="text" id="o-serial" placeholder="Número de serie">
+            <label data-i18n="lbl_serial">Serial del Equipo</label>
+            <input type="text" id="o-serial" data-i18n="ph_serial" data-i18n-type="placeholder" placeholder="Número de serie">
           </div>
           <div class="form-group">
-            <label for="o-costo">Costo del Servicio</label>
+            <label data-i18n="lbl_costo">Costo del Servicio</label>
             <input type="number" id="o-costo" placeholder="0" min="0">
           </div>
           <div class="form-group form-group-fullwidth">
-            <label for="o-falla">Descripción de la Falla *</label>
-            <textarea id="o-falla" placeholder="Describe el problema"></textarea>
+            <label data-i18n="lbl_falla">Descripción de la Falla *</label>
+            <textarea id="o-falla" data-i18n="ph_falla" data-i18n-type="placeholder" placeholder="Describe el problema"></textarea>
           </div>
           <div class="form-group form-group-fullwidth">
-            <label for="o-diagnostico">Diagnóstico Técnico</label>
-            <textarea id="o-diagnostico" placeholder="Reparación efectuada o estatus técnico"></textarea>
+            <label data-i18n="lbl_diagnostico">Diagnóstico Técnico</label>
+            <textarea id="o-diagnostico" data-i18n="ph_diagnostico" data-i18n-type="placeholder" placeholder="Reparación efectuada o estatus técnico"></textarea>
           </div>
           <div class="form-group form-group-fullwidth">
-            <label for="o-notas">Notas Internas</label>
-            <textarea id="o-notas" placeholder="Observaciones adicionales (opcional)"></textarea>
+            <label data-i18n="lbl_notas_internas">Notas Internas</label>
+            <textarea id="o-notas" data-i18n="ph_notas_int" data-i18n-type="placeholder" placeholder="Observaciones adicionales (opcional)"></textarea>
           </div>
           <div class="form-group">
-            <label for="o-entrega">Tipo de Entrega</label>
-            <select class="form-select" id="o-entrega" title="Seleccionar tipo de entrega">
-              <option value="tienda">Retiro en Tienda</option>
-              <option value="domicilio">Entrega a Domicilio</option>
+            <label data-i18n="lbl_tipo_entrega">Tipo de Entrega</label>
+            <select class="form-select" id="o-entrega">
+              <option value="tienda" data-i18n="opt_tienda">Retiro en Tienda</option>
+              <option value="domicilio" data-i18n="opt_domicilio">Entrega a Domicilio</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="o-estado">Estado de la Orden</label>
-            <select class="form-select" id="o-estado" title="Seleccionar estado">
-              <option value="pendiente">Pendiente</option>
-              <option value="en_proceso">En Proceso</option>
-              <option value="completado">Completado</option>
-              <option value="entregado">Entregado</option>
-              <option value="cancelado">Cancelado</option>
+            <label data-i18n="lbl_estado_orden">Estado de la Orden</label>
+            <select class="form-select" id="o-estado">
+              <option value="pendiente" data-i18n="opt_pendiente">Pendiente</option>
+              <option value="en_proceso" data-i18n="opt_en_proceso">En Proceso</option>
+              <option value="completado" data-i18n="opt_completado">Completado</option>
+              <option value="entregado" data-i18n="opt_entregado">Entregado</option>
+              <option value="cancelado" data-i18n="opt_cancelado">Cancelado</option>
             </select>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost" onclick="closeModal('modal-orden')">Cancelar</button>
-          <button class="btn btn-primary" onclick="guardarOrden()"><i class="ti ti-check"></i> Guardar Orden</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('modal-orden')" data-i18n="btn_cancelar">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarOrden()"><i class="ti ti-check"></i> <span data-i18n="btn_guardar_orden">Guardar Orden</span></button>
       </div>
     </div>
   </div>
 
+  <!-- Modal Confirmación -->
   <div class="modal-overlay" id="modal-confirmacion">
-  <div class="modal" style="max-width: 400px; border-radius: 16px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);">
-    
-    <div class="modal-body" style="text-align: center; padding: 8px 0 16px 0;">
-      <div id="confirm-icon-wrapper" style="width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 28px;">
-        <i id="confirm-icon" class="ti ti-alert-triangle"></i>
+    <div class="modal" style="max-width:400px;border-radius:16px;padding:24px;">
+      <div class="modal-body" style="text-align:center;padding:8px 0 16px 0;">
+        <div id="confirm-icon-wrapper" style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px auto;font-size:28px;">
+          <i id="confirm-icon" class="ti ti-alert-triangle"></i>
+        </div>
+        <h3 id="confirm-titulo" style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px;">Confirmar Acción</h3>
+        <p id="confirm-mensaje" style="font-size:14px;color:var(--text2);line-height:1.6;padding:0 12px;margin:0;"></p>
       </div>
-      <h3 id="confirm-titulo" style="font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text1); margin-bottom: 8px;">Confirmar Acción</h3>
-      <p id="confirm-mensaje" style="font-size: 14px; color: var(--text3); line-height: 1.6; padding: 0 12px; margin: 0;"></p>
+      <div class="modal-footer" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;border:none;padding:0;margin-top:8px;">
+        <button class="btn btn-ghost" onclick="closeModal('modal-confirmacion')" data-i18n="btn_cancelar" style="width:100%;justify-content:center;">Cancelar</button>
+        <button class="btn" id="confirm-btn-proceder" style="width:100%;justify-content:center;font-weight:600;" data-i18n="btn_confirmar">Confirmar</button>
+      </div>
     </div>
-    
-    <div class="modal-footer" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border: none; padding: 0; margin-top: 8px;">
-      <button class="btn btn-ghost" onclick="closeModal('modal-confirmacion')" style="width: 100%; justify-content: center; font-weight: 500;">Cancelar</button>
-      <button class="btn" id="confirm-btn-proceder" style="width: 100%; justify-content: center; font-weight: 600;">Confirmar</button>
-    </div>
-
   </div>
-</div>
 
   <div class="toast-container" id="toasts"></div>
 
+  
   <script src="/client/assets/js/auth.js"></script>
-    <script src="/client/assets/js/config.js"></script>
+  <script src="/client/assets/js/config.js"></script>
   <script src="/client/assets/js/script.js"></script>
   <script src="/client/assets/js/ordenes.js"></script>
 </body>

@@ -14,130 +14,127 @@
   <aside class="sidebar" id="sidebar">
     <div class="logo">
       <h1>VA <span>Control</span></h1>
-      <p>Sistema de Gestión</p>
+      <p data-i18n="logo_sub">Sistema de Gestión</p>
     </div>
     <nav>
-      <span class="nav-section">Principal</span>
-      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
-      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i>Productos</div>
-      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i>Inventario</div>
-      <span class="nav-section">Operaciones</span>
-      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i>Ventas</div>
-      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i>Órdenes de Servicio<span class="nav-badge" id="badge-ordenes">3</span></div>
-      <div class="nav-item" onclick="window.location.href='facaturas.html'"><i class="ti ti-file-invoice"></i>Facturas</div>
-      <span class="nav-section">Administración</span>
-      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i>Clientes</div>
-      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i>Usuarios</div>
-      <div class="nav-item active" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i>Reportes</div>
+      <span class="nav-section" data-i18n="nav_principal">Principal</span>
+      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i><span data-i18n="nav_dashboard">Dashboard</span></div>
+      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i><span data-i18n="nav_productos">Productos</span></div>
+      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i><span data-i18n="nav_inventario">Inventario</span></div>
+      <span class="nav-section" data-i18n="nav_operaciones">Operaciones</span>
+      <div class="nav-item" onclick="window.location.href='ventas.html'"><i class="ti ti-receipt"></i><span data-i18n="nav_ventas">Ventas</span></div>
+      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i><span data-i18n="nav_ordenes">Órdenes de Servicio</span><span class="nav-badge" id="badge-ordenes">3</span></div>
+      <div class="nav-item" onclick="window.location.href='facturas.html'"><i class="ti ti-file-invoice"></i><span data-i18n="nav_facturas">Facturas</span></div>
+      <span class="nav-section" data-i18n="nav_administracion">Administración</span>
+      <div class="nav-item" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i><span data-i18n="nav_clientes">Clientes</span></div>
+      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i><span data-i18n="nav_usuarios">Usuarios</span></div>
+      <div class="nav-item active" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i><span data-i18n="nav_reportes">Reportes</span></div>
     </nav>
     <div class="sidebar-footer">
       <div class="user-card">
         <div class="user-avatar">AD</div>
         <div class="user-info">
           <p>Admin User</p>
-          <span>Administrador</span>
+          <span data-i18n="rol_admin">Administrador</span>
         </div>
-        <button onclick="logout()" title="Cerrar sesión" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;margin-left:auto;font-size:18px;transition:color .2s;" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--text3)'">
-          <i class="ti ti-logout"></i>
-        </button>
       </div>
     </div>
   </aside>
 
   <div class="main">
     <header class="topbar">
-      <div class="page-title" id="page-title">Reportes</div>
+      <div class="page-title" id="page-title" data-i18n="titulo_reportes">Reportes</div>
       <div class="topbar-right">
-        <div class="icon-btn" title="Alertas de stock"><i class="ti ti-bell"></i><span class="badge-dot"></span></div>
-        <div class="icon-btn" title="Configuración"><i class="ti ti-settings"></i></div>
+        <div class="icon-btn" data-i18n="topbar_alertas" data-i18n-type="title" title="Alertas de stock"><i class="ti ti-bell"></i><span class="badge-dot"></span></div>
+        <div class="icon-btn" data-i18n="topbar_config" data-i18n-type="title" title="Configuración"><i class="ti ti-settings"></i></div>
       </div>
     </header>
 
     <main class="content">
       <div class="page active" id="page-reportes">
 
-        <!-- ── Encabezado + filtros ── -->
         <div class="section-header">
           <div>
-            <div class="section-title">Reportes y Análisis</div>
-            <div class="section-sub">Métricas de negocio en tiempo real</div>
+            <div class="section-title" data-i18n="sec_reportes_titulo">Reportes y Análisis</div>
+            <div class="section-sub" data-i18n="sec_reportes_sub">Métricas de negocio en tiempo real</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <input type="date" id="rep-desde" class="form-input" style="font-size:13px;padding:6px 10px" title="Fecha desde">
-            <input type="date" id="rep-hasta" class="form-input" style="font-size:13px;padding:6px 10px" title="Fecha hasta">
-            <button class="btn btn-primary btn-sm" onclick="aplicarFiltroFechas()"><i class="ti ti-filter"></i> Filtrar</button>
-            <button class="btn btn-ghost btn-sm" onclick="limpiarFiltros()"><i class="ti ti-x"></i> Limpiar</button>
-            <button class="btn btn-ghost btn-sm" onclick="exportarCSV()" title="Exportar reporte a Excel"><i class="ti ti-table-export"></i> Excel</button>
-            <button class="btn btn-ghost btn-sm" onclick="cargarReportes()" title="Actualizar datos"><i class="ti ti-refresh"></i></button>
+            <input type="date" id="rep-desde" style="font-size:13px;padding:6px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);outline:none;">
+            <input type="date" id="rep-hasta" style="font-size:13px;padding:6px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);outline:none;">
+            <button class="btn btn-primary btn-sm" onclick="aplicarFiltroFechas()"><i class="ti ti-filter"></i> <span data-i18n="btn_filtrar">Filtrar</span></button>
+            <button class="btn btn-ghost btn-sm" onclick="limpiarFiltros()"><i class="ti ti-x"></i> <span data-i18n="btn_limpiar">Limpiar</span></button>
+            <button class="btn btn-ghost btn-sm" onclick="exportarCSV()" title="Excel"><i class="ti ti-table-export"></i> <span data-i18n="btn_excel">Excel</span></button>
+            <button class="btn btn-ghost btn-sm" onclick="cargarReportes()"><i class="ti ti-refresh"></i></button>
           </div>
         </div>
 
-        <!-- ── KPIs ── -->
         <div class="kpi-grid">
           <div class="kpi-card kpi-green">
-            <div class="kpi-label">Ingresos del Período</div>
+            <div class="kpi-label" data-i18n="rep_ingresos">Ingresos del Período</div>
             <div class="kpi-value" id="rep-ingresos">...</div>
             <i class="ti ti-cash kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-blue">
-            <div class="kpi-label">Órdenes Completadas</div>
+            <div class="kpi-label" data-i18n="rep_ordenes_comp">Órdenes Completadas</div>
             <div class="kpi-value" id="rep-ordenes-comp">...</div>
             <i class="ti ti-check kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-amber">
-            <div class="kpi-label">Productos Sin Stock</div>
+            <div class="kpi-label" data-i18n="rep_sin_stock">Productos Sin Stock</div>
             <div class="kpi-value" id="rep-sin-stock">...</div>
             <i class="ti ti-alert-triangle kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-red">
-            <div class="kpi-label">Facturas Emitidas</div>
+            <div class="kpi-label" data-i18n="rep_facturas">Facturas Emitidas</div>
             <div class="kpi-value" id="rep-facturas">...</div>
             <i class="ti ti-file-invoice kpi-icon"></i>
           </div>
         </div>
 
-        <!-- ── Gráfica ventas por mes (últimos 6 meses) ── -->
         <div class="panel" style="margin-bottom:16px">
-          <div class="panel-title"><i class="ti ti-chart-bar"></i> Ventas de los últimos 6 meses</div>
+          <div class="panel-title"><i class="ti ti-chart-bar"></i> <span data-i18n="rep_ventas_meses">Ventas de los últimos 6 meses</span></div>
           <div id="rep-grafica-meses" class="chart-bars" style="height:120px;margin-top:8px"></div>
         </div>
 
-        <!-- ── Fila: métodos de pago + órdenes por estado ── -->
         <div class="panel-grid">
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-credit-card"></i> Ventas por método de pago</div>
+            <div class="panel-title"><i class="ti ti-credit-card"></i> <span data-i18n="rep_metodos_pago">Ventas por método de pago</span></div>
             <div id="rep-metodos" style="margin-top:8px"></div>
           </div>
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-tool"></i> Órdenes por estado</div>
+            <div class="panel-title"><i class="ti ti-tool"></i> <span data-i18n="rep_ordenes_estado">Órdenes por estado</span></div>
             <div id="rep-ordenes-estado" style="margin-top:8px"></div>
           </div>
         </div>
 
-        <!-- ── Fila: categorías + top vendedores ── -->
         <div class="panel-grid">
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-chart-pie"></i> Inventario por categoría (valor)</div>
+            <div class="panel-title"><i class="ti ti-chart-pie"></i> <span data-i18n="rep_inventario_cat">Inventario por categoría (valor)</span></div>
             <div id="rep-categorias" style="margin-top:8px"></div>
           </div>
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-award"></i> Top vendedores del período</div>
+            <div class="panel-title"><i class="ti ti-award"></i> <span data-i18n="rep_top_vendedores">Top vendedores del período</span></div>
             <div id="rep-vendedores" style="margin-top:8px"></div>
           </div>
         </div>
 
-        <!-- ── Fila: top clientes + stock crítico ── -->
         <div class="panel-grid">
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-users-group"></i> Top clientes del período</div>
+            <div class="panel-title"><i class="ti ti-users-group"></i> <span data-i18n="rep_top_clientes">Top clientes del período</span></div>
             <div id="rep-top-clientes" style="margin-top:8px"></div>
           </div>
           <div class="panel">
-            <div class="panel-title" style="color:var(--amber)"><i class="ti ti-alert-triangle"></i> Stock crítico</div>
+            <div class="panel-title" style="color:var(--amber)"><i class="ti ti-alert-triangle"></i> <span data-i18n="rep_stock_critico">Stock crítico</span></div>
             <div class="table-wrap" style="margin-top:8px;max-height:220px;overflow-y:auto">
               <table>
                 <thead>
-                  <tr><th>Producto</th><th>SKU</th><th>Estado</th><th>Stock/Mín.</th><th>Faltantes</th></tr>
+                  <tr>
+                    <th data-i18n="th_producto">Producto</th>
+                    <th>SKU</th>
+                    <th data-i18n="th_estado">Estado</th>
+                    <th data-i18n="th_stock">Stock/Mín.</th>
+                    <th data-i18n="th_minimo">Faltantes</th>
+                  </tr>
                 </thead>
                 <tbody id="rep-stock-critico">
                   <tr><td colspan="5" style="text-align:center;color:var(--text3);padding:16px">Cargando...</td></tr>
@@ -147,14 +144,20 @@
           </div>
         </div>
 
-        <!-- ── Ventas recientes del período ── -->
         <div class="section-header" style="margin-top:8px">
-          <div class="section-title">Ventas del período</div>
+          <div class="section-title" data-i18n="rep_ventas_periodo">Ventas del período</div>
         </div>
         <div class="table-wrap" style="margin-bottom:24px">
           <table>
             <thead>
-              <tr><th>#</th><th>Vendedor</th><th>Cliente</th><th>Total</th><th>Método</th><th>Fecha</th></tr>
+              <tr>
+                <th>#</th>
+                <th data-i18n="th_vendedor">Vendedor</th>
+                <th data-i18n="th_cliente">Cliente</th>
+                <th data-i18n="th_subtotal">Total</th>
+                <th data-i18n="th_metodo">Método</th>
+                <th data-i18n="th_fecha">Fecha</th>
+              </tr>
             </thead>
             <tbody id="rep-tabla-ventas">
               <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:16px">Cargando...</td></tr>
