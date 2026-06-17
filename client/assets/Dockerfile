@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
-# Limpiamos cualquier archivo por defecto de Nginx
+# 1. Limpiamos cualquier archivo basura que traiga Nginx por defecto
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copiamos todo el contenido de tu carpeta (incluyendo el nuevo index.html y la carpeta pages)
-COPY . /usr/share/nginx/html/
+# 2. Copiamos el CONTENIDO de client/assets directamente a la raíz del servidor
+COPY client/assets/ /usr/share/nginx/html/
