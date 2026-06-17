@@ -1,4 +1,4 @@
-const API = "https://vacontrol-production.up.railway.app/";
+const API = "https://vacontrol-production.up.railway.app";
 
 function _en()      { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en) { return _en() ? en : es; }
