@@ -1,5 +1,3 @@
-const API = 'http://localhost:3000/api';
-
 function _en()      { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en) { return _en() ? en : es; }
 

@@ -8,7 +8,8 @@
     "start": "node index.js --omit=dev",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "hash-passwords": "node scripts/hash-passwords.js"
+    "hash-passwords": "node scripts/hash-passwords.js",
+    "migrations": "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && npm run dev"
   },
   "keywords": [],
   "author": "",
