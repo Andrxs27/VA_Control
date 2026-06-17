@@ -1,1 +1,0 @@
-const API = "https://vacontrol-production.up.railway.app/";

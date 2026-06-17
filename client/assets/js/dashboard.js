@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000/api';
+const API = "https://vacontrol-production.up.railway.app/api";
 
 // ── Helper de traducción (usa config.js si está disponible) ──────────────────
 function _t(clave) {
