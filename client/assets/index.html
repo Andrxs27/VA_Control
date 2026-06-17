@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VA Control</title>
-  <meta http-equiv="refresh" content="0; url=/login.html">
+  <meta http-equiv="refresh" content="0; url=/client/login.html">
 </head>
 <body>
   <script>
     if (localStorage.getItem('va_token')) {
-      window.location.href = 'pages/dashboard.html';
+      window.location.href = '/client/assets/pages/dashboard.html';
     } else {
-      window.location.href = 'pages/login.html';
+      window.location.href = '/client/assets/pages/login.html';
     }
   </script>
 </body>
