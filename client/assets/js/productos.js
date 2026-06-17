@@ -9,6 +9,22 @@ let tipoAccionProducto   = '';
 function _en()        { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en)   { return _en() ? en : es; }
 
+// ── DICCIONARIOS PARA DATOS DE LA BASE DE DATOS ──────────────────────────────
+// Aquí mapeamos los nombres y categorías que vienen en español desde la BD
+const traduccionesNombres = {
+    "Cambio de pantalla": "Screen replacement",
+    "Pantalla iPhone 13": "iPhone 13 Screen",
+    "Samsung Galaxy S24": "Samsung Galaxy S24",
+    "iPhone 15 Pro": "iPhone 15 Pro",
+    "MacBook Air M2": "MacBook Air M2"
+};
+
+const traduccionesCategorias = {
+    "servicios": "Services",
+    "repuestos": "Spare Parts",
+    "electronicos": "Electronics"
+};
+
 // ── 1. CARGAR Y RENDERIZAR ───────────────────────────────────────────────────
 async function renderProductos(productosAMostrar = null) {
     try {
@@ -33,10 +49,15 @@ async function renderProductos(productosAMostrar = null) {
                 ? `<button class="btn btn-sm" style="background:#6b7280;color:white" onclick="solicitarCambioEstadoProducto(${p.id},false)" title="${lblDesact}"><i class="ti ti-ban"></i></button>`
                 : `<button class="btn btn-sm" style="background:#10b981;color:white" onclick="solicitarCambioEstadoProducto(${p.id},true)"  title="${lblActivar}"><i class="ti ti-refresh"></i></button>`;
 
+            // TRADUCCIÓN DINÁMICA DE DATOS:
+            // Si está en inglés, busca el equivalente. Si no existe o está en español, usa el original de la BD.
+            const nombreMostrar = _en() ? (traduccionesNombres[p.nombre] || p.nombre) : p.nombre;
+            const categoriaMostrar = _en() ? (traduccionesCategorias[p.categoria] || p.categoria) : p.categoria;
+
             html += `<tr>
                 <td><code>${p.sku}</code></td>
-                <td>${p.nombre}</td>
-                <td>${p.categoria}</td>
+                <td>${nombreMostrar}</td>
+                <td>${categoriaMostrar}</td>
                 <td>${p.stock} ${unidad}</td>
                 <td>$${Number(p.precio_venta).toFixed(2)}</td>
                 <td><span class="badge ${p.activo ? 'badge-green' : 'badge-gray'}">${p.activo ? activo : inactivo}</span></td>

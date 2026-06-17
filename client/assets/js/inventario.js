@@ -8,6 +8,25 @@ function _en()        { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en)   { return _en() ? en : es; }
 function _locale()    { return _en() ? 'en-US' : 'es-CO'; }
 
+// ── DICCIONARIOS PARA DATOS DE LA BASE DE DATOS ──────────────────────────────
+// Mapeamos los nombres, motivos o detalles que ingresan en español a la BD
+const traduccionesNombres = {
+    "Cambio de pantalla": "Screen replacement",
+    "Pantalla iPhone 13": "iPhone 13 Screen",
+    "Samsung Galaxy S24": "Samsung Galaxy S24",
+    "iPhone 15 Pro": "iPhone 15 Pro",
+    "MacBook Air M2": "MacBook Air M2"
+};
+
+const traduccionesMotivos = {
+    "Ingreso inicial": "Initial inventory",
+    "Ajuste manual": "Manual adjustment",
+    "Venta de producto": "Product sale",
+    "Garantía": "Warranty",
+    "pantalla rota": "Broken screen",
+    "No enciende": "Does not turn on"
+};
+
 // ── TOAST ────────────────────────────────────────────────────────────────────
 function toast(msg, type = 'info') {
     const c = document.getElementById('toasts');
@@ -107,10 +126,13 @@ function _renderTablaInventario(data) {
                 : `<span class="badge badge-green">${badgeTexts.normal}</span>`;
         const ultimoMov = p.ultimo_movimiento ? _formatFecha(p.ultimo_movimiento) : '<span style="color:var(--text3)">—</span>';
 
+        // Traducimos el nombre del producto de forma dinámica
+        const nombreMostrar = _en() ? (traduccionesNombres[p.nombre] || p.nombre) : p.nombre;
+
         return `
             <tr>
                 <td><code>${p.sku}</code></td>
-                <td>${p.nombre}</td>
+                <td>${nombreMostrar}</td>
                 <td>
                     <div style="display:flex;align-items:center;gap:10px">
                         <span style="min-width:32px;font-weight:600;${p.stock===0?'color:var(--red)':p.estado_stock==='stock_bajo'?'color:var(--amber)':''}">${p.stock}</span>
@@ -143,8 +165,12 @@ async function _cargarSelectProductos() {
         : await fetch(`${API}/inventario`, { headers: obtenerHeaders() }).then(r => r.json());
     const seleccionar = _t('— Seleccionar producto —','— Select product —');
     const stock_txt   = _t('Stock','Stock');
+    
     sel.innerHTML = `<option value="">${seleccionar}</option>` +
-        opciones.map(p => `<option value="${p.id}">${p.sku} — ${p.nombre} (${stock_txt}: ${p.stock})</option>`).join('');
+        opciones.map(p => {
+            const nombreM = _en() ? (traduccionesNombres[p.nombre] || p.nombre) : p.nombre;
+            return `<option value="${p.id}">${p.sku} — ${nombreM} (${stock_txt}: ${p.stock})</option>`;
+        }).join('');
 }
 
 function abrirModalMovimiento(productoId = null) {
@@ -238,14 +264,17 @@ async function exportarExcel() {
             stock_bajo: _t('Stock Bajo','Low Stock'),
             normal: _t('Normal','Normal')
         };
-        const datosExportar = inventarioListado.map(p => ({
-            [headers.sku]:    p.sku,
-            [headers.nombre]: p.nombre,
-            [headers.stock]:  p.stock,
-            [headers.minimo]: p.stock_minimo,
-            [headers.estado]: estadoTextos[p.estado_stock] || p.estado_stock,
-            [headers.ultimo]: p.ultimo_movimiento ? _formatFecha(p.ultimo_movimiento) : '—'
-        }));
+        const datosExportar = inventarioListado.map(p => {
+            const nombreM = _en() ? (traduccionesNombres[p.nombre] || p.nombre) : p.nombre;
+            return {
+                [headers.sku]:    p.sku,
+                [headers.nombre]: nombreM,
+                [headers.stock]:   p.stock,
+                [headers.minimo]: p.stock_minimo,
+                [headers.estado]: estadoTextos[p.estado_stock] || p.estado_stock,
+                [headers.ultimo]: p.ultimo_movimiento ? _formatFecha(p.ultimo_movimiento) : '—'
+            };
+        });
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.json_to_sheet(datosExportar);
         const maxAncho = datosExportar.reduce((acc, row) => {
@@ -282,7 +311,10 @@ async function verHistorial(productoId) {
 function _renderPanelHistorial(producto, movimientos) {
     const tituloEl = document.getElementById('historial-titulo');
     const lblHist  = _t('Historial','History');
-    if (tituloEl) tituloEl.textContent = `${lblHist} — ${producto.sku} · ${producto.nombre}`;
+    
+    // Traducimos el nombre del producto en la cabecera del historial
+    const nombreProdM = _en() ? (traduccionesNombres[producto.nombre] || producto.nombre) : producto.nombre;
+    if (tituloEl) tituloEl.textContent = `${lblHist} — ${producto.sku} · ${nombreProdM}`;
 
     const tbody = document.getElementById('tb-historial');
     if (!tbody) return;
@@ -307,13 +339,17 @@ function _renderPanelHistorial(producto, movimientos) {
         const signo      = delta >= 0 ? '+' : '';
         const colorDelta = delta > 0 ? 'var(--green)' : delta < 0 ? 'var(--red)' : 'var(--text2)';
         const unidad     = _t('uds.','units');
+        
+        // Traducimos dinámicamente los motivos de la base de datos
+        const motivoMostrar = _en() ? (traduccionesMotivos[m.motivo] || m.motivo) : m.motivo;
+
         return `
             <tr>
                 <td style="font-size:12px;color:var(--text2)">${_formatFecha(m.creado_en)}</td>
                 <td>${iconTipo}</td>
                 <td style="font-weight:600;color:${colorDelta}">${signo}${delta} ${unidad}</td>
                 <td>${m.stock_antes} → ${m.stock_despues}</td>
-                <td style="color:var(--text2);font-size:12px">${m.motivo || '—'}</td>
+                <td style="color:var(--text2);font-size:12px">${motivoMostrar || '—'}</td>
             </tr>`;
     }).join('');
 }

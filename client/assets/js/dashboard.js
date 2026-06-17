@@ -10,11 +10,60 @@ function _idioma() {
     return localStorage.getItem('va_idioma') || 'es';
 }
 
-// Locale para fechas según idioma
-function _locale() {
-    return _idioma() === 'en' ? 'en-US' : 'es-CO';
+function _en() {
+    return _idioma() === 'en';
 }
 
+// Locale para fechas según idioma
+function _locale() {
+    return _en() ? 'en-US' : 'es-CO';
+}
+
+// ── DICCIONARIOS EN MINÚSCULAS PARA EVITAR FALLAS DE COINCIDENCIA ────────────
+const traduccionesDB = {
+    // Equipos / Fallas
+    "celular": "Cell phone",
+    "computador": "Computer",
+    "portátil": "Laptop",
+    "televisor": "Television",
+    "consola": "Console",
+    "pantalla rota": "Broken screen",
+    "no enciende": "Does not turn on",
+    "cambio de batería": "Battery replacement",
+    "limpieza mantenimiento": "Cleaning & maintenance",
+    "error de software": "Software error",
+    
+    // Variantes de productos / descripciones específicas
+    "pantalla iphone negra": "Black iPhone Screen",
+    "pantalla iphone blanca": "White iPhone Screen",
+    "batería genérica": "Generic Battery",
+    "iphone negro": "Black iPhone",
+    "iphone \"negro\"": "Black iPhone", // Por si trae comillas desde la BD
+    "iphone": "iPhone"
+};
+
+// Función auxiliar para buscar traducciones de forma segura
+function traducirDatoBD(cadena) {
+    if (!cadena) return '';
+    if (!_en()) return cadena; // Si está en español, se devuelve tal cual
+
+    // Limpiamos la cadena de comillas extras y espacios para buscar el match
+    const limpia = cadena.toLowerCase().trim().replace(/["']/g, '');
+    
+    // 1. Buscamos coincidencia exacta en el diccionario limpio
+    if (traduccionesDB[limpia]) return traduccionesDB[limpia];
+
+    // 2. Si no es exacta, buscamos si alguna de nuestras palabras clave está contenida
+    for (const [espanol, ingles] of Object.entries(traduccionesDB)) {
+        if (limpia.includes(espanol)) {
+            return ingles;
+        }
+    }
+
+    return cadena; // Retorno por defecto si no se encuentra
+}
+
+// ── DATOS INICIALES ──────────────────────────────────────────────────────────
 async function cargarDashboard() {
     try {
         const fecha = new Date().toLocaleDateString(_locale(), {
@@ -76,7 +125,6 @@ function renderGrafica(ordenes) {
 
     const maximo = Math.max(...conteoPorDia, 1);
 
-    // Nombres de días según idioma
     const nombresDias = dias.map(d => {
         const fecha = new Date(d + 'T12:00:00');
         return fecha.toLocaleDateString(_locale(), { weekday: 'short' });
@@ -111,9 +159,7 @@ function renderActividad(ordenes) {
         .slice(0, 6);
 
     if (recientes.length === 0) {
-        const msg = _idioma() === 'en'
-            ? 'No recent activity'
-            : 'No hay actividad reciente';
+        const msg = _en() ? 'No recent activity' : 'No hay actividad reciente';
         contenedor.innerHTML = `<p style="color:var(--text3);font-size:13px;padding:16px 0">${msg}</p>`;
         return;
     }
@@ -126,28 +172,33 @@ function renderActividad(ordenes) {
         cancelado:  'var(--red)'
     };
 
-    // Etiquetas según idioma
-    const etiquetas = _idioma() === 'en'
+    const etiquetas = _en()
         ? { pendiente:'Pending', en_proceso:'In Progress', completado:'Completed', entregado:'Delivered', cancelado:'Cancelled' }
         : { pendiente:'Pendiente', en_proceso:'En Proceso', completado:'Completado', entregado:'Entregado', cancelado:'Cancelado' };
 
-    const ordenTxt = _idioma() === 'en' ? 'Order' : 'Orden';
+    const ordenTxt = _en() ? 'Order' : 'Orden';
 
-    contenedor.innerHTML = recientes.map(o => `
+    contenedor.innerHTML = recientes.map(o => {
+        // Traducimos de forma segura tanto el equipo como la falla si se muestran juntos
+        const equipoMostrar = traducirDatoBD(o.equipo);
+        const fallaMostrar   = o.falla ? ` — ${traducirDatoBD(o.falla)}` : '';
+
+        return `
         <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
             <div style="width:34px;height:34px;border-radius:50%;background:${colores[o.estado]}22;color:${colores[o.estado]};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">
                 <i class="ti ti-tool"></i>
             </div>
             <div style="flex:1;min-width:0">
                 <div style="font-size:13px;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                    ${ordenTxt} #${String(o.id).padStart(4, '0')} — ${o.equipo}
+                    ${ordenTxt} #${String(o.id).padStart(4, '0')} — ${equipoMostrar}${fallaMostrar}
                 </div>
                 <div style="font-size:11px;color:${colores[o.estado]};margin-top:2px">${etiquetas[o.estado] || o.estado}</div>
             </div>
             <div style="font-size:11px;color:var(--text3);flex-shrink:0">
                 ${o.creado_en ? new Date(o.creado_en).toLocaleDateString(_locale(), {day:'2-digit', month:'short'}) : ''}
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
 
 function renderAlertasStock(productos) {
@@ -161,14 +212,12 @@ function renderAlertasStock(productos) {
         return;
     }
 
-    const en = _idioma() === 'en';
-
-    const titulo      = en ? `Products with low stock (${criticos.length})` : `Productos con stock bajo (${criticos.length})`;
-    const thProducto  = en ? 'Product'       : 'Producto';
+    const titulo      = _en() ? `Products with low stock (${criticos.length})` : `Productos con stock bajo (${criticos.length})`;
+    const thProducto  = _en() ? 'Product'       : 'Producto';
     const thSku       = 'SKU';
-    const thActual    = en ? 'Current Stock' : 'Stock actual';
-    const thMinimo    = en ? 'Minimum'       : 'Mínimo';
-    const unidad      = en ? 'units'         : 'uds.';
+    const thActual    = _en() ? 'Current Stock' : 'Stock actual';
+    const thMinimo    = _en() ? 'Minimum'       : 'Mínimo';
+    const unidad      = _en() ? 'units'         : 'uds.';
 
     seccion.innerHTML = `
         <div class="panel" style="margin-top:0">
@@ -185,13 +234,18 @@ function renderAlertasStock(productos) {
                     </tr>
                 </thead>
                 <tbody>
-                    ${criticos.map(p => `
+                    ${criticos.map(p => {
+                        // Traducimos el nombre del producto usando el helper tolerante a minúsculas/comillas
+                        const nombreProductoMostrar = traducirDatoBD(p.nombre);
+
+                        return `
                         <tr style="border-top:1px solid var(--border)">
-                            <td style="padding:10px 0;color:var(--text1)">${p.nombre}</td>
+                            <td style="padding:10px 0;color:var(--text1)">${nombreProductoMostrar}</td>
                             <td style="padding:10px 0;color:var(--text3)"><code>${p.sku}</code></td>
                             <td style="padding:10px 0;color:${p.stock === 0 ? 'var(--red)' : 'var(--amber)'};font-weight:600">${p.stock} ${unidad}</td>
                             <td style="padding:10px 0;color:var(--text3)">${p.stock_minimo} ${unidad}</td>
-                        </tr>`).join('')}
+                        </tr>`;
+                    }).join('')}
                 </tbody>
             </table>
         </div>`;

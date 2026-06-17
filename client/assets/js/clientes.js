@@ -3,22 +3,24 @@ let clientesLista = [];
 let clienteEditandoId = null;
 let accionConfirmadaCallback = null;
 
+// SISTEMA DE TRADUCCIÓN 
 function _en() { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en) { return _en() ? en : es; }
 
 if (typeof openModal !== 'function') {
-    window.openModal  = id => document.getElementById(id)?.classList.add('open');
+    window.openModal  = id => document.getElementById(id)?.classList.add('open'); // el window garantiza que las funciones sean globales 
 }
 if (typeof closeModal !== 'function') {
     window.closeModal = id => document.getElementById(id)?.classList.remove('open');
 }
 
-// ── 1. CARGAR Y MOSTRAR ──────────────────────────────────────────────────────
+//  (CRUD - GET)
 async function cargarClientes() {
     try {
-        const inputBuscar = document.getElementById('buscar-cliente');
+        const inputBuscar = document.getElementById('buscar-cliente'); //
         if (inputBuscar) inputBuscar.value = '';
 
+        // fetch  GET para traer la lisat de los clientes desde el backend 
         const res = await fetch(`${API}/clientes`);
         if (!res.ok) throw new Error(_t('Error al obtener clientes', 'Error fetching clients'));
         clientesLista = await res.json();
@@ -28,12 +30,25 @@ async function cargarClientes() {
     }
 }
 
+// renderizacion de las tablas 
 function renderizarTabla(lista) {
     const tbody = document.getElementById('tb-clientes');
     if (!tbody) return;
     tbody.innerHTML = '';
 
-    const en = _en();
+    const thead = tbody.closest('table')?.querySelector('thead');//
+    if (thead) {
+        thead.innerHTML = `
+            <tr>
+                <th>ID</th>
+                <th>${_t('Documento', 'Document')}</th>
+                <th>${_t('Nombre', 'Name')}</th>
+                <th>${_t('Correo', 'Email')}</th>
+                <th>${_t('Teléfono', 'Phone')}</th>
+                <th>${_t('Estado', 'Status')}</th>
+                <th>${_t('Acciones', 'Actions')}</th>
+            </tr>`;
+    }
 
     if (lista.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text3)">${_t('No hay clientes registrados','No registered clients')}</td></tr>`;
@@ -41,6 +56,7 @@ function renderizarTabla(lista) {
     }
 
     lista.forEach(c => {
+        
         const botonEstado = c.activo
             ? `<button class="btn btn-sm" style="background:#6b7280;color:white" onclick="solicitarCambioEstado(${c.id},false)" title="${_t('Desactivar','Deactivate')}"><i class="ti ti-user-off"></i></button>`
             : `<button class="btn btn-sm" style="background:#10b981;color:white" onclick="solicitarCambioEstado(${c.id},true)" title="${_t('Activar','Activate')}"><i class="ti ti-user-check"></i></button>`;
@@ -64,11 +80,11 @@ function renderizarTabla(lista) {
     });
 }
 
-// ── 2. FILTRAR ───────────────────────────────────────────────────────────────
+//filtar clientes 
 function filtrarClientes() {
     const texto = document.getElementById('buscar-cliente').value.toLowerCase().trim();
     if (!texto) { renderizarTabla(clientesLista); return; }
-    renderizarTabla(clientesLista.filter(c =>
+    renderizarTabla(clientesLista.filter(c => //
         (c.identificacion || '').toLowerCase().includes(texto) ||
         (c.nombre        || '').toLowerCase().includes(texto) ||
         (c.email         || '').toLowerCase().includes(texto) ||
@@ -76,10 +92,8 @@ function filtrarClientes() {
     ));
 }
 
-// ── 3. PREPARAR FORMULARIO ───────────────────────────────────────────────────
 function prepararCreacion() {
     clienteEditandoId = null;
-
     const desbloq = (id) => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -104,7 +118,7 @@ function prepararCreacion() {
 function prepararEdicion(id) {
     const cliente = clientesLista.find(c => c.id === id);
     if (!cliente) return;
-    clienteEditandoId = id;
+    clienteEditandoId = id; 
 
     const bloquear = (id, valor) => {
         const el = document.getElementById(id);
@@ -130,7 +144,7 @@ function prepararEdicion(id) {
     openModal('modal-cliente');
 }
 
-// ── 4. GUARDAR ───────────────────────────────────────────────────────────────
+// CRUD - UPDATE / POST / PUT
 async function guardarCliente() {
     const identificacion = document.getElementById('c-identificacion').value.trim();
     const nombre         = document.getElementById('c-nombre').value.trim();
@@ -148,6 +162,7 @@ async function guardarCliente() {
     const payload = { identificacion, nombre, email: email || null, telefono: telefono || null, direccion: direccion || null, tipo, notas: notas || null };
 
     try {
+        
         const url    = clienteEditandoId ? `${API}/clientes/${clienteEditandoId}` : `${API}/clientes`;
         const method = clienteEditandoId ? 'PUT' : 'POST';
         const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -161,13 +176,12 @@ async function guardarCliente() {
             ? _t('Cliente actualizado correctamente','Client updated successfully')
             : _t('Cliente creado correctamente','Client created successfully'), 'success');
         closeModal('modal-cliente');
-        cargarClientes();
+        cargarClientes(); 
     } catch (error) {
         mostrarToast(error.message, 'error');
     }
 }
 
-// ── 5. CONFIRMACIONES ────────────────────────────────────────────────────────
 function abrirDialogoConfirmacion({ titulo, mensaje, icono, colorFondo, colorIcono, textoBoton, colorBoton, callback }) {
     document.getElementById('confirm-titulo').innerText  = titulo;
     document.getElementById('confirm-mensaje').innerText = mensaje;
@@ -181,6 +195,7 @@ function abrirDialogoConfirmacion({ titulo, mensaje, icono, colorFondo, colorIco
     btnProceder.innerText   = textoBoton;
     btnProceder.style.backgroundColor = colorBoton;
 
+
     accionConfirmadaCallback = () => { callback(); closeModal('modal-confirmacion'); };
     btnProceder.onclick = accionConfirmadaCallback;
     openModal('modal-confirmacion');
@@ -189,7 +204,6 @@ function abrirDialogoConfirmacion({ titulo, mensaje, icono, colorFondo, colorIco
 function solicitarCambioEstado(id, nuevoEstado) {
     const cliente      = clientesLista.find(c => c.id === id);
     const identificador = cliente ? ` ${_t('de','of')} ${cliente.nombre}` : '';
-    const en           = _en();
 
     abrirDialogoConfirmacion({
         titulo:     nuevoEstado ? _t('¿Activar cuenta de cliente?','Activate client account?') : _t('¿Desactivar cuenta de cliente?','Deactivate client account?'),
@@ -221,9 +235,10 @@ function solicitarEliminacion(id) {
     });
 }
 
-// ── 6. OPERACIONES AJAX ──────────────────────────────────────────────────────
+// CRUD - DELETE
 async function cambiarEstadoCliente(id, nuevoEstado) {
     try {
+
         const res = await fetch(`${API}/clientes/${id}/estado`, {
             method: 'PATCH', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ activo: nuevoEstado })
@@ -244,7 +259,7 @@ async function eliminarClienteDefinitivo(id) {
     } catch (error) { mostrarToast(error.message, 'error'); }
 }
 
-// ── UTILS ────────────────────────────────────────────────────────────────────
+// las notificaciones tipo toast 
 function mostrarToast(msg, type = 'info') {
     const c = document.getElementById('toasts');
     if (!c) return;
@@ -253,7 +268,7 @@ function mostrarToast(msg, type = 'info') {
     const icons = { success: 'ti-circle-check', error: 'ti-circle-x', info: 'ti-info-circle' };
     el.innerHTML = `<i class="ti ${icons[type] || 'ti-info-circle'}" style="font-size:16px;color:${type === 'success' ? 'var(--green)' : type === 'error' ? 'var(--red)' : 'var(--blue)'}"></i>${msg}`;
     c.appendChild(el);
-    setTimeout(() => el.remove(), 3500);
+    setTimeout(() => el.remove(), 3500); 
 }
 
 cargarClientes();

@@ -1694,3 +1694,24 @@ textarea::placeholder {
   background: var(--border);
   margin: 3px 0;
 }
+
+    .panel-grid .panel {
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+    }
+    #chart-ventas {
+      flex: 1;
+      min-height: 0;
+    }
+    #activity-list {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: 8px;
+    }
+    #activity-list::-webkit-scrollbar { width: 6px; }
+    #activity-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 10px; }
+    #activity-list::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+    #activity-list::-webkit-scrollbar-thumb:hover { background: #2563eb; }
