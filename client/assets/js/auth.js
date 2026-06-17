@@ -6,8 +6,6 @@
  * <script src="/client/assets/js/auth.js"></script>
  */
 
-const VA_API = 'http://localhost:3000/api';
-
 // Obtiene el token almacenado
 function getToken() {
     return localStorage.getItem('va_token');
@@ -26,7 +24,7 @@ function getUsuario() {
 function logout() {
     localStorage.removeItem('va_token');
     localStorage.removeItem('va_usuario');
-    window.location.href = '/client/assets/pages/login.html';
+    window.location.href = '/pages/login.html';
 }
 
 // Headers estándar con token para llamadas a la API
@@ -43,7 +41,7 @@ function authHeaders() {
     
     // 1. Si no hay token, directo al login
     if (!token) {
-        window.location.href = '/client/assets/pages/login.html';
+        window.location.href = '/pages/login.html';
         return;
     }
 
@@ -55,7 +53,7 @@ function authHeaders() {
         console.error("Error 401: Unauthorized - No tienes permisos para esta sección.");
         
         // Redirección limpia e inmediata a la página de error independiente
-        window.location.href = '/client/assets/pages/401.html';
+        window.location.href = '/pages/401.html';
         return; 
     }
 
