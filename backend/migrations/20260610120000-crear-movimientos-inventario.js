@@ -3,6 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`
+      DROP TABLE IF EXISTS movimientos_inventario CASCADE;
       CREATE TABLE movimientos_inventario (
         id SERIAL PRIMARY KEY,
         producto_id INT NOT NULL REFERENCES productos(id) ON DELETE CASCADE,

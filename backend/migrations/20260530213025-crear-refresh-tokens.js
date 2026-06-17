@@ -3,6 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`
+      DROP TABLE IF EXISTS refresh_tokens CASCADE;
       CREATE TABLE refresh_tokens (
         id SERIAL PRIMARY KEY,
         usuario_id INT NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,

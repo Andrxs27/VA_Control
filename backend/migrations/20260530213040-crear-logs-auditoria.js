@@ -3,6 +3,9 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`
+      DROP TABLE IF EXISTS log_ventas CASCADE;
+      DROP TABLE IF EXISTS log_ordenes CASCADE;
+      DROP TABLE IF EXISTS log_productos CASCADE;
       CREATE TABLE log_ventas (
         id_log SERIAL PRIMARY KEY,
         id_venta INT NOT NULL,
