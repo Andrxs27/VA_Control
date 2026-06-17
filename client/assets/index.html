@@ -8,7 +8,6 @@
 </head>
 <body>
   <script>
-    // Si hay sesión activa, ir al dashboard; si no, al login
     if (localStorage.getItem('va_token')) {
       window.location.href = '/client/assets/pages/dashboard.html';
     } else {
