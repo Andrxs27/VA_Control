@@ -6,7 +6,7 @@ module.exports = {
     password: process.env.DB_PASSWORD || 'ekrLNkiBdBOvQJDeuFtEoIVowQrCTssj',
     database: process.env.DB_NAME || 'railway',
     host: process.env.DB_HOST || 'thomas.proxy.rlwy.net',
-    port: process.env.DB_PORT || 5432,
+    port: process.env.DB_PORT || 17441,
     dialect: 'postgres'
   },
   test: {
@@ -14,7 +14,7 @@ module.exports = {
     password: process.env.DB_PASSWORD || 'ekrLNkiBdBOvQJDeuFtEoIVowQrCTssj',
     database: process.env.DB_NAME || 'railway',
     host: process.env.DB_HOST || 'thomas.proxy.rlwy.net',
-    port: process.env.DB_PORT || 5432,
+    port: process.env.DB_PORT || 17441,
     dialect: 'postgres'
   },
   production: {
