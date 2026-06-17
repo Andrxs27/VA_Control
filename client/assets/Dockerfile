@@ -1,10 +1,7 @@
 FROM nginx:alpine
 
-# Limpiar la carpeta por defecto de Nginx
-RUN rm -rf /usr/share/nginx/html/*
+# Creamos la ruta exacta dentro del contenedor de Nginx
+RUN mkdir -p /usr/share/nginx/html/client/assets
 
-# Copia los archivos buscando directamente en la ruta completa
-COPY client/assets/ /usr/share/nginx/html/
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Copiamos TODO el contenido de tu carpeta actual ahí dentro
+COPY . /usr/share/nginx/html/client/assets/
