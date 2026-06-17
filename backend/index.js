@@ -1,6 +1,17 @@
 require('dotenv').config();
+const { execSync } = require('child_process');
 const express = require('express');
 const cors = require('cors');
+
+try {
+  console.log('Ejecutando migraciones...');
+  execSync('npx sequelize-cli db:migrate', { stdio: 'inherit' });
+  console.log('Migraciones completadas.');
+} catch (err) {
+  console.error('Error en migraciones:', err.message);
+  process.exit(1);
+}
+
 const app = express();
 
 app.use(cors());
