@@ -1,10 +1,11 @@
+
+// TRADUCCIONES 
 const VA_TRADUCCIONES = {
   es: {
     // Sidebar - Nav sections
     'nav_principal': 'Principal',
     'nav_operaciones': 'Operaciones',
     'nav_administracion': 'Administración',
-
     // Sidebar - Nav items
     'nav_dashboard': 'Dashboard',
     'nav_productos': 'Productos',
@@ -15,27 +16,22 @@ const VA_TRADUCCIONES = {
     'nav_clientes': 'Clientes',
     'nav_usuarios': 'Usuarios',
     'nav_reportes': 'Reportes',
-
     // Sidebar - Logo
     'logo_sub': 'Sistema de Gestión',
-
     // Topbar
     'topbar_alertas': 'Alertas de stock',
     'topbar_config': 'Configuración',
-
     // Menú configuración
     'cfg_tema': 'Tema',
     'cfg_tema_claro': 'Modo Claro',
     'cfg_tema_oscuro': 'Modo Oscuro',
     'cfg_idioma': 'Idioma',
     'cfg_cerrar': 'Cerrar Sesión',
-
     // Modal logout
     'logout_titulo': '¿Cerrar sesión?',
     'logout_msg': 'Se cerrará tu sesión actual. Tendrás que volver a iniciar sesión para acceder al sistema.',
     'logout_confirmar': 'Sí, cerrar sesión',
     'logout_cancelar': 'Cancelar',
-
     // Páginas - títulos
     'titulo_dashboard': 'Dashboard',
     'titulo_productos': 'Productos',
@@ -46,7 +42,6 @@ const VA_TRADUCCIONES = {
     'titulo_clientes': 'Clientes',
     'titulo_usuarios': 'Usuarios',
     'titulo_reportes': 'Reportes',
-
     // Botones comunes
     'btn_cancelar': 'Cancelar',
     'btn_guardar': 'Guardar',
@@ -71,13 +66,11 @@ const VA_TRADUCCIONES = {
     'btn_editar_producto': 'Editar Producto',
     'btn_editar_cliente': 'Editar Cliente',
     'btn_editar_usuario': 'Editar Usuario',
-
     // Roles
     'rol_admin': 'Administrador',
     'rol_vendedor': 'Vendedor',
     'rol_tecnico': 'Técnico',
     'rol_cliente': 'Cliente',
-
     // Login
     'login_titulo': 'Iniciar Sesión',
     'login_sub': 'Ingresa tus credenciales para acceder',
@@ -89,11 +82,9 @@ const VA_TRADUCCIONES = {
     'login_error': 'Error al iniciar sesión',
     'login_campos_requeridos': 'Por favor completa todos los campos.',
     'login_error_conexion': 'No se pudo conectar con el servidor. Verifica que esté activo.',
-
-    // 401 Error de permisos
+    // 401
     '401_msg': 'Acceso denegado. No tienes permisos de Administrador para gestionar usuarios.',
     '401_btn': 'Volver al Dashboard',
-
     // Secciones de módulos
     'sec_catalogo_titulo': 'Catálogo de Productos',
     'sec_catalogo_sub': 'Gestión de SKUs, precios y categorías',
@@ -111,7 +102,6 @@ const VA_TRADUCCIONES = {
     'sec_usuarios_sub': 'Gestión de roles y permisos',
     'sec_reportes_titulo': 'Reportes y Análisis',
     'sec_reportes_sub': 'Métricas de negocio en tiempo real',
-
     // Tablas - encabezados comunes
     'th_id': 'ID',
     'th_nombre': 'Nombre',
@@ -125,7 +115,6 @@ const VA_TRADUCCIONES = {
     'th_stock': 'Stock',
     'th_precio': 'Precio Venta',
     'th_fecha': 'Fecha',
-
     // Búsqueda
     'buscar_producto': 'Buscar por nombre, SKU...',
     'buscar_cliente': 'Buscar por nombre, identificación, email o teléfono...',
@@ -134,7 +123,6 @@ const VA_TRADUCCIONES = {
     'buscar_orden': 'Buscar por ID, cliente, técnico, equipo...',
     'buscar_factura': 'Buscar por factura, venta...',
     'buscar_inventario': 'Buscar por nombre o SKU...',
-
     // Filtros
     'filtro_categorias': 'Todas las categorías',
     'filtro_metodos': 'Todos los métodos',
@@ -142,14 +130,12 @@ const VA_TRADUCCIONES = {
     'filtro_sin_stock': 'Sin stock',
     'filtro_stock_bajo': 'Stock bajo',
     'filtro_normal': 'Normal',
-
     // Estados de órdenes (tabs)
     'tab_todas': 'Todas',
     'tab_pendientes': 'Pendientes',
     'tab_en_proceso': 'En Proceso',
     'tab_completadas': 'Completadas',
     'tab_entregadas': 'Entregadas',
-
     // Modales - campos
     'lbl_sku': 'SKU *',
     'lbl_nombre_producto': 'Nombre *',
@@ -191,7 +177,6 @@ const VA_TRADUCCIONES = {
     'lbl_costo': 'Costo del Servicio',
     'lbl_diagnostico': 'Diagnóstico Técnico',
     'lbl_notas_internas': 'Notas Internas',
-
     // Placeholders
     'ph_sku': 'EJ: ELEC-001',
     'ph_nombre_producto': 'Nombre del producto',
@@ -219,7 +204,6 @@ const VA_TRADUCCIONES = {
     'ph_notas_int': 'Observaciones adicionales (opcional)',
     'ph_ref': 'ID de venta u orden',
     'ph_motivo': 'Ej: Compra proveedor XYZ',
-
     // Selects - opciones
     'opt_seleccionar': 'Seleccionar...',
     'opt_seleccionar_vendedor': 'Seleccione un Vendedor...',
@@ -250,7 +234,6 @@ const VA_TRADUCCIONES = {
     'opt_entrada': 'Entrada — Compra / recepción',
     'opt_salida': 'Salida — Uso / venta / pérdida',
     'opt_ajuste': 'Ajuste — Corrección manual de stock',
-
     // Modales - títulos
     'modal_nuevo_producto': 'Nuevo Producto',
     'modal_editar_producto': 'Editar Producto',
@@ -266,7 +249,6 @@ const VA_TRADUCCIONES = {
     'modal_registrar_mov': 'Registrar Movimiento de Inventario',
     'modal_historial': 'Historial de Movimientos',
     'modal_confirmar': 'Confirmar Acción',
-
     // Estados - badges
     'estado_activo': 'Activo',
     'estado_inactivo': 'Inactivo',
@@ -275,7 +257,6 @@ const VA_TRADUCCIONES = {
     'estado_completado': 'Completado',
     'estado_entregado': 'Entregado',
     'estado_cancelado': 'Cancelado',
-
     // Acciones en tabla
     'accion_editar': 'Editar',
     'accion_eliminar': 'Eliminar',
@@ -285,7 +266,6 @@ const VA_TRADUCCIONES = {
     'accion_eliminar_venta': 'Eliminar venta',
     'accion_registrar_mov': 'Registrar movimiento',
     'accion_ver_historial': 'Ver historial',
-
     // Confirmaciones - títulos
     'confirm_desactivar_orden': '¿Desactivar orden de servicio?',
     'confirm_reactivar_orden': '¿Reactivar orden de servicio?',
@@ -301,7 +281,6 @@ const VA_TRADUCCIONES = {
     'confirm_eliminar_usuario': '¿Eliminar cuenta de usuario?',
     'confirm_eliminar_venta': '¿Eliminar esta venta?',
     'confirm_eliminar_factura': '¿Eliminar esta factura?',
-
     // Confirmaciones - mensajes
     'confirm_msg_desactivar_orden': 'La orden quedará inhabilitada temporalmente.',
     'confirm_msg_reactivar_orden': 'La orden volverá a estar activa.',
@@ -317,7 +296,6 @@ const VA_TRADUCCIONES = {
     'confirm_msg_eliminar_usuario': 'La cuenta se eliminará permanentemente.',
     'confirm_msg_eliminar_venta': 'La venta se eliminará definitivamente y el stock será restaurado.',
     'confirm_msg_eliminar_factura': '¿Seguro que deseas eliminar esta factura?',
-
     // Toasts - éxito
     'toast_orden_eliminada': 'Orden eliminada',
     'toast_orden_desactivada': 'Orden desactivada con éxito',
@@ -341,7 +319,6 @@ const VA_TRADUCCIONES = {
     'toast_mov_registrado': 'Movimiento registrado correctamente',
     'toast_excel_generando': 'Generando archivo Excel...',
     'toast_excel_descargado': 'Excel descargado correctamente',
-
     // Toasts - error
     'toast_error_operacion': 'No se pudo realizar la operación',
     'toast_error_orden_datos': 'No se pudieron cargar los datos de la orden',
@@ -361,7 +338,6 @@ const VA_TRADUCCIONES = {
     'toast_error_venta_detalle': 'No se pudo cargar el detalle de la venta',
     'toast_error_reporte': 'No se pudo generar el reporte.',
     'toast_error_servidor': 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en puerto 3000.',
-
     // Toasts - validación ventas
     'toast_venta_sel_vendedor_cliente': 'Seleccione un vendedor y un cliente',
     'toast_venta_agregar_producto': 'Agregue al menos un producto a la venta',
@@ -374,7 +350,6 @@ const VA_TRADUCCIONES = {
     'toast_cliente_id_nombre': 'La identificación y el nombre son requeridos',
     'toast_producto_sku_nombre': 'El SKU y el Nombre son campos requeridos',
     'toast_factura_ref_subtotal': 'Referencia y Subtotal son requeridos',
-
     // Inventario - KPIs
     'inv_total_productos': 'Total Productos',
     'inv_con_seguimiento': 'con seguimiento de stock',
@@ -384,7 +359,6 @@ const VA_TRADUCCIONES = {
     'inv_requieren_reposicion': 'requieren reposición',
     'inv_sin_stock': 'Sin Stock',
     'inv_agotados': 'agotados',
-
     // Inventario - modal movimiento
     'inv_cantidad_label': 'Cantidad *',
     'inv_nuevo_stock_label': 'Nuevo stock total *',
@@ -396,12 +370,10 @@ const VA_TRADUCCIONES = {
     'inv_mov_entrada': 'Entrada',
     'inv_mov_salida': 'Salida',
     'inv_mov_ajuste': 'Ajuste',
-
     // Inventario - stock badges
     'inv_sin_stock_badge': 'Sin stock',
     'inv_stock_bajo_badge': 'Stock bajo',
     'inv_normal_badge': 'Normal',
-
     // Inventario - export
     'inv_export_producto': 'Producto',
     'inv_export_stock_actual': 'Stock Actual',
@@ -411,7 +383,6 @@ const VA_TRADUCCIONES = {
     'inv_export_sin_stock': 'Sin Stock',
     'inv_export_stock_bajo': 'Stock Bajo',
     'inv_export_hoja': 'Inventario Completo',
-
     // Facturas
     'fact_tipo_venta': 'Venta',
     'fact_tipo_servicio': 'Servicio',
@@ -419,7 +390,6 @@ const VA_TRADUCCIONES = {
     'fact_modificada': 'Modificada desde interfaz web',
     'fact_emitida': 'Emitida desde interfaz web',
     'fact_sin_facturas': 'No hay facturas emitidas',
-
     // Reportes
     'rep_ingresos': 'Ingresos del Período',
     'rep_ordenes_comp': 'Órdenes Completadas',
@@ -436,7 +406,6 @@ const VA_TRADUCCIONES = {
     'btn_filtrar': 'Filtrar',
     'btn_limpiar': 'Limpiar',
     'btn_excel': 'Excel',
-
     // Reportes - textos dinámicos
     'rep_sin_datos': 'Sin datos en el período',
     'rep_sin_ventas': 'Sin ventas en el período',
@@ -452,7 +421,6 @@ const VA_TRADUCCIONES = {
     'rep_cliente_lbl': 'Cliente',
     'rep_sin_stock_badge': 'Sin stock',
     'rep_stock_bajo_badge': 'Stock bajo',
-
     // Reportes - export Excel
     'rep_excel_id': 'ID',
     'rep_excel_fecha': 'Fecha',
@@ -498,40 +466,33 @@ const VA_TRADUCCIONES = {
     'rep_excel_stock_critico': 'Productos en Stock Crítico',
     'rep_excel_hoja_resumen': 'Resumen',
     'rep_excel_nombre_archivo': 'Reporte',
-
     // Reportes - métodos pago
     'rep_metodo_efectivo': 'Efectivo',
     'rep_metodo_tarjeta': 'Tarjeta',
     'rep_metodo_transferencia': 'Transferencia',
     'rep_metodo_otro': 'Otro',
-
     // Reportes - categorías
     'rep_cat_electronicos': 'Electrónicos',
     'rep_cat_repuestos': 'Repuestos',
     'rep_cat_servicios': 'Servicios',
     'rep_cat_otros': 'Otros',
-
     // Reportes - estados órdenes
     'rep_estado_pendiente': 'Pendiente',
     'rep_estado_en_proceso': 'En Proceso',
     'rep_estado_completado': 'Completado',
     'rep_estado_entregado': 'Entregado',
     'rep_estado_cancelado': 'Cancelado',
-
     // Ventas - detalle
     'venta_sin_detalle': 'Sin líneas de detalle registradas',
     'venta_emitida_pos': 'Emitido desde terminal POS Web',
     'venta_sin_ventas': 'No hay ventas registradas',
-
     // Inventario mov tipos (en tabla)
     'mov_entrada': 'Entrada',
     'mov_salida': 'Salida',
     'mov_ajuste': 'Ajuste',
-
     // Alertas
     'alert_rec_schema': 'Recomendación de esquema',
     'alert_rec_tabla': 'Se recomienda tabla',
-
     // KPIs Dashboard
     'kpi_productos': 'Productos Activos',
     'kpi_stock_bajo': 'Stock Bajo',
@@ -541,12 +502,10 @@ const VA_TRADUCCIONES = {
     'kpi_rep_repos': 'requieren reposición',
     'kpi_pend_proc': 'pendientes y en proceso',
     'kpi_comp_ent': 'completadas y entregadas',
-
     // Dashboard paneles
     'dash_actividad': 'Actividad últimos 7 días',
     'dash_ordenes_rec': 'Órdenes recientes',
     'dash_alertas_stock': 'Alertas de Stock',
-
     // Tablas encabezados específicos
     'th_identificacion': 'Identificación / RUT',
     'th_razon_social': 'Nombre / Razón Social',
@@ -566,19 +525,15 @@ const VA_TRADUCCIONES = {
     'th_iva': 'IVA',
     'th_factura': '#Factura',
     'th_accion': 'Acción',
-
     // Usuarios - roles badges
     'badge_admin': 'Admin',
     'badge_vendedor': 'Vendedor',
     'badge_tecnico': 'Técnico',
-
     // Usuarios - tabla vacía
     'usuarios_sin_registros': 'No hay usuarios registrados',
     'clientes_sin_registros': 'No hay clientes registrados',
-
     // Confirmación
     'confirm_cancelar': 'Cancelar',
-
     // Exportar
     'exportar_excel': 'Exportar Excel',
   },
@@ -588,7 +543,6 @@ const VA_TRADUCCIONES = {
     'nav_principal': 'Main',
     'nav_operaciones': 'Operations',
     'nav_administracion': 'Administration',
-
     // Sidebar - Nav items
     'nav_dashboard': 'Dashboard',
     'nav_productos': 'Products',
@@ -599,27 +553,22 @@ const VA_TRADUCCIONES = {
     'nav_clientes': 'Clients',
     'nav_usuarios': 'Users',
     'nav_reportes': 'Reports',
-
     // Sidebar - Logo
     'logo_sub': 'Management System',
-
     // Topbar
     'topbar_alertas': 'Stock alerts',
     'topbar_config': 'Settings',
-
     // Menú configuración
     'cfg_tema': 'Theme',
     'cfg_tema_claro': 'Light Mode',
     'cfg_tema_oscuro': 'Dark Mode',
     'cfg_idioma': 'Language',
     'cfg_cerrar': 'Log Out',
-
     // Modal logout
     'logout_titulo': 'Log out?',
     'logout_msg': 'Your current session will be closed. You will need to log in again to access the system.',
     'logout_confirmar': 'Yes, log out',
     'logout_cancelar': 'Cancel',
-
     // Páginas - títulos
     'titulo_dashboard': 'Dashboard',
     'titulo_productos': 'Products',
@@ -630,7 +579,6 @@ const VA_TRADUCCIONES = {
     'titulo_clientes': 'Clients',
     'titulo_usuarios': 'Users',
     'titulo_reportes': 'Reports',
-
     // Botones comunes
     'btn_cancelar': 'Cancel',
     'btn_guardar': 'Save',
@@ -655,13 +603,11 @@ const VA_TRADUCCIONES = {
     'btn_editar_producto': 'Edit Product',
     'btn_editar_cliente': 'Edit Client',
     'btn_editar_usuario': 'Edit User',
-
     // Roles
     'rol_admin': 'Administrator',
     'rol_vendedor': 'Seller',
     'rol_tecnico': 'Technician',
     'rol_cliente': 'Client',
-
     // Login
     'login_titulo': 'Log In',
     'login_sub': 'Enter your credentials to access',
@@ -673,11 +619,9 @@ const VA_TRADUCCIONES = {
     'login_error': 'Login error',
     'login_campos_requeridos': 'Please fill in all fields.',
     'login_error_conexion': 'Could not connect to the server. Make sure it is running.',
-
-    // 401 Error de permisos
+    // 401
     '401_msg': 'Access denied. You do not have Administrator permissions to manage users.',
     '401_btn': 'Back to Dashboard',
-
     // Secciones de módulos
     'sec_catalogo_titulo': 'Product Catalog',
     'sec_catalogo_sub': 'Management of SKUs, prices and categories',
@@ -695,7 +639,6 @@ const VA_TRADUCCIONES = {
     'sec_usuarios_sub': 'Role and permissions management',
     'sec_reportes_titulo': 'Reports & Analytics',
     'sec_reportes_sub': 'Real-time business metrics',
-
     // Tablas - encabezados comunes
     'th_id': 'ID',
     'th_nombre': 'Name',
@@ -709,7 +652,6 @@ const VA_TRADUCCIONES = {
     'th_stock': 'Stock',
     'th_precio': 'Sale Price',
     'th_fecha': 'Date',
-
     // Búsqueda
     'buscar_producto': 'Search by name, SKU...',
     'buscar_cliente': 'Search by name, ID, email or phone...',
@@ -718,7 +660,6 @@ const VA_TRADUCCIONES = {
     'buscar_orden': 'Search by ID, client, technician, device...',
     'buscar_factura': 'Search by invoice, sale...',
     'buscar_inventario': 'Search by name or SKU...',
-
     // Filtros
     'filtro_categorias': 'All categories',
     'filtro_metodos': 'All methods',
@@ -726,14 +667,12 @@ const VA_TRADUCCIONES = {
     'filtro_sin_stock': 'Out of stock',
     'filtro_stock_bajo': 'Low stock',
     'filtro_normal': 'Normal',
-
     // Estados de órdenes (tabs)
     'tab_todas': 'All',
     'tab_pendientes': 'Pending',
     'tab_en_proceso': 'In Progress',
     'tab_completadas': 'Completed',
     'tab_entregadas': 'Delivered',
-
     // Modales - campos
     'lbl_sku': 'SKU *',
     'lbl_nombre_producto': 'Name *',
@@ -775,7 +714,6 @@ const VA_TRADUCCIONES = {
     'lbl_costo': 'Service Cost',
     'lbl_diagnostico': 'Technical Diagnosis',
     'lbl_notas_internas': 'Internal Notes',
-
     // Placeholders
     'ph_sku': 'E.G.: ELEC-001',
     'ph_nombre_producto': 'Product name',
@@ -803,7 +741,6 @@ const VA_TRADUCCIONES = {
     'ph_notas_int': 'Additional observations (optional)',
     'ph_ref': 'Sale or order ID',
     'ph_motivo': 'E.g.: Purchase from supplier XYZ',
-
     // Selects - opciones
     'opt_seleccionar': 'Select...',
     'opt_seleccionar_vendedor': 'Select a Seller...',
@@ -815,11 +752,11 @@ const VA_TRADUCCIONES = {
     'opt_repuestos': 'Spare Parts',
     'opt_servicios': 'Services',
     'opt_electronicos': 'Electronics',
-    'opt_particular': 'Natural Person / Individual',
+    'opt_particular': 'Individual / Consumer',
     'opt_empresa': 'Company / Corporate',
     'opt_efectivo': 'Cash',
     'opt_tarjeta': 'Card',
-    'opt_transferencia': 'Bank Transfer',
+    'opt_transferencia': 'Transfer',
     'opt_credito': 'Credit',
     'opt_otro': 'Other',
     'opt_tienda': 'Store Pickup',
@@ -831,10 +768,9 @@ const VA_TRADUCCIONES = {
     'opt_cancelado': 'Cancelled',
     'opt_por_venta': 'By Sale',
     'opt_por_servicio': 'By Service Order',
-    'opt_entrada': 'Inbound — Purchase / reception',
-    'opt_salida': 'Outbound — Use / sale / loss',
+    'opt_entrada': 'Entry — Purchase / reception',
+    'opt_salida': 'Exit — Usage / sale / loss',
     'opt_ajuste': 'Adjustment — Manual stock correction',
-
     // Modales - títulos
     'modal_nuevo_producto': 'New Product',
     'modal_editar_producto': 'Edit Product',
@@ -850,7 +786,6 @@ const VA_TRADUCCIONES = {
     'modal_registrar_mov': 'Register Inventory Movement',
     'modal_historial': 'Movement History',
     'modal_confirmar': 'Confirm Action',
-
     // Estados - badges
     'estado_activo': 'Active',
     'estado_inactivo': 'Inactive',
@@ -859,7 +794,6 @@ const VA_TRADUCCIONES = {
     'estado_completado': 'Completed',
     'estado_entregado': 'Delivered',
     'estado_cancelado': 'Cancelled',
-
     // Acciones en tabla
     'accion_editar': 'Edit',
     'accion_eliminar': 'Delete',
@@ -869,7 +803,6 @@ const VA_TRADUCCIONES = {
     'accion_eliminar_venta': 'Delete sale',
     'accion_registrar_mov': 'Register movement',
     'accion_ver_historial': 'View history',
-
     // Confirmaciones - títulos
     'confirm_desactivar_orden': 'Deactivate service order?',
     'confirm_reactivar_orden': 'Reactivate service order?',
@@ -885,34 +818,32 @@ const VA_TRADUCCIONES = {
     'confirm_eliminar_usuario': 'Delete user account?',
     'confirm_eliminar_venta': 'Delete this sale?',
     'confirm_eliminar_factura': 'Delete this invoice?',
-
     // Confirmaciones - mensajes
     'confirm_msg_desactivar_orden': 'The order will be temporarily disabled.',
     'confirm_msg_reactivar_orden': 'The order will be active again.',
     'confirm_msg_eliminar_orden': 'The order will be permanently deleted. This action cannot be undone.',
     'confirm_msg_desactivar_producto': 'The product will no longer be visible in the catalog.',
     'confirm_msg_reactivar_producto': 'The product will be available in the catalog again.',
-    'confirm_msg_eliminar_producto': 'Upon confirmation, the product will be permanently deleted. This action is irreversible.',
-    'confirm_msg_activar_cliente': 'The client status will be set to active.',
-    'confirm_msg_desactivar_cliente': 'The client will be temporarily inactive.',
+    'confirm_msg_eliminar_producto': 'Upon confirming, the product will be permanently deleted. This action is irreversible.',
+    'confirm_msg_activar_cliente': 'Client will be set to active.',
+    'confirm_msg_desactivar_cliente': 'Client will be temporarily inactive.',
     'confirm_msg_eliminar_cliente': 'The record will be permanently deleted.',
-    'confirm_msg_activar_usuario': 'The user will regain system access.',
-    'confirm_msg_desactivar_usuario': 'The user will be temporarily disabled.',
+    'confirm_msg_activar_usuario': 'User will regain access to the system.',
+    'confirm_msg_desactivar_usuario': 'User will be temporarily disabled.',
     'confirm_msg_eliminar_usuario': 'The account will be permanently deleted.',
     'confirm_msg_eliminar_venta': 'The sale will be permanently deleted and stock will be restored.',
     'confirm_msg_eliminar_factura': 'Are you sure you want to delete this invoice?',
-
     // Toasts - éxito
     'toast_orden_eliminada': 'Order deleted',
-    'toast_orden_desactivada': 'Order successfully deactivated',
-    'toast_orden_activada': 'Order successfully activated',
+    'toast_orden_desactivada': 'Order deactivated successfully',
+    'toast_orden_activada': 'Order activated successfully',
     'toast_orden_actualizada': 'Order updated successfully',
     'toast_orden_creada': 'Order created successfully',
     'toast_producto_creado': 'Product created successfully',
-    'toast_producto_actualizado': 'Product successfully updated',
-    'toast_producto_eliminado': 'Product successfully deleted',
-    'toast_producto_activado': 'Product successfully activated',
-    'toast_producto_desactivado': 'Product successfully deactivated',
+    'toast_producto_actualizado': 'Product updated successfully',
+    'toast_producto_eliminado': 'Product deleted successfully',
+    'toast_producto_activado': 'Product activated successfully',
+    'toast_producto_desactivado': 'Product deactivated successfully',
     'toast_cliente_creado': 'Client created successfully',
     'toast_cliente_actualizado': 'Client updated successfully',
     'toast_cliente_eliminado': 'Client permanently deleted',
@@ -920,17 +851,16 @@ const VA_TRADUCCIONES = {
     'toast_usuario_creado': 'User created successfully',
     'toast_usuario_actualizado': 'User updated',
     'toast_usuario_eliminado': 'User permanently deleted',
-    'toast_venta_creada': 'Sale successfully registered',
+    'toast_venta_creada': 'Sale registered successfully',
     'toast_venta_eliminada': 'Sale deleted and stock restored',
-    'toast_mov_registrado': 'Movement successfully registered',
+    'toast_mov_registrado': 'Movement registered successfully',
     'toast_excel_generando': 'Generating Excel file...',
     'toast_excel_descargado': 'Excel downloaded successfully',
-
     // Toasts - error
-    'toast_error_operacion': 'Could not perform operation',
+    'toast_error_operacion': 'Could not complete the operation',
     'toast_error_orden_datos': 'Could not load order data',
-    'toast_error_orden_guardar': 'Error saving order on the server',
-    'toast_error_campos_obligatorios': 'Please fill in required fields (*)',
+    'toast_error_orden_guardar': 'Error saving order to server',
+    'toast_error_campos_obligatorios': 'Please fill in the required fields (*)',
     'toast_error_venta_eliminar': 'Could not delete sale',
     'toast_error_mov_campos': 'Fill in required fields: product, type and quantity',
     'toast_error_mov_registrar': 'Error registering movement',
@@ -941,34 +871,31 @@ const VA_TRADUCCIONES = {
     'toast_error_excel_sin_datos': 'No data to export',
     'toast_error_excel_exportar': 'Error exporting Excel: ',
     'toast_error_selectores': 'Error initializing selectors',
-    'toast_error_ventas': 'Error querying sales',
+    'toast_error_ventas': 'Error fetching sales',
     'toast_error_venta_detalle': 'Could not load sale details',
-    'toast_error_reporte': 'Could not generate report.',
-    'toast_error_servidor': 'Could not connect to the server. Make sure the backend is running on port 3000.',
-
+    'toast_error_reporte': 'Could not generate the report.',
+    'toast_error_servidor': 'Could not connect to server. Make sure the backend is running on port 3000.',
     // Toasts - validación ventas
     'toast_venta_sel_vendedor_cliente': 'Select a seller and a client',
     'toast_venta_agregar_producto': 'Add at least one product to the sale',
     'toast_venta_sel_producto_cantidad': 'Select a product and a valid quantity',
     'toast_stock_insuficiente': 'Insufficient stock. Available: ',
-    'toast_stock_excede': 'The sum exceeds available stock',
+    'toast_stock_excede': 'Sum exceeds available stock',
     'toast_usuario_pass_requerida': 'Password is required for new users',
     'toast_usuario_pass_no_coincide': 'Passwords do not match',
     'toast_usuario_nombre_email': 'Name and email are required',
     'toast_cliente_id_nombre': 'ID and name are required',
     'toast_producto_sku_nombre': 'SKU and Name are required fields',
     'toast_factura_ref_subtotal': 'Reference and Subtotal are required',
-
     // Inventario - KPIs
     'inv_total_productos': 'Total Products',
     'inv_con_seguimiento': 'with stock tracking',
     'inv_stock_normal': 'Normal Stock',
     'inv_por_encima_minimo': 'above minimum',
     'inv_stock_bajo': 'Low Stock',
-    'inv_requieren_reposicion': 'require replenishment',
+    'inv_requieren_reposicion': 'need restocking',
     'inv_sin_stock': 'Out of Stock',
-    'inv_agotados': 'out of stock',
-
+    'inv_agotados': 'depleted',
     // Inventario - modal movimiento
     'inv_cantidad_label': 'Quantity *',
     'inv_nuevo_stock_label': 'New total stock *',
@@ -976,16 +903,14 @@ const VA_TRADUCCIONES = {
     'inv_minimo': 'Minimum',
     'inv_unidades': 'units',
     'inv_historial_titulo': 'History',
-    'inv_sin_movimientos': 'This product does not have registered movements yet',
-    'inv_mov_entrada': 'Inbound',
-    'inv_mov_salida': 'Outbound',
+    'inv_sin_movimientos': 'This product has no registered movements yet',
+    'inv_mov_entrada': 'Entry',
+    'inv_mov_salida': 'Exit',
     'inv_mov_ajuste': 'Adjustment',
-
     // Inventario - stock badges
     'inv_sin_stock_badge': 'Out of stock',
     'inv_stock_bajo_badge': 'Low stock',
     'inv_normal_badge': 'Normal',
-
     // Inventario - export
     'inv_export_producto': 'Product',
     'inv_export_stock_actual': 'Current Stock',
@@ -995,7 +920,6 @@ const VA_TRADUCCIONES = {
     'inv_export_sin_stock': 'Out of Stock',
     'inv_export_stock_bajo': 'Low Stock',
     'inv_export_hoja': 'Full Inventory',
-
     // Facturas
     'fact_tipo_venta': 'Sale',
     'fact_tipo_servicio': 'Service',
@@ -1003,13 +927,12 @@ const VA_TRADUCCIONES = {
     'fact_modificada': 'Modified from web interface',
     'fact_emitida': 'Issued from web interface',
     'fact_sin_facturas': 'No issued invoices',
-
     // Reportes
     'rep_ingresos': 'Period Revenue',
     'rep_ordenes_comp': 'Completed Orders',
     'rep_sin_stock': 'Out of Stock Products',
     'rep_facturas': 'Issued Invoices',
-    'rep_ventas_meses': 'Sales of the last 6 months',
+    'rep_ventas_meses': 'Sales over the last 6 months',
     'rep_metodos_pago': 'Sales by payment method',
     'rep_ordenes_estado': 'Orders by status',
     'rep_inventario_cat': 'Inventory by category (value)',
@@ -1020,12 +943,11 @@ const VA_TRADUCCIONES = {
     'btn_filtrar': 'Filter',
     'btn_limpiar': 'Clear',
     'btn_excel': 'Excel',
-
     // Reportes - textos dinámicos
-    'rep_sin_datos': 'No data in the period',
-    'rep_sin_ventas': 'No sales in the period',
-    'rep_sin_ordenes': 'No orders in the period',
-    'rep_sin_productos': 'No registered products',
+    'rep_sin_datos': 'No data for this period',
+    'rep_sin_ventas': 'No sales in this period',
+    'rep_sin_ordenes': 'No orders in this period',
+    'rep_sin_productos': 'No products registered',
     'rep_stock_normal': 'All stock is at normal levels',
     'rep_sin_ventas_periodo': 'No sales in the selected period',
     'rep_venta': 'sale',
@@ -1036,7 +958,6 @@ const VA_TRADUCCIONES = {
     'rep_cliente_lbl': 'Client',
     'rep_sin_stock_badge': 'Out of stock',
     'rep_stock_bajo_badge': 'Low stock',
-
     // Reportes - export Excel
     'rep_excel_id': 'ID',
     'rep_excel_fecha': 'Date',
@@ -1055,15 +976,15 @@ const VA_TRADUCCIONES = {
     'rep_excel_tipo_entrega': 'Delivery Type',
     'rep_excel_costo': 'Service Cost',
     'rep_excel_fecha_promesa': 'Promise Date',
-    'rep_excel_creado': 'Created At',
+    'rep_excel_creado': 'Created On',
     'rep_excel_hoja_ordenes': 'Orders',
     'rep_excel_nombre': 'Name',
     'rep_excel_categoria': 'Category',
     'rep_excel_stock_actual': 'Current Stock',
-    'rep_excel_stock_min': 'Minimum Stock',
-    'rep_excel_faltantes': 'Missing Items',
+    'rep_excel_stock_min': 'Min Stock',
+    'rep_excel_faltantes': 'Missing',
     'rep_excel_precio_venta': 'Sale Price',
-    'rep_excel_valor_riesgo': 'Value at Risk',
+    'rep_excel_valor_riesgo': 'At-Risk Value',
     'rep_excel_hoja_stock': 'Critical Stock',
     'rep_excel_generado': 'Report Generated',
     'rep_excel_periodo_desde': 'Period From',
@@ -1079,66 +1000,57 @@ const VA_TRADUCCIONES = {
     'rep_excel_ingresos_serv': 'Revenue from Services',
     'rep_excel_facturas': 'Issued Invoices',
     'rep_excel_sin_stock': 'Out of Stock Products',
-    'rep_excel_stock_critico': 'Products in Critical Stock',
+    'rep_excel_stock_critico': 'Critical Stock Products',
     'rep_excel_hoja_resumen': 'Summary',
     'rep_excel_nombre_archivo': 'Report',
-
     // Reportes - métodos pago
     'rep_metodo_efectivo': 'Cash',
     'rep_metodo_tarjeta': 'Card',
-    'rep_metodo_transferencia': 'Bank Transfer',
+    'rep_metodo_transferencia': 'Transfer',
     'rep_metodo_otro': 'Other',
-
     // Reportes - categorías
     'rep_cat_electronicos': 'Electronics',
     'rep_cat_repuestos': 'Spare Parts',
     'rep_cat_servicios': 'Services',
     'rep_cat_otros': 'Others',
-
     // Reportes - estados órdenes
     'rep_estado_pendiente': 'Pending',
     'rep_estado_en_proceso': 'In Progress',
     'rep_estado_completado': 'Completed',
     'rep_estado_entregado': 'Delivered',
     'rep_estado_cancelado': 'Cancelled',
-
     // Ventas - detalle
-    'venta_sin_detalle': 'No registered detail lines',
+    'venta_sin_detalle': 'No detail lines registered',
     'venta_emitida_pos': 'Issued from Web POS terminal',
     'venta_sin_ventas': 'No registered sales',
-
     // Inventario mov tipos (en tabla)
-    'mov_entrada': 'Inbound',
-    'mov_salida': 'Outbound',
+    'mov_entrada': 'Entry',
+    'mov_salida': 'Exit',
     'mov_ajuste': 'Adjustment',
-
     // Alertas
     'alert_rec_schema': 'Schema recommendation',
-    'alert_rec_tabla': 'Table is recommended',
-
+    'alert_rec_tabla': 'Table recommended',
     // KPIs Dashboard
     'kpi_productos': 'Active Products',
     'kpi_stock_bajo': 'Low Stock',
     'kpi_ordenes_pend': 'Pending Orders',
     'kpi_ordenes_ent': 'Delivered Orders',
     'kpi_en_catalogo': 'in catalog',
-    'kpi_rep_repos': 'require replenishment',
+    'kpi_rep_repos': 'need restocking',
     'kpi_pend_proc': 'pending and in progress',
     'kpi_comp_ent': 'completed and delivered',
-
     // Dashboard paneles
     'dash_actividad': 'Activity last 7 days',
     'dash_ordenes_rec': 'Recent orders',
     'dash_alertas_stock': 'Stock Alerts',
-
     // Tablas encabezados específicos
     'th_identificacion': 'ID / Tax ID',
-    'th_razon_social': 'Name / Company Name',
+    'th_razon_social': 'Name / Company',
     'th_minimo': 'Minimum',
     'th_ultimo_mov': 'Last Mov.',
     'th_cliente': 'Client',
     'th_tecnico': 'Technician',
-    'th_equipo_falla': 'Device / Failure',
+    'th_equipo_falla': 'Device / Issue',
     'th_entrega': 'Delivery',
     'th_fecha_promesa': 'Promise Date',
     'th_id_venta': '#ID',
@@ -1150,20 +1062,248 @@ const VA_TRADUCCIONES = {
     'th_iva': 'VAT',
     'th_factura': '#Invoice',
     'th_accion': 'Action',
-
     // Usuarios - roles badges
     'badge_admin': 'Admin',
     'badge_vendedor': 'Seller',
     'badge_tecnico': 'Technician',
-
     // Usuarios - tabla vacía
     'usuarios_sin_registros': 'No registered users',
     'clientes_sin_registros': 'No registered clients',
-
     // Confirmación
     'confirm_cancelar': 'Cancel',
-
     // Exportar
     'exportar_excel': 'Export Excel',
   }
 };
+
+// ==================== ESTADO GLOBAL ====================
+const VA_CONFIG = {
+  get idioma() { return localStorage.getItem('va_idioma') || 'es'; },
+  get tema()   { return localStorage.getItem('va_tema')   || 'dark'; },
+  set idioma(v) { localStorage.setItem('va_idioma', v); },
+  set tema(v)   { localStorage.setItem('va_tema',   v); }
+};
+
+// ==================== HELPER DE TRADUCCIÓN ====================
+function t(clave) {
+  return VA_TRADUCCIONES[VA_CONFIG.idioma]?.[clave] || VA_TRADUCCIONES['es']?.[clave] || clave;
+}
+
+// ==================== TEMA ====================
+function aplicarTema(tema) {
+  const root = document.documentElement;
+  if (tema === 'light') {
+    root.setAttribute('data-theme', 'light');
+  } else {
+    root.removeAttribute('data-theme');
+  }
+  VA_CONFIG.tema = tema;
+  const btnTema = document.getElementById('cfg-btn-tema');
+  if (btnTema) {
+    const icono = tema === 'light' ? 'ti-moon' : 'ti-sun';
+    const texto = tema === 'light' ? t('cfg_tema_oscuro') : t('cfg_tema_claro');
+    btnTema.innerHTML = `<i class="ti ${icono}"></i><span>${texto}</span>`;
+  }
+}
+
+function toggleTema() {
+  const nuevo = VA_CONFIG.tema === 'dark' ? 'light' : 'dark';
+  aplicarTema(nuevo);
+  cerrarMenuConfig();
+}
+
+// ==================== IDIOMA ====================
+function aplicarIdioma(idioma) {
+  VA_CONFIG.idioma = idioma;
+  traducirPagina();
+  const btnIdioma = document.getElementById('cfg-btn-idioma');
+  if (btnIdioma) {
+    const esActivo = idioma === 'es';
+    btnIdioma.innerHTML = `<i class="ti ti-language"></i><span>${t('cfg_idioma')}: ${esActivo ? 'ES' : 'EN'}</span>`;
+  }
+}
+
+function toggleIdioma() {
+  const nuevo = VA_CONFIG.idioma === 'es' ? 'en' : 'es';
+  aplicarIdioma(nuevo);
+  cerrarMenuConfig();
+}
+
+// ==================== TRADUCCIÓN DE PÁGINA ====================
+function traducirPagina() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const clave = el.getAttribute('data-i18n');
+    const tipo  = el.getAttribute('data-i18n-type') || 'text';
+    const traduccion = t(clave);
+    if (tipo === 'placeholder') {
+      el.placeholder = traduccion;
+    } else if (tipo === 'title') {
+      el.title = traduccion;
+    } else if (tipo === 'value') {
+      el.textContent = traduccion;
+    } else {
+      el.textContent = traduccion;
+    }
+  });
+
+  const titulos = {
+    'dashboard.html': 'titulo_dashboard',
+    'productos.html': 'titulo_productos',
+    'inventario.html': 'titulo_inventario',
+    'ventas.html': 'titulo_ventas',
+    'ordenes.html': 'titulo_ordenes',
+    'facturas.html': 'titulo_facturas',
+    'clientes.html': 'titulo_clientes',
+    'usuarios.html': 'titulo_usuarios',
+    'reportes.html': 'titulo_reportes',
+    'login.html': 'login_titulo',
+    '401.html': '401_msg',
+  };
+  const pagina = window.location.pathname.split('/').pop();
+  if (titulos[pagina]) {
+    document.title = `VA Control — ${t(titulos[pagina])}`;
+  }
+
+  const pageTitle = document.getElementById('page-title');
+  const mapaPageTitle = {
+    'dashboard.html': 'titulo_dashboard',
+    'productos.html': 'titulo_productos',
+    'inventario.html': 'titulo_inventario',
+    'ventas.html': 'titulo_ventas',
+    'ordenes.html': 'titulo_ordenes',
+    'facturas.html': 'titulo_facturas',
+    'clientes.html': 'titulo_clientes',
+    'usuarios.html': 'titulo_usuarios',
+    'reportes.html': 'titulo_reportes',
+  };
+  if (pageTitle && mapaPageTitle[pagina]) {
+    pageTitle.textContent = t(mapaPageTitle[pagina]);
+  }
+
+  aplicarTema(VA_CONFIG.tema);
+  const btnIdioma = document.getElementById('cfg-btn-idioma');
+  if (btnIdioma) {
+    const idioma = VA_CONFIG.idioma;
+    btnIdioma.innerHTML = `<i class="ti ti-language"></i><span>${t('cfg_idioma')}: ${idioma === 'es' ? 'ES' : 'EN'}</span>`;
+  }
+}
+
+// ==================== MENÚ DE CONFIGURACIÓN ====================
+function crearMenuConfig() {
+  if (document.getElementById('cfg-dropdown')) return;
+  const dropdown = document.createElement('div');
+  dropdown.id = 'cfg-dropdown';
+  dropdown.className = 'cfg-dropdown';
+  dropdown.innerHTML = `
+    <button class="cfg-item" id="cfg-btn-tema" onclick="toggleTema()">
+      <i class="ti ti-sun"></i><span>${t('cfg_tema_claro')}</span>
+    </button>
+    <div class="cfg-separator"></div>
+    <button class="cfg-item" id="cfg-btn-idioma" onclick="toggleIdioma()">
+      <i class="ti ti-language"></i><span>${t('cfg_idioma')}: ${VA_CONFIG.idioma === 'es' ? 'ES' : 'EN'}</span>
+    </button>
+    <div class="cfg-separator"></div>
+    <button class="cfg-item cfg-item--danger" onclick="abrirModalLogout()">
+      <i class="ti ti-logout"></i><span>${t('cfg_cerrar')}</span>
+    </button>
+  `;
+  document.body.appendChild(dropdown);
+  document.addEventListener('click', function cerrarAlClickAfuera(e) {
+    const btnCfg = document.getElementById('btn-config');
+    if (!dropdown.contains(e.target) && e.target !== btnCfg && !btnCfg?.contains(e.target)) {
+      cerrarMenuConfig();
+    }
+  });
+}
+
+function abrirMenuConfig() {
+  const dropdown = document.getElementById('cfg-dropdown');
+  if (!dropdown) return;
+  const btnCfg = document.getElementById('btn-config');
+  const rect = btnCfg.getBoundingClientRect();
+  dropdown.style.top  = (rect.bottom + 8) + 'px';
+  dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+  dropdown.classList.toggle('cfg-dropdown--open');
+  aplicarTema(VA_CONFIG.tema);
+}
+
+function cerrarMenuConfig() {
+  const dropdown = document.getElementById('cfg-dropdown');
+  if (dropdown) dropdown.classList.remove('cfg-dropdown--open');
+}
+
+// ==================== MODAL LOGOUT ====================
+function crearModalLogout() {
+  if (document.getElementById('modal-logout-cfg')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'modal-logout-cfg';
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal modal-confirm">
+      <div class="confirm-icon-box confirm-danger" style="background:var(--red-bg);color:var(--red);display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;margin-bottom:16px;">
+        <i class="ti ti-logout" style="font-size:28px;"></i>
+      </div>
+      <h3 class="confirm-title" id="logout-titulo"></h3>
+      <p class="confirm-message" id="logout-msg"></p>
+      <div class="confirm-actions">
+        <button class="btn btn-ghost btn-flex" id="logout-btn-cancelar" onclick="cerrarModalLogout()"></button>
+        <button class="btn btn-flex" id="logout-btn-confirmar"
+          style="background:var(--red);color:#fff;font-weight:600;"
+          onclick="logout()">
+        </button>
+      </div>
+    </div>
+  `;
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) cerrarModalLogout();
+  });
+  document.body.appendChild(overlay);
+}
+
+function abrirModalLogout() {
+  cerrarMenuConfig();
+  document.getElementById('logout-titulo').textContent     = t('logout_titulo');
+  document.getElementById('logout-msg').textContent        = t('logout_msg');
+  document.getElementById('logout-btn-cancelar').textContent = t('logout_cancelar');
+  document.getElementById('logout-btn-confirmar').textContent = t('logout_confirmar');
+  document.getElementById('modal-logout-cfg').classList.add('open');
+}
+
+function cerrarModalLogout() {
+  const m = document.getElementById('modal-logout-cfg');
+  if (m) m.classList.remove('open');
+}
+
+// ==================== INYECCIÓN DEL BOTÓN DE CONFIGURACIÓN ====================
+function inyectarBotonConfig() {
+  const btns = document.querySelectorAll('.icon-btn');
+  let btnConfig = null;
+  btns.forEach(btn => {
+    if (btn.querySelector('.ti-settings')) btnConfig = btn;
+  });
+  if (!btnConfig) return;
+  btnConfig.id = 'btn-config';
+  btnConfig.setAttribute('data-i18n', 'topbar_config');
+  btnConfig.setAttribute('data-i18n-type', 'title');
+  btnConfig.removeAttribute('onclick');
+  btnConfig.addEventListener('click', function(e) {
+    e.stopPropagation();
+    abrirMenuConfig();
+  });
+}
+
+// ==================== QUITAR BOTÓN LOGOUT DEL SIDEBAR ====================
+function quitarLogoutSidebar() {
+  const btnsLogout = document.querySelectorAll('.sidebar-footer button[onclick*="logout"]');
+  btnsLogout.forEach(btn => btn.remove());
+}
+
+// ==================== INICIALIZACIÓN ====================
+document.addEventListener('DOMContentLoaded', function() {
+  aplicarTema(VA_CONFIG.tema);
+  crearMenuConfig();
+  crearModalLogout();
+  inyectarBotonConfig();
+  quitarLogoutSidebar();
+  aplicarIdioma(VA_CONFIG.idioma);
+});
