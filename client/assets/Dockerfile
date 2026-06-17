@@ -1,7 +1,10 @@
 FROM nginx:alpine
 
-# Creamos la ruta exacta dentro del contenedor de Nginx
+# Borramos lo que trae Nginx por defecto para limpiar la raíz
+RUN rm -rf /usr/share/nginx/html/*
+
+# Creamos la estructura limpia
 RUN mkdir -p /usr/share/nginx/html/client/assets
 
-# Copiamos TODO el contenido de tu carpeta actual ahí dentro
+# Copiamos todo lo que está en tu carpeta actual a la ruta destino
 COPY . /usr/share/nginx/html/client/assets/
