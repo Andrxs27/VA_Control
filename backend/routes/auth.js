@@ -6,7 +6,7 @@ const { verifyToken } = require('../middleware/authMiddleware');
 // --- RUTAS PÚBLICAS ---
 
 // POST /api/auth/login
-router.post('https://vacontrol-production.up.railway.app/login', authController.login);
+router.post('/login', authController.login);
 
 // --- RUTAS PROTEGIDAS ---
 
