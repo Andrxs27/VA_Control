@@ -6,8 +6,6 @@
  * <script src="/client/assets/js/auth.js"></script>
  */
 
-const VA_API = 'http://localhost:3000/api';
-
 // Obtiene el token almacenado
 function getToken() {
     return localStorage.getItem('va_token');
