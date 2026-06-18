@@ -3,6 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`
+      DROP TABLE IF EXISTS productos CASCADE;
       CREATE TABLE productos (
         id SERIAL PRIMARY KEY,
         sku VARCHAR(50) UNIQUE,

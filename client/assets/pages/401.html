@@ -1,61 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>401 — VA Control</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
-  <link rel="stylesheet" href="/client/assets/css/styles.css">
-  <link rel="stylesheet" href="/client/assets/css/401.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>401 No Autorizado - VA Control</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght=700&family=DM+Sans:wght=400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="/client/assets/css/401.css">
 </head>
 <body>
 
-  <div class="card-401">
-    <i class="ti ti-lock-square-rounded"></i>
-    <h1>401</h1>
-    <p data-i18n="401_msg">Acceso denegado. No tienes permisos de Administrador para gestionar usuarios.</p>
-    <a href="/client/assets/pages/dashboard.html" class="btn-back" data-i18n="401_btn">Volver al Dashboard</a>
-  </div>
+    <div class="card-401">
+        <i class="ti ti-lock-square-rounded"></i>
+        <h1>401</h1>
+        <p>Acceso denegado. No tienes permisos de Administrador para gestionar usuarios.</p>
+        <a href="/client/assets/pages/dashboard.html" class="btn-back">Volver al Dashboard</a>
+    </div>
+    <script src="/client/assets/js/config.js"></script>
 
-  <!-- Config mínimo: solo aplica tema e idioma, sin menú ni logout -->
-  <script>
-    (function() {
-      // Aplicar tema guardado inmediatamente para evitar parpadeo
-      const tema = localStorage.getItem('va_tema') || 'dark';
-      if (tema === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-
-      // Traducciones mínimas para esta página
-      const textos = {
-        es: {
-          '401_msg': 'Acceso denegado. No tienes permisos de Administrador para gestionar usuarios.',
-          '401_btn': 'Volver al Dashboard',
-          'title':   '401 No Autorizado — VA Control'
-        },
-        en: {
-          '401_msg': 'Access denied. You do not have Administrator permissions to manage users.',
-          '401_btn': 'Back to Dashboard',
-          'title':   '401 Unauthorized — VA Control'
-        }
-      };
-
-      document.addEventListener('DOMContentLoaded', function() {
-        const idioma = localStorage.getItem('va_idioma') || 'es';
-        const t      = textos[idioma] || textos.es;
-
-        // Traducir elementos con data-i18n
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-          const clave = el.getAttribute('data-i18n');
-          if (t[clave]) el.textContent = t[clave];
-        });
-
-        // Título de pestaña
-        document.title = t.title;
-      });
-    })();
-  </script>
 </body>
 </html>

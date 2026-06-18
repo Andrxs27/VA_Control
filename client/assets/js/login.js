@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000/api';
+const API = "https://vacontrol-production.up.railway.app/api";
 
 function _en()      { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en) { return _en() ? en : es; }
@@ -51,7 +51,7 @@ async function handleLogin() {
         }
         localStorage.setItem('va_token',   data.token);
         localStorage.setItem('va_usuario', JSON.stringify(data.usuario));
-        window.location.href = '/client/assets/pages/dashboard.html';
+        window.location.href = '/pages/dashboard.html';
     } catch (error) {
         console.error('Error de conexión:', error);
         mostrarError(_t(
@@ -66,5 +66,5 @@ async function handleLogin() {
 
 // Si ya hay sesión activa, redirigir al dashboard
 if (localStorage.getItem('va_token')) {
-    window.location.href = '/client/assets/pages/dashboard.html';
+    window.location.href = '/pages/dashboard.html';
 }

@@ -3,6 +3,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`
+      DROP TABLE IF EXISTS usuarios CASCADE;
       CREATE TABLE usuarios (
         id SERIAL PRIMARY KEY,
         nombre VARCHAR(100) NOT NULL,

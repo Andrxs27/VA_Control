@@ -8,7 +8,10 @@
     "start": "node index.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "hash-passwords": "node scripts/hash-passwords.js"
+    "hash-passwords": "node scripts/hash-passwords.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "seed": "npx sequelize-cli db:seed:all",
+    "migrations": "npm run migrate && npm run seed"
   },
   "keywords": [],
   "author": "",

@@ -1,5 +1,5 @@
 // /client/assets/js/badges.js
-const API_BADGE = 'http://localhost:3000/api';
+const API_BADGE = 'https://vacontrol-production.up.railway.app/api';
 
 async function actualizarBadgeOrdenes() {
     const badgeOrdenes = document.getElementById('badge-ordenes');

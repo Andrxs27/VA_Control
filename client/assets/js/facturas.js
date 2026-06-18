@@ -1,4 +1,4 @@
-const API = 'http://localhost:3000/api';
+const API = "https://vacontrol-production.up.railway.app/api";
 let facturaEditandoId = null;
 
 function _en()      { return localStorage.getItem('va_idioma') === 'en'; }

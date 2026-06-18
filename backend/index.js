@@ -1,6 +1,17 @@
 require('dotenv').config();
+const { execSync } = require('child_process');
 const express = require('express');
 const cors = require('cors');
+
+try {
+  console.log('Ejecutando migraciones...');
+  execSync('npx sequelize-cli db:migrate', { stdio: 'inherit' });
+  console.log('Migraciones completadas.');
+} catch (err) {
+  console.error('Error en migraciones:', err.message);
+  process.exit(1);
+}
+
 const app = express();
 
 app.use(cors());
@@ -31,7 +42,8 @@ app.get('/', (req, res) => {
     res.json({ mensaje: 'Backend VA_Control funcionando' });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
