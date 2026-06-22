@@ -5,7 +5,9 @@
  * * Uso en HTML:
  * <script src="/client/assets/js/auth.js"></script>
  */
+
 const VA_API = 'https://vacontrol-production.up.railway.app/api';
+
 // Obtiene el token almacenado
 function getToken() {
     return localStorage.getItem('va_token');
@@ -35,6 +37,42 @@ function authHeaders() {
     };
 }
 
+// Función para pintar/actualizar los datos del usuario en la interfaz (Sidebar)
+function actualizarUI() {
+    const usuario = getUsuario();
+    if (!usuario) return;
+
+    // 1. Iniciales del avatar
+    const avatarEl = document.querySelector('.user-avatar');
+    if (avatarEl && usuario.nombre) {
+        const iniciales = usuario.nombre
+            .split(' ')
+            .filter(n => n) // Evita errores si hay dobles espacios
+            .map(n => n[0])
+            .slice(0, 2)
+            .join('')
+            .toUpperCase();
+        avatarEl.textContent = iniciales;
+    }
+
+    // 2. Nombre en el sidebar
+    const nombreEl = document.querySelector('.user-info p');
+    if (nombreEl) nombreEl.textContent = usuario.nombre;
+
+    // 3. Rol en el sidebar
+    const rolEl = document.querySelector('.user-info span');
+    if (rolEl) {
+        const roles = { admin: 'Administrador', vendedor: 'Vendedor', tecnico: 'Técnico' };
+        rolEl.textContent = roles[usuario.rol] || usuario.rol;
+    }
+
+    // 4. Mostrar u ocultar accesos del menú lateral según el rol actual
+    const navUsuarios = document.querySelector('.nav-item[onclick*="usuarios"]');
+    if (navUsuarios) {
+        navUsuarios.style.display = usuario.rol === 'admin' ? '' : 'none';
+    }
+}
+
 // Guard principal: ejecuta las comprobaciones de ruta inmediatamente
 (function checkAuth() {
     const token = getToken();
@@ -51,58 +89,39 @@ function authHeaders() {
 
     if (esPaginaUsuarios && (!usuario || usuario.rol !== 'admin')) {
         console.error("Error 401: Unauthorized - No tienes permisos para esta sección.");
-        
-        // Redirección limpia e inmediata a la página de error independiente
         window.location.href = '/pages/401.html';
         return; 
     }
 
-    // 3. Verificar token con el servidor en segundo plano
+    // 3. Verificar token y actualizar datos del usuario en tiempo real
     fetch(`${VA_API}/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => {
         if (res.status === 401) {
-            // Token expirado o inválido
             logout();
+            throw new Error('Sesión expirada o inválida');
+        }
+        return res.json();
+    })
+    .then(data => {
+        // Validamos si la API devuelve el usuario directamente o anidado en data.usuario
+        const usuarioActualizado = data.usuario || data;
+        
+        if (usuarioActualizado && usuarioActualizado.rol) {
+            // Guardamos los datos nuevos en el localStorage (por si cambió de admin a tecnico)
+            localStorage.setItem('va_usuario', JSON.stringify(usuarioActualizado));
+            
+            // Forzamos el rediseño de la UI con los datos frescos del servidor
+            actualizarUI();
         }
     })
-    .catch(() => {
-        console.warn('VA_Control: No se pudo verificar el token con el servidor.');
+    .catch((err) => {
+        console.warn('VA_Control:', err.message || 'No se pudo verificar el token con el servidor.');
     });
 })();
 
-// Poblar elementos de la interfaz común (Sidebar) una vez cargue el DOM
+// Poblar elementos de la interfaz común una vez cargue el DOM inicial
 document.addEventListener('DOMContentLoaded', () => {
-    const usuario = getUsuario();
-    if (!usuario) return;
-
-    // Iniciales del avatar
-    const avatarEl = document.querySelector('.user-avatar');
-    if (avatarEl) {
-        const iniciales = usuario.nombre
-            .split(' ')
-            .map(n => n[0])
-            .slice(0, 2)
-            .join('')
-            .toUpperCase();
-        avatarEl.textContent = iniciales;
-    }
-
-    // Nombre en el sidebar
-    const nombreEl = document.querySelector('.user-info p');
-    if (nombreEl) nombreEl.textContent = usuario.nombre;
-
-    // Rol en el sidebar
-    const rolEl = document.querySelector('.user-info span');
-    if (rolEl) {
-        const roles = { admin: 'Administrador', vendedor: 'Vendedor', tecnico: 'Técnico' };
-        rolEl.textContent = roles[usuario.rol] || usuario.rol;
-    }
-
-    // Ocultar accesos del menú lateral si no es administrador
-    if (usuario.rol !== 'admin') {
-        const navUsuarios = document.querySelector('.nav-item[onclick*="usuarios"]');
-        if (navUsuarios) navUsuarios.style.display = 'none';
-    }
+    actualizarUI();
 });
