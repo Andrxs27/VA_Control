@@ -12,13 +12,7 @@ const getAuthHeaders = () => {
     return { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
 };
 
-const originalSetItem = localStorage.setItem;
-localStorage.setItem = function(key, value) {
-    originalSetItem.apply(this, arguments);
-    if (key === 'va_idioma' && typeof usuariosLista !== 'undefined' && usuariosLista.length > 0) {
-        renderizarTabla(usuariosLista);
-    }
-};
+
 
 // ── TOAST ────────────────────────────────────────────────────────────────────
 function toast(msg, type = 'info') {
