@@ -11,6 +11,16 @@ const getAuthHeaders = () => {
     return { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
 };
 
+// Funciones de respaldo por si no están definidas en script.js
+window.openModal = window.openModal || function(id) {
+    const m = document.getElementById(id);
+    if (m) m.classList.add('active'); // O la clase CSS que uses para mostrarlo
+};
+window.closeModal = window.closeModal || function(id) {
+    const m = document.getElementById(id);
+    if (m) m.classList.remove('active');
+};
+
 // ── TOAST ────────────────────────────────────────────────────────────────────
 function toast(msg, type = 'info') {
     const c = document.getElementById('toasts');
@@ -42,13 +52,18 @@ function restablecerVisibilidadPasswords() {
 // ── 1. CARGAR USUARIOS ───────────────────────────────────────────────────────
 async function cargarUsuarios() {
     try {
+        console.log("Intentando cargar la lista de usuarios...");
         const inputBuscar = document.getElementById('buscar-usuario');
         if (inputBuscar) inputBuscar.value = '';
+        
         const res = await fetch(`${API}/usuarios`, { headers: getAuthHeaders() });
         if (!res.ok) throw new Error(_t('Error al obtener usuarios','Error fetching users'));
+        
         usuariosLista = await res.json();
+        console.log("Usuarios cargados con éxito:", usuariosLista);
         renderizarTabla(usuariosLista);
     } catch (error) {
+        console.error("Error en cargarUsuarios:", error);
         toast(`Error: ${error.message}`, 'error');
     }
 }
@@ -66,7 +81,10 @@ function rolBadge(rol) {
 
 function renderizarTabla(lista) {
     const tbody = document.getElementById('tb-usuarios');
-    if (!tbody) return;
+    if (!tbody) {
+        console.error("No se encontró el elemento 'tb-usuarios' en el HTML.");
+        return;
+    }
     tbody.innerHTML = '';
 
     if (lista.length === 0) {
@@ -205,38 +223,6 @@ function abrirDialogoConfirmacion({ titulo, mensaje, icono, colorFondo, colorIco
     openModal('modal-confirmacion');
 }
 
-function solicitarCambioEstado(id, nuevoEstado) {
-    const usuario      = usuariosLista.find(u => u.id === id);
-    const identificador = usuario ? ` ${_t('de','of')} ${usuario.nombre}` : '';
-    abrirDialogoConfirmacion({
-        titulo:     nuevoEstado ? _t('¿Activar cuenta de usuario?','Activate user account?') : _t('¿Desactivar cuenta de usuario?','Deactivate user account?'),
-        mensaje:    nuevoEstado
-            ? _t(`El usuario${identificador} recuperará el acceso al sistema.`, `User${identificador} will regain access to the system.`)
-            : _t(`El usuario${identificador} será inhabilitado temporalmente.`, `User${identificador} will be temporarily disabled.`),
-        icono:      nuevoEstado ? 'ti-user-check' : 'ti-user-off',
-        colorFondo: nuevoEstado ? '#e6f4ea' : '#f3f4f6',
-        colorIcono: nuevoEstado ? '#10b981' : '#4b5563',
-        textoBoton: _t('Confirmar','Confirm'),
-        colorBoton: nuevoEstado ? '#10b981' : '#6b7280',
-        callback:   () => cambiarEstadoUsuario(id, nuevoEstado)
-    });
-}
-
-function solicitarEliminacion(id) {
-    const usuario      = usuariosLista.find(u => u.id === id);
-    const identificador = usuario ? `${usuario.nombre} (${usuario.email})` : _t('este usuario','this user');
-    abrirDialogoConfirmacion({
-        titulo:     _t('¿Eliminar cuenta de usuario?','Delete user account?'),
-        mensaje:    _t(`La cuenta de ${identificador} se eliminará permanentemente.`, `The account of ${identificador} will be permanently deleted.`),
-        icono:      'ti-alert-triangle',
-        colorFondo: '#fee2e2',
-        colorIcono: '#ef4444',
-        textoBoton: _t('Confirmar','Confirm'),
-        colorBoton: '#ef4444',
-        callback:   () => eliminarUsuarioDefinitivo(id)
-    });
-}
-
 // ── 5. OPERACIONES AJAX ──────────────────────────────────────────────────────
 async function cambiarEstadoUsuario(id, nuevoEstado) {
     try {
@@ -260,26 +246,44 @@ async function eliminarUsuarioDefinitivo(id) {
 // ── 6. CARGAR PERFIL DE USUARIO LOGUEADO (SIDEBAR) ───────────────────────────
 async function cargarPerfilSidebar() {
     try {
+        console.log("Intentando cargar perfil del sidebar...");
         let usuario = null;
 
-        // OPCIÓN A: Intenta traer el perfil desde tu API actual
-        // (Modifica '/usuarios/perfil' si tu backend usa otra ruta como '/auth/me' o similar)
-        const res = await fetch(`${API}/usuarios/perfil`, { headers: getAuthHeaders() });
-        if (res.ok) {
-            usuario = await res.json();
+        // Intentar obtener desde la API primero
+        try {
+            const res = await fetch(`${API}/usuarios/perfil`, { headers: getAuthHeaders() });
+            if (res.ok) {
+                usuario = await res.json();
+                console.log("Perfil obtenido desde la API:", usuario);
+            }
+        } catch (apiError) {
+            console.warn("La ruta API /usuarios/perfil falló. Buscando en localStorage...");
         }
 
-        // OPCIÓN B: Descomenta la línea de abajo si prefieres leerlo directo de tu localStorage
-        // usuario = JSON.parse(localStorage.getItem('va_usuario'));
+        // Si la API no respondió, buscar un respaldo en localStorage (ej: guardado al hacer login)
+        if (!usuario) {
+            const localUser = localStorage.getItem('va_usuario') || localStorage.getItem('usuario');
+            if (localUser) {
+                usuario = JSON.parse(localUser);
+                console.log("Perfil obtenido desde localStorage:", usuario);
+            }
+        }
 
-        if (!usuario) return;
+        // Si no hay datos en ningún lugar, dejar valores por defecto estables
+        if (!usuario) {
+            console.warn("No se encontró información del usuario actual en API ni localStorage.");
+            const nombreEl = document.getElementById('sb-user-name');
+            const rolEl    = document.getElementById('sb-user-role');
+            if (nombreEl) nombreEl.innerText = "Invitado";
+            if (rolEl)    rolEl.innerText = "Usuario";
+            return;
+        }
 
-        // Extraer las dos primeras iniciales del nombre (Ej: "Juan Perez" -> "JP")
+        // Obtener iniciales
         const iniciales = usuario.nombre
-            ? usuario.nombre.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
+            ? usuario.nombre.split(' ').filter(n => n).map(n => n[0]).join('').toUpperCase().substring(0, 2)
             : 'U';
         
-        // Mapear y traducir los roles para la vista lateral
         const rolesMap = {
             admin:    _t('Administrador', 'Administrator'),
             vendedor: _t('Vendedor', 'Seller'),
@@ -295,10 +299,13 @@ async function cargarPerfilSidebar() {
         if (rolEl)    rolEl.innerText = rolesMap[usuario.rol] || usuario.rol;
 
     } catch (error) {
-        console.error("Error al cargar dinámicamente el perfil del sidebar:", error);
+        console.error("Error crítico al renderizar el sidebar:", error);
     }
 }
 
-// ── INICIALIZACIÓN DE CARGA AUTOMÁTICA ───────────────────────────────────────
-cargarUsuarios();
-cargarPerfilSidebar();
+// ── INICIALIZACIÓN COMPLETA ──────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM listo. Iniciando peticiones...");
+    cargarUsuarios();
+    cargarPerfilSidebar();
+});
