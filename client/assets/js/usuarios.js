@@ -66,6 +66,7 @@ function rolBadge(rol) {
 
 function renderizarTabla(lista) {
     const tbody = document.getElementById('tb-usuarios');
+    if (!tbody) return;
     tbody.innerHTML = '';
 
     if (lista.length === 0) {
@@ -83,7 +84,7 @@ function renderizarTabla(lista) {
     lista.forEach(u => {
         const botonEstado = u.activo
             ? `<button class="btn btn-sm" style="background:#6b7280;color:white" onclick="solicitarCambioEstado(${u.id},false)" title="${desact}"><i class="ti ti-user-off"></i></button>`
-            : `<button class="btn btn-sm" style="background:#10b981;color:white" onclick="solicitarCambioEstado(${u.id},true)"  title="${activar}"><i class="ti ti-user-check"></i></button>`;
+            : `<button class="btn btn-sm" style="background:#10b981;color:white" onclick="solicitarCambioEstado(${u.id},true)"   title="${activar}"><i class="ti ti-user-check"></i></button>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -256,4 +257,48 @@ async function eliminarUsuarioDefinitivo(id) {
     } catch (error) { toast(error.message, 'error'); }
 }
 
+// ── 6. CARGAR PERFIL DE USUARIO LOGUEADO (SIDEBAR) ───────────────────────────
+async function cargarPerfilSidebar() {
+    try {
+        let usuario = null;
+
+        // OPCIÓN A: Intenta traer el perfil desde tu API actual
+        // (Modifica '/usuarios/perfil' si tu backend usa otra ruta como '/auth/me' o similar)
+        const res = await fetch(`${API}/usuarios/perfil`, { headers: getAuthHeaders() });
+        if (res.ok) {
+            usuario = await res.json();
+        }
+
+        // OPCIÓN B: Descomenta la línea de abajo si prefieres leerlo directo de tu localStorage
+        // usuario = JSON.parse(localStorage.getItem('va_usuario'));
+
+        if (!usuario) return;
+
+        // Extraer las dos primeras iniciales del nombre (Ej: "Juan Perez" -> "JP")
+        const iniciales = usuario.nombre
+            ? usuario.nombre.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
+            : 'U';
+        
+        // Mapear y traducir los roles para la vista lateral
+        const rolesMap = {
+            admin:    _t('Administrador', 'Administrator'),
+            vendedor: _t('Vendedor', 'Seller'),
+            tecnico:  _t('Técnico', 'Technician'),
+        };
+
+        const avatarEl = document.getElementById('sb-user-avatar');
+        const nombreEl = document.getElementById('sb-user-name');
+        const rolEl    = document.getElementById('sb-user-role');
+
+        if (avatarEl) avatarEl.innerText = iniciales;
+        if (nombreEl) nombreEl.innerText = usuario.nombre;
+        if (rolEl)    rolEl.innerText = rolesMap[usuario.rol] || usuario.rol;
+
+    } catch (error) {
+        console.error("Error al cargar dinámicamente el perfil del sidebar:", error);
+    }
+}
+
+// ── INICIALIZACIÓN DE CARGA AUTOMÁTICA ───────────────────────────────────────
 cargarUsuarios();
+cargarPerfilSidebar();
