@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VA Control — Clientes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
+
 <body>
 
   <aside class="sidebar" id="sidebar">
@@ -18,22 +22,29 @@
     </div>
     <nav>
       <span class="nav-section" data-i18n="nav_principal">Principal</span>
-      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i><span data-i18n="nav_dashboard">Dashboard</span></div>
-      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i><span data-i18n="nav_productos">Productos</span></div>
-      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i><span data-i18n="nav_inventario">Inventario</span></div>
+      <div class="nav-item" onclick="window.location.href='dashboard.html'"><i class="ti ti-layout-dashboard"></i><span
+          data-i18n="nav_dashboard">Dashboard</span></div>
+      <div class="nav-item" onclick="window.location.href='productos.html'"><i class="ti ti-package"></i><span
+          data-i18n="nav_productos">Productos</span></div>
+      <div class="nav-item" onclick="window.location.href='inventario.html'"><i class="ti ti-clipboard-list"></i><span
+          data-i18n="nav_inventario">Inventario</span></div>
       <span class="nav-section" data-i18n="nav_operaciones">Operaciones</span>
-      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i><span data-i18n="nav_ordenes">Órdenes de Servicio</span><span class="nav-badge" id="badge-ordenes">3</span></div>
+      <div class="nav-item" onclick="window.location.href='ordenes.html'"><i class="ti ti-tool"></i><span
+          data-i18n="nav_ordenes">Órdenes de Servicio</span><span class="nav-badge" id="badge-ordenes">3</span></div>
       <span class="nav-section" data-i18n="nav_administracion">Administración</span>
-      <div class="nav-item active" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i><span data-i18n="nav_clientes">Clientes</span></div>
-      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i><span data-i18n="nav_usuarios">Usuarios</span></div>
-      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i><span data-i18n="nav_reportes">Reportes</span></div>
+      <div class="nav-item active" onclick="window.location.href='clientes.html'"><i class="ti ti-users-group"></i><span
+          data-i18n="nav_clientes">Clientes</span></div>
+      <div class="nav-item" onclick="window.location.href='usuarios.html'"><i class="ti ti-users"></i><span
+          data-i18n="nav_usuarios">Usuarios</span></div>
+      <div class="nav-item" onclick="window.location.href='reportes.html'"><i class="ti ti-chart-bar"></i><span
+          data-i18n="nav_reportes">Reportes</span></div>
     </nav>
     <div class="sidebar-footer">
       <div class="user-card">
-        <div class="user-avatar">AD</div>
+        <div class="user-avatar">...</div>
         <div class="user-info">
-          <p>Admin User</p>
-          <span data-i18n="rol_admin">Administrador</span>
+          <p>...</p>
+          <span data-i18n="cargando">Cargando...</span>
         </div>
       </div>
     </div>
@@ -59,15 +70,15 @@
             <div class="section-title" data-i18n="sec_clientes_titulo">Clientes del Sistema</div>
             <div class="section-sub" data-i18n="sec_clientes_sub">Gestión de la cartera de clientes y cuentas</div>
           </div>
-          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> <span data-i18n="btn_nuevo_cliente">Nuevo Cliente</span></button>
+          <button class="btn btn-primary" onclick="prepararCreacion()"><i class="ti ti-user-plus"></i> <span
+              data-i18n="btn_nuevo_cliente">Nuevo Cliente</span></button>
         </div>
 
         <div class="search-container">
           <div class="search-wrapper">
             <i class="ti ti-search search-icon"></i>
-            <input type="text" id="buscar-cliente" class="input-search"
-              data-i18n="buscar_cliente" data-i18n-type="placeholder"
-              placeholder="Buscar por nombre, identificación, email o teléfono..."
+            <input type="text" id="buscar-cliente" class="input-search" data-i18n="buscar_cliente"
+              data-i18n-type="placeholder" placeholder="Buscar por nombre, identificación, email o teléfono..."
               oninput="filtrarClientes()">
           </div>
         </div>
@@ -96,29 +107,35 @@
     <div class="modal">
       <div class="modal-head">
         <h2 id="modal-cliente-titulo" data-i18n="modal_nuevo_cliente">Nuevo Cliente</h2>
-        <button class="icon-btn" onclick="closeModal('modal-cliente')" aria-label="Cerrar modal"><i class="ti ti-x"></i></button>
+        <button class="icon-btn" onclick="closeModal('modal-cliente')" aria-label="Cerrar modal"><i
+            class="ti ti-x"></i></button>
       </div>
       <div class="modal-body">
         <div class="form-grid form-grid-2">
           <div class="form-group">
             <label for="c-identificacion" data-i18n="lbl_identificacion">Identificación / NIT / RUT *</label>
-            <input type="text" id="c-identificacion" data-i18n="ph_identificacion" data-i18n-type="placeholder" placeholder="12345678-9" required>
+            <input type="text" id="c-identificacion" data-i18n="ph_identificacion" data-i18n-type="placeholder"
+              placeholder="12345678-9" required>
           </div>
           <div class="form-group">
             <label for="c-nombre" data-i18n="lbl_nombre_razon">Nombre o Razón Social *</label>
-            <input type="text" id="c-nombre" data-i18n="ph_nombre_razon" data-i18n-type="placeholder" placeholder="Juan Pérez o Empresa S.A." required>
+            <input type="text" id="c-nombre" data-i18n="ph_nombre_razon" data-i18n-type="placeholder"
+              placeholder="Juan Pérez o Empresa S.A." required>
           </div>
           <div class="form-group">
             <label for="c-email" data-i18n="lbl_email_opcional">Email (Opcional)</label>
-            <input type="email" id="c-email" data-i18n="ph_email" data-i18n-type="placeholder" placeholder="cliente@email.com">
+            <input type="email" id="c-email" data-i18n="ph_email" data-i18n-type="placeholder"
+              placeholder="cliente@email.com">
           </div>
           <div class="form-group">
             <label for="c-telefono" data-i18n="lbl_telefono">Teléfono (Opcional)</label>
-            <input type="tel" id="c-telefono" data-i18n="ph_telefono" data-i18n-type="placeholder" placeholder="+56 9 1234 5678">
+            <input type="tel" id="c-telefono" data-i18n="ph_telefono" data-i18n-type="placeholder"
+              placeholder="+56 9 1234 5678">
           </div>
           <div class="form-group" style="grid-column:span 2;">
             <label for="c-direccion" data-i18n="lbl_direccion">Dirección</label>
-            <input type="text" id="c-direccion" data-i18n="ph_direccion" data-i18n-type="placeholder" placeholder="Av. Principal 123, Ciudad">
+            <input type="text" id="c-direccion" data-i18n="ph_direccion" data-i18n-type="placeholder"
+              placeholder="Av. Principal 123, Ciudad">
           </div>
           <div class="form-group">
             <label for="c-tipo" data-i18n="lbl_tipo_cliente">Tipo de Cliente</label>
@@ -138,7 +155,8 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" onclick="closeModal('modal-cliente')" data-i18n="btn_cancelar">Cancelar</button>
-        <button class="btn btn-primary" onclick="guardarCliente()"><i class="ti ti-check"></i> <span data-i18n="btn_crear_cliente">Crear Cliente</span></button>
+        <button class="btn btn-primary" onclick="guardarCliente()"><i class="ti ti-check"></i> <span
+            data-i18n="btn_crear_cliente">Crear Cliente</span></button>
       </div>
     </div>
   </div>
@@ -151,7 +169,8 @@
       <h3 id="confirm-titulo" class="confirm-title" data-i18n="modal_confirmar">Confirmar Acción</h3>
       <p id="confirm-mensaje" class="confirm-message"></p>
       <div class="confirm-actions">
-        <button class="btn btn-ghost btn-flex" onclick="closeModal('modal-confirmacion')" data-i18n="btn_cancelar">Cancelar</button>
+        <button class="btn btn-ghost btn-flex" onclick="closeModal('modal-confirmacion')"
+          data-i18n="btn_cancelar">Cancelar</button>
         <button class="btn btn-flex" id="confirm-btn-proceder" data-i18n="btn_confirmar">Confirmar</button>
       </div>
     </div>
@@ -165,4 +184,5 @@
   <script src="/js/clientes.js"></script>
   <script src="/js/alertordenes.js"></script>
 </body>
+
 </html>

@@ -59,11 +59,26 @@ function actualizarUI() {
     const nombreEl = document.querySelector('.user-info p');
     if (nombreEl) nombreEl.textContent = usuario.nombre;
 
-    // 3. Rol en el sidebar
+    // 3. Rol en el sidebar (Soporte Multi-idioma)
     const rolEl = document.querySelector('.user-info span');
     if (rolEl) {
-        const roles = { admin: 'Administrador', vendedor: 'Vendedor', tecnico: 'Técnico' };
-        rolEl.textContent = roles[usuario.rol] || usuario.rol;
+        // Mapeamos el rol de la base de datos con tu clave de traducción de los archivos JSON
+        const i18nRoles = { admin: 'rol_admin', vendedor: 'rol_vendedor', tecnico: 'rol_tecnico' };
+        const claveTraduccion = i18nRoles[usuario.rol] || `rol_${usuario.rol}`;
+        
+        // Cambiamos el atributo dinámicamente
+        rolEl.setAttribute('data-i18n', claveTraduccion);
+
+        // 🔄 EJECUTAR TRADUCCIÓN: Intentamos forzar al motor de i18n a traducir el nuevo atributo
+        if (typeof aplicarTraducciones === 'function') {
+            aplicarTraducciones(); // Cambia esto por el nombre de tu función global de i18n si es diferente
+        } else if (window.i18next && typeof i18next.t === 'function') {
+            rolEl.textContent = i18next.t(claveTraduccion);
+        } else {
+            // Respaldo en texto plano en español si la librería de idiomas aún no se ha inicializado
+            const rolesRespaldo = { admin: 'Administrador', vendedor: 'Vendedor', tecnico: 'Técnico' };
+            rolEl.textContent = rolesRespaldo[usuario.rol] || usuario.rol;
+        }
     }
 
     // 4. Mostrar u ocultar accesos del menú lateral según el rol actual
