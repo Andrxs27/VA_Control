@@ -6,9 +6,6 @@
  * <script src="/client/assets/js/auth.js"></script>
  */
 
-// Variable global para la API (asegúrate de que coincida con tu backend)
-const VA_API = "https://vacontrol-production.up.railway.app/api";
-
 // Obtiene el token almacenado
 function getToken() {
     return localStorage.getItem('va_token');
@@ -54,6 +51,8 @@ function authHeaders() {
 
     if (esPaginaUsuarios && (!usuario || usuario.rol !== 'admin')) {
         console.error("Error 401: Unauthorized - No tienes permisos para esta sección.");
+        
+        // Redirección limpia e inmediata a la página de error independiente
         window.location.href = '/pages/401.html';
         return; 
     }
@@ -64,7 +63,8 @@ function authHeaders() {
     })
     .then(res => {
         if (res.status === 401) {
-            logout(); // Token expirado o inválido
+            // Token expirado o inválido
+            logout();
         }
     })
     .catch(() => {
@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const usuario = getUsuario();
     if (!usuario) return;
 
-    // 1. Iniciales del avatar automáticamente (Ej: "Admin User" -> "AU")
+    // Iniciales del avatar
     const avatarEl = document.querySelector('.user-avatar');
-    if (avatarEl && usuario.nombre) {
+    if (avatarEl) {
         const iniciales = usuario.nombre
             .split(' ')
             .map(n => n[0])
@@ -89,19 +89,18 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarEl.textContent = iniciales;
     }
 
-    // 2. Nombre dinámico en el sidebar
+    // Nombre en el sidebar
     const nombreEl = document.querySelector('.user-info p');
     if (nombreEl) nombreEl.textContent = usuario.nombre;
 
-    // 3. Rol dinámico en el sidebar
+    // Rol en el sidebar
     const rolEl = document.querySelector('.user-info span');
     if (rolEl) {
         const roles = { admin: 'Administrador', vendedor: 'Vendedor', tecnico: 'Técnico' };
         rolEl.textContent = roles[usuario.rol] || usuario.rol;
-        rolEl.setAttribute('data-i18n', `rol_${usuario.rol}`);
     }
 
-    // 4. Ocultar accesos del menú lateral si no es administrador
+    // Ocultar accesos del menú lateral si no es administrador
     if (usuario.rol !== 'admin') {
         const navUsuarios = document.querySelector('.nav-item[onclick*="usuarios"]');
         if (navUsuarios) navUsuarios.style.display = 'none';
