@@ -6,23 +6,6 @@ let accionConfirmadaCallback = null;
 function _en()      { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en) { return _en() ? en : es; }
 
-// ── INTERCEPTOR SEGURO DE TRADUCCIÓN EN TIEMPO REAL ──────────────────────────
-// Captura cuando config.js cambia el idioma y actualiza la tabla de inmediato
-let traduciendoTablaFlujo = false;
-if (typeof traducirPagina === 'function') {
-    const originalTraducirPagina = traducirPagina;
-    traducirPagina = function() {
-        originalTraducirPagina(); // Ejecuta la traducción estática de config.js
-        if (!traduciendoTablaFlujo) {
-            traduciendoTablaFlujo = true;
-            if (typeof usuariosLista !== 'undefined' && usuariosLista.length > 0) {
-                renderizarTabla(usuariosLista); // Redibuja los textos dinámicos de las filas
-            }
-            traduciendoTablaFlujo = false;
-        }
-    };
-}
-
 const getAuthHeaders = () => {
     const token = localStorage.getItem('va_token');
     return { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
@@ -73,35 +56,34 @@ async function cargarUsuarios() {
 function rolBadge(rol) {
     const en = _en();
     const map = {
-        admin:    ['badge-red',   en ? 'Admin'       : 'Admin',      'rol_admin'],
-        vendedor: ['badge-blue',  en ? 'Seller'      : 'Vendedor',   'rol_vendedor'],
-        tecnico:  ['badge-amber', en ? 'Technician'  : 'Técnico',    'rol_tecnico'],
+        admin:    ['badge-red',   en ? 'Admin'       : 'Admin'],
+        vendedor: ['badge-blue',  en ? 'Seller'      : 'Vendedor'],
+        tecnico:  ['badge-amber', en ? 'Technician'  : 'Técnico'],
     };
-    const [cls, label, i18nKey] = map[rol] || ['badge-gray', rol, ''];
-    return `<span class="badge ${cls}" data-i18n="${i18nKey}">${label}</span>`;
+    const [cls, label] = map[rol] || ['badge-gray', rol];
+    return `<span class="badge ${cls}">${label}</span>`;
 }
 
 function renderizarTabla(lista) {
     const tbody = document.getElementById('tb-usuarios');
-    if (!tbody) return;
     tbody.innerHTML = '';
 
     if (lista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3)" data-i18n="no_usuarios">${_t('No hay usuarios registrados','No registered users')}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3)">${_t('No hay usuarios registrados','No registered users')}</td></tr>`;
         return;
     }
 
     const activo   = _t('Activo','Active');
     const inactivo = _t('Inactivo','Inactive');
     const desact   = _t('Desactivar','Deactivate');
-    const activar  = _t('Activar','Activate');
+    const activar  = _t('Activate','Activate');
     const editar   = _t('Editar','Edit');
     const eliminar = _t('Eliminar','Delete');
 
     lista.forEach(u => {
         const botonEstado = u.activo
-            ? `<button class="btn btn-sm" style="background:#6b7280;color:white" onclick="solicitarCambioEstado(${u.id},false)" title="${desact}" data-i18n="btn_desactivar" data-i18n-type="title"><i class="ti ti-user-off"></i></button>`
-            : `<button class="btn btn-sm" style="background:#10b981;color:white" onclick="solicitarCambioEstado(${u.id},true)"  title="${activar}" data-i18n="btn_activar" data-i18n-type="title"><i class="ti ti-user-check"></i></button>`;
+            ? `<button class="btn btn-sm" style="background:#6b7280;color:white" onclick="solicitarCambioEstado(${u.id},false)" title="${desact}"><i class="ti ti-user-off"></i></button>`
+            : `<button class="btn btn-sm" style="background:#10b981;color:white" onclick="solicitarCambioEstado(${u.id},true)"  title="${activar}"><i class="ti ti-user-check"></i></button>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -109,17 +91,14 @@ function renderizarTabla(lista) {
             <td>${u.nombre}</td>
             <td>${u.email}</td>
             <td>${rolBadge(u.rol)}</td>
-            <td><span class="badge ${u.activo ? 'badge-green' : 'badge-gray'}" data-i18n="${u.activo ? 'estado_activo' : 'estado_inactivo'}">${u.activo ? activo : inactivo}</span></td>
+            <td><span class="badge ${u.activo ? 'badge-green' : 'badge-gray'}">${u.activo ? activo : inactivo}</span></td>
             <td>
-                <button class="btn btn-warning btn-sm" onclick="prepararEdicion(${u.id})" title="${editar}" data-i18n="btn_editar" data-i18n-type="title"><i class="ti ti-edit"></i></button>
+                <button class="btn btn-warning btn-sm" onclick="prepararEdicion(${u.id})" title="${editar}"><i class="ti ti-edit"></i></button>
                 ${botonEstado}
-                <button class="btn btn-danger btn-sm" onclick="solicitarEliminacion(${u.id})" title="${eliminar}" data-i18n="btn_eliminar" data-i18n-type="title"><i class="ti ti-trash"></i></button>
+                <button class="btn btn-danger btn-sm" onclick="solicitarEliminacion(${u.id})" title="${eliminar}"><i class="ti ti-trash"></i></button>
             </td>`;
         tbody.appendChild(tr);
     });
-
-    // Forzar la ejecución del traductor nativo sobre los nuevos elementos agregados
-    if (typeof traducirPagina === 'function') traducirPagina();
 }
 
 // ── FILTRAR ──────────────────────────────────────────────────────────────────
@@ -277,5 +256,4 @@ async function eliminarUsuarioDefinitivo(id) {
     } catch (error) { toast(error.message, 'error'); }
 }
 
-// Inicialización automática
 cargarUsuarios();
