@@ -6,9 +6,18 @@ let accionConfirmadaCallback = null;
 function _en()      { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en) { return _en() ? en : es; }
 
+
 const getAuthHeaders = () => {
     const token = localStorage.getItem('va_token');
     return { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
+};
+
+const originalSetItem = localStorage.setItem;
+localStorage.setItem = function(key, value) {
+    originalSetItem.apply(this, arguments);
+    if (key === 'va_idioma' && typeof usuariosLista !== 'undefined' && usuariosLista.length > 0) {
+        renderizarTabla(usuariosLista);
+    }
 };
 
 // ── TOAST ────────────────────────────────────────────────────────────────────
