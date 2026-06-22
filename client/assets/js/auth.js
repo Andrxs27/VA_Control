@@ -1,10 +1,5 @@
-/**
- * auth.js — Guard de autenticación para VA Control
- * * Incluir este script en TODAS las páginas protegidas (dashboard, productos, etc.)
- * ANTES de cualquier otro script de la página.
- * * Uso en HTML:
- * <script src="/client/assets/js/auth.js"></script>
- */
+
+const VA_API = 'https://vacontrol-production.up.railway.app/api';
 
 // Obtiene el token almacenado
 function getToken() {
@@ -97,7 +92,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const rolEl = document.querySelector('.user-info span');
     if (rolEl) {
         const roles = { admin: 'Administrador', vendedor: 'Vendedor', tecnico: 'Técnico' };
+
+        // 1. Set the text fallback
         rolEl.textContent = roles[usuario.rol] || usuario.rol;
+
+        // 2. Dynamically change the i18n key so the translation engine plays nice
+        rolEl.setAttribute('data-i18n', `rol_${usuario.rol}`);
     }
 
     // Ocultar accesos del menú lateral si no es administrador
