@@ -1600,6 +1600,16 @@ textarea::placeholder {
   box-shadow: 0 8px 32px rgba(0,0,0,0.12);
 }
  
+[data-theme="light"] .notif-dropdown {
+  background: var(--bg2);
+  border-color: var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+ 
+[data-theme="light"] .notif-item:hover {
+  background: var(--bg3);
+}
+ 
 [data-theme="light"] .cfg-item:hover {
   background: var(--bg3);
 }
@@ -1693,6 +1703,140 @@ textarea::placeholder {
   height: 1px;
   background: var(--border);
   margin: 3px 0;
+}
+
+/* ==========================================================================
+   PANEL DE NOTIFICACIONES (Alertas de stock)
+   ========================================================================== */
+.notif-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: var(--red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 20px;
+  border: 1.5px solid var(--bg2);
+}
+
+.notif-dropdown {
+  position: fixed;
+  z-index: 9000;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.notif-dropdown--open {
+  display: flex;
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.notif-link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.notif-link:hover {
+  color: var(--accent2);
+  text-decoration: underline;
+}
+
+.notif-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.notif-list::-webkit-scrollbar { width: 6px; }
+.notif-list::-webkit-scrollbar-track { background: transparent; }
+.notif-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
+
+.notif-item:hover {
+  background: var(--bg3);
+}
+
+.notif-item i {
+  font-size: 17px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.notif-item-body {
+  min-width: 0;
+}
+
+.notif-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notif-item-sub {
+  font-size: 11.5px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+.notif-empty {
+  padding: 24px 14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.notif-empty i {
+  font-size: 22px;
+  color: var(--green);
 }
 
     .panel-grid .panel {

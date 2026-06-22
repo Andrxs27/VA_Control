@@ -5,7 +5,7 @@
  * * Uso en HTML:
  * <script src="/client/assets/js/auth.js"></script>
  */
-const VA_API = 'https://vacontrol-production.up.railway.app/api';
+
 // Obtiene el token almacenado
 function getToken() {
     return localStorage.getItem('va_token');
@@ -38,7 +38,7 @@ function authHeaders() {
 // Guard principal: ejecuta las comprobaciones de ruta inmediatamente
 (function checkAuth() {
     const token = getToken();
-
+    
     // 1. Si no hay token, directo al login
     if (!token) {
         window.location.href = '/pages/login.html';
@@ -51,25 +51,25 @@ function authHeaders() {
 
     if (esPaginaUsuarios && (!usuario || usuario.rol !== 'admin')) {
         console.error("Error 401: Unauthorized - No tienes permisos para esta sección.");
-
+        
         // Redirección limpia e inmediata a la página de error independiente
         window.location.href = '/pages/401.html';
-        return;
+        return; 
     }
 
     // 3. Verificar token con el servidor en segundo plano
     fetch(`${VA_API}/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
-        .then(res => {
-            if (res.status === 401) {
-                // Token expirado o inválido
-                logout();
-            }
-        })
-        .catch(() => {
-            console.warn('VA_Control: No se pudo verificar el token con el servidor.');
-        });
+    .then(res => {
+        if (res.status === 401) {
+            // Token expirado o inválido
+            logout();
+        }
+    })
+    .catch(() => {
+        console.warn('VA_Control: No se pudo verificar el token con el servidor.');
+    });
 })();
 
 // Poblar elementos de la interfaz común (Sidebar) una vez cargue el DOM
@@ -97,12 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rolEl = document.querySelector('.user-info span');
     if (rolEl) {
         const roles = { admin: 'Administrador', vendedor: 'Vendedor', tecnico: 'Técnico' };
-
-        // 1. Set the text fallback
         rolEl.textContent = roles[usuario.rol] || usuario.rol;
-
-        // 2. Dynamically change the i18n key so the translation engine plays nice
-        rolEl.setAttribute('data-i18n', `rol_${usuario.rol}`);
     }
 
     // Ocultar accesos del menú lateral si no es administrador
