@@ -5,7 +5,7 @@
  * * Uso en HTML:
  * <script src="/client/assets/js/auth.js"></script>
  */
-
+const VA_API = 'https://vacontrol-production.up.railway.app/api';
 // Obtiene el token almacenado
 function getToken() {
     return localStorage.getItem('va_token');
