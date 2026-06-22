@@ -57,11 +57,8 @@ function authHeaders() {
         return; 
     }
 
-    // 3. Verificar token con el servidor en segundo plano de manera segura
-    // Usamos un chequeo de tipo para evitar que el script colapse si config.js no ha cargado VA_API aún
-    const apiUrl = typeof VA_API !== 'undefined' ? VA_API : '/api'; 
-
-    fetch(`${apiUrl}/auth/me`, {
+    // 3. Verificar token con el servidor en segundo plano
+    fetch(`${VA_API}/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
     .then(res => {
@@ -71,7 +68,7 @@ function authHeaders() {
         }
     })
     .catch(() => {
-        console.warn('VA_Control: No se pudo verificar el token con el servidor en este momento.');
+        console.warn('VA_Control: No se pudo verificar el token con el servidor.');
     });
 })();
 
@@ -80,42 +77,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const usuario = getUsuario();
     if (!usuario) return;
 
-    // 1. Iniciales del avatar (Ej: "Admin User" -> "AU", "Juan" -> "J")
+    // Iniciales del avatar
     const avatarEl = document.querySelector('.user-avatar');
-    if (avatarEl && usuario.nombre) {
+    if (avatarEl) {
         const iniciales = usuario.nombre
-            .trim()
-            .split(/\s+/) // Divide por cualquier cantidad de espacios en blanco
+            .split(' ')
             .map(n => n[0])
             .slice(0, 2)
             .join('')
             .toUpperCase();
-        avatarEl.textContent = iniciales || 'AD';
+        avatarEl.textContent = iniciales;
     }
 
-    // 2. Nombre en el sidebar
+    // Nombre en el sidebar
     const nombreEl = document.querySelector('.user-info p');
-    if (nombreEl && usuario.nombre) {
-        nombreEl.textContent = usuario.nombre;
-    }
+    if (nombreEl) nombreEl.textContent = usuario.nombre;
 
-    // 3. Rol en el sidebar
+    // Rol en el sidebar
     const rolEl = document.querySelector('.user-info span');
-    if (rolEl && usuario.rol) {
-        const roles = { 
-            admin: 'Administrador', 
-            vendedor: 'Vendedor', 
-            tecnico: 'Técnico' 
-        };
-        const rolNormalizado = usuario.rol.toLowerCase();
-        
-        // Actualiza el texto visual
-        rolEl.textContent = roles[rolNormalizado] || usuario.rol;
-        // Cambia el atributo data-i18n para que tu sistema de traducción no lo sobreescriba con el valor por defecto
-        rolEl.setAttribute('data-i18n', `rol_${rolNormalizado}`);
+    if (rolEl) {
+        const roles = { admin: 'Administrador', vendedor: 'Vendedor', tecnico: 'Técnico' };
+        rolEl.textContent = roles[usuario.rol] || usuario.rol;
     }
 
-    // 4. Ocultar accesos del menú lateral si no es administrador
+    // Ocultar accesos del menú lateral si no es administrador
     if (usuario.rol !== 'admin') {
         const navUsuarios = document.querySelector('.nav-item[onclick*="usuarios"]');
         if (navUsuarios) navUsuarios.style.display = 'none';
