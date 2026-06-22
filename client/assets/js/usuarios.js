@@ -6,16 +6,6 @@ let accionConfirmadaCallback = null;
 function _en()      { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en) { return _en() ? en : es; }
 
-// ── DETECTOR DE CAMBIO DE IDIOMA EN TIEMPO REAL ──────────────────────────────
-// Intercepta cuando config.js cambia el idioma y actualiza la tabla "de una" sin usar F5
-const originalSetItem = localStorage.setItem;
-localStorage.setItem = function(key, value) {
-    originalSetItem.apply(this, arguments);
-    if (key === 'va_idioma' && typeof usuariosLista !== 'undefined' && usuariosLista.length > 0) {
-        renderizarTabla(usuariosLista);
-    }
-};
-
 const getAuthHeaders = () => {
     const token = localStorage.getItem('va_token');
     return { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
@@ -71,7 +61,7 @@ function rolBadge(rol) {
         tecnico:  ['badge-amber', en ? 'Technician'  : 'Técnico',    'rol_tecnico'],
     };
     const [cls, label, i18nKey] = map[rol] || ['badge-gray', rol, ''];
-    return `<span class="badge ${cls}" data-i18n="${i18nKey}">${label}</span>`;
+    return `<span class="badge ${cls}" data-i18n="${i18nKey} ${rol}">${label}</span>`;
 }
 
 function renderizarTabla(lista) {
@@ -111,8 +101,10 @@ function renderizarTabla(lista) {
         tbody.appendChild(tr);
     });
 
-    // Forzar la ejecución del traductor nativo sobre los nuevos elementos agregados
-    if (typeof traducirPagina === 'function') traducirPagina();
+    // Re-aplicar traducciones dinámicas de manera automática si el framework global está disponible
+    if (typeof aplicarTraducciones === 'function') aplicarTraducciones();
+    else if (typeof translatePage === 'function') translatePage();
+    else if (typeof traducirPagina === 'function') traducirPagina();
 }
 
 // ── FILTRAR ──────────────────────────────────────────────────────────────────
@@ -270,5 +262,5 @@ async function eliminarUsuarioDefinitivo(id) {
     } catch (error) { toast(error.message, 'error'); }
 }
 
-// Inicialización automática
+// Inicialización de la vista
 cargarUsuarios();
