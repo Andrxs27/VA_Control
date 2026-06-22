@@ -6,6 +6,23 @@ let accionConfirmadaCallback = null;
 function _en()      { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en) { return _en() ? en : es; }
 
+// ── INTERCEPTOR SEGURO DE TRADUCCIÓN EN TIEMPO REAL ──────────────────────────
+// Captura cuando config.js cambia el idioma y actualiza la tabla de inmediato
+let traduciendoTablaFlujo = false;
+if (typeof traducirPagina === 'function') {
+    const originalTraducirPagina = traducirPagina;
+    traducirPagina = function() {
+        originalTraducirPagina(); // Ejecuta la traducción estática de config.js
+        if (!traduciendoTablaFlujo) {
+            traduciendoTablaFlujo = true;
+            if (typeof usuariosLista !== 'undefined' && usuariosLista.length > 0) {
+                renderizarTabla(usuariosLista); // Redibuja los textos dinámicos de las filas
+            }
+            traduciendoTablaFlujo = false;
+        }
+    };
+}
+
 const getAuthHeaders = () => {
     const token = localStorage.getItem('va_token');
     return { 'Content-Type': 'application/json', ...(token && { 'Authorization': `Bearer ${token}` }) };
@@ -61,7 +78,7 @@ function rolBadge(rol) {
         tecnico:  ['badge-amber', en ? 'Technician'  : 'Técnico',    'rol_tecnico'],
     };
     const [cls, label, i18nKey] = map[rol] || ['badge-gray', rol, ''];
-    return `<span class="badge ${cls}" data-i18n="${i18nKey} ${rol}">${label}</span>`;
+    return `<span class="badge ${cls}" data-i18n="${i18nKey}">${label}</span>`;
 }
 
 function renderizarTabla(lista) {
@@ -101,10 +118,8 @@ function renderizarTabla(lista) {
         tbody.appendChild(tr);
     });
 
-    // Re-aplicar traducciones dinámicas de manera automática si el framework global está disponible
-    if (typeof aplicarTraducciones === 'function') aplicarTraducciones();
-    else if (typeof translatePage === 'function') translatePage();
-    else if (typeof traducirPagina === 'function') traducirPagina();
+    // Forzar la ejecución del traductor nativo sobre los nuevos elementos agregados
+    if (typeof traducirPagina === 'function') traducirPagina();
 }
 
 // ── FILTRAR ──────────────────────────────────────────────────────────────────
@@ -262,5 +277,5 @@ async function eliminarUsuarioDefinitivo(id) {
     } catch (error) { toast(error.message, 'error'); }
 }
 
-// Inicialización de la vista
+// Inicialización automática
 cargarUsuarios();
