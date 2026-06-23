@@ -23,57 +23,6 @@ function renderPage(page) {
   }
 }
 
-// ==================== DASHBOARD ====================
-function renderDashboard() {
-  const ventasHoy = DB.ventas.filter(v => v.creado_en.startsWith('2025-05-15'));
-  const totalHoy = ventasHoy.reduce((s,v) => s + v.total, 0);
-  const stockBajo = DB.productos.filter(p => p.active && p.stock <= p.stock_minimo && p.categoria !== 'servicios').length;
-  const ordenesPendientes = DB.ordenes.filter(o => o.estado === 'pendiente' || o.estado === 'en_proceso').length;
-
-  document.getElementById('kpi-ventas').textContent = formatCOP(totalHoy);
-  document.getElementById('kpi-productos').textContent = DB.productos.filter(p=>p.active).length;
-  document.getElementById('kpi-stockbajo').textContent = stockBajo;
-  document.getElementById('kpi-ordenes').textContent = ordenesPendientes;
-  document.getElementById('badge-ordenes').textContent = ordenesPendientes;
-
-  // Chart barras simulado
-  const dias = ['Lu','Ma','Mi','Ju','Vi','Sa','Do'];
-  const vals = [320000,185000,410000,275000,530000,380000,totalHoy];
-  const maxV = Math.max(...vals);
-  document.getElementById('chart-ventas').innerHTML = dias.map((d,i) => {
-    const pct = Math.round((vals[i]/maxV)*100);
-    const color = i===6 ? 'var(--accent)' : 'var(--border2)';
-    return `<div class="bar-item"><div class="bar" style="height:${pct}%;background:${color}"></div><span class="bar-label">${d}</span></div>`;
-  }).join('');
-
-  // Activity
-  const acts = [
-    {tipo:'sale',text:'Venta #003 registrada — $103.000',time:'Hace 2 horas'},
-    {tipo:'service',text:'Orden #004 completada por Diego Ríos',time:'Hace 4 horas'},
-    {tipo:'stock',text:'Stock bajo: Conector USB-C (0 uds.)',time:'Hace 5 horas'},
-    {tipo:'sale',text:'Venta #002 — María Torres',time:'Ayer'},
-    {tipo:'stock',text:'Stock bajo: Vidrio Templado (2 uds.)',time:'Ayer'},
-  ];
-  document.getElementById('activity-list').innerHTML = acts.map(a =>
-    `<div class="activity-item"><div class="activity-dot ${a.tipo}"></div><div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div></div>`
-  ).join('');
-
-  // Alertas stock
-  const criticos = DB.productos.filter(p => p.active && p.stock <= p.stock_minimo && p.categoria !== 'servicios');
-  if(criticos.length > 0) {
-    document.getElementById('alertas-stock-section').innerHTML = `
-      <div class="section-header" style="margin-top:8px"><div class="section-title" style="color:var(--amber)"><i class="ti ti-alert-triangle" style="margin-right:6px"></i>Alertas de Stock</div></div>
-      <div class="table-wrap">
-        <table><thead><tr><th>Producto</th><th>Stock Actual</th><th>Stock Mínimo</th><th>Estado</th></tr></thead>
-        <tbody>${criticos.map(p => `<tr>
-          <td>${p.nombre}</td>
-          <td>${p.stock}</td>
-          <td>${p.stock_minimo}</td>
-          <td><span class="badge ${p.stock===0?'badge-red':'badge-amber'}">${p.stock===0?'Sin stock':'Stock bajo'}</span></td>
-        </tr>`).join('')}</tbody></table>
-      </div>`;
-  }
-}
 
 // ==================== VENTAS ====================
 function renderVentas(filtro='', metodo='') {
@@ -444,12 +393,3 @@ function toast(msg, type='info') {
   c.appendChild(t);
   setTimeout(()=>t.remove(),3500);
 }
-
-
-
-
-
-// ==================== INIT ====================
-renderDashboard();
-
-
