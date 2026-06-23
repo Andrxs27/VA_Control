@@ -283,8 +283,13 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 });
 
 // Calcular preview factura
-document.getElementById('f-subtotal').addEventListener('input', calcFactura);
-document.getElementById('f-iva').addEventListener('input', calcFactura);
+// Calcular preview factura
+const subtotalEl = document.getElementById('f-subtotal');
+const ivaEl = document.getElementById('f-iva');
+
+if (subtotalEl) subtotalEl.addEventListener('input', calcFactura);
+if (ivaEl) ivaEl.addEventListener('input', calcFactura);
+
 function calcFactura() {
   const sub = parseFloat(document.getElementById('f-subtotal').value)||0;
   const iva = parseFloat(document.getElementById('f-iva').value)||0;
