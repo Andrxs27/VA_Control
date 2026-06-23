@@ -34,30 +34,29 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── CARGA PRINCIPAL ───────────────────────────────────────────────────────────
+// El proyecto ya no tiene módulos de Ventas ni Facturas: los reportes se calculan
+// a partir de Órdenes de Servicio (que incluyen costo_servicio), Productos/Inventario,
+// Usuarios (técnicos) y Clientes.
 async function cargarReportes() {
     mostrarSkeletons();
     try {
-        const [ventas, ordenes, facturas, productos, usuarios, clientes] = await Promise.all([
-            fetch(`${API}/ventas`).then(r => r.ok ? r.json() : []),
+        const [ordenes, productos, usuarios, clientes] = await Promise.all([
             fetch(`${API}/ordenes`).then(r => r.ok ? r.json() : []),
-            fetch(`${API}/facturas`).then(r => r.ok ? r.json() : []),
             fetch(`${API}/productos`).then(r => r.ok ? r.json() : []),
             fetch(`${API}/usuarios`).then(r => r.ok ? r.json() : []),
             fetch(`${API}/clientes`).then(r => r.ok ? r.json() : []),
         ]);
 
-        const ventasFiltradas    = filtrarPorFecha(ventas,   'creado_en');
-        const ordenesFiltradas   = filtrarPorFecha(ordenes,  'creado_en');
-        const facturasFiltradas  = filtrarPorFecha(facturas, 'fecha_emision');
+        const ordenesFiltradas = filtrarPorFecha(ordenes, 'creado_en');
 
-        renderKPIs(ventasFiltradas, ordenesFiltradas, facturasFiltradas, productos);
-        renderGraficaVentasMes(ventas);
-        renderVentasPorMetodo(ventasFiltradas);
-        renderCategorias(ventasFiltradas, productos);
-        renderTopVendedores(ventasFiltradas, usuarios);
-        renderTopClientes(ventasFiltradas, clientes);
+        renderKPIs(ordenesFiltradas, productos);
+        renderGraficaIngresosMes(ordenes);
+        renderOrdenesPorEntrega(ordenesFiltradas);
+        renderCategorias(productos);
+        renderTopTecnicos(ordenesFiltradas, usuarios);
+        renderTopClientes(ordenesFiltradas, clientes);
         renderStockCritico(productos);
-        renderTablaVentas(ventasFiltradas, usuarios, clientes);
+        renderTablaOrdenes(ordenesFiltradas, usuarios, clientes);
         renderOrdenesResumen(ordenesFiltradas);
     } catch (err) {
         console.error('Error cargando reportes:', err);
@@ -78,29 +77,35 @@ function filtrarPorFecha(items, campo) {
     });
 }
 
-// ── KPIs ──────────────────────────────────────────────────────────────────────
-function renderKPIs(ventas, ordenes, facturas, productos) {
-    const ingresos   = ventas.reduce((s, v) => s + parseFloat(v.total || 0), 0);
-    const ordenesComp = ordenes.filter(o => o.estado === 'completado' || o.estado === 'entregado').length;
-    const sinStock   = productos.filter(p => p.activo && p.stock === 0 && p.categoria !== 'servicios').length;
-    set('rep-ingresos',    formatCOP(ingresos));
-    set('rep-ordenes-comp', ordenesComp);
-    set('rep-sin-stock',   sinStock);
-    set('rep-facturas',    facturas.length);
+// Ingreso de una orden: se cuenta el costo del servicio salvo que esté cancelada.
+function ingresoOrden(o) {
+    return o.estado === 'cancelado' ? 0 : parseFloat(o.costo_servicio || 0);
 }
 
-// ── GRÁFICA 6 MESES ───────────────────────────────────────────────────────────
-function renderGraficaVentasMes(todasVentas) {
+// ── KPIs ──────────────────────────────────────────────────────────────────────
+function renderKPIs(ordenes, productos) {
+    const ingresos   = ordenes.reduce((s, o) => s + ingresoOrden(o), 0);
+    const ordenesComp = ordenes.filter(o => o.estado === 'completado' || o.estado === 'entregado').length;
+    const sinStock   = productos.filter(p => p.activo && p.stock === 0 && p.categoria !== 'servicios').length;
+    const clientesAtendidos = new Set(ordenes.map(o => o.cliente_id).filter(Boolean)).size;
+    set('rep-ingresos',           formatCOP(ingresos));
+    set('rep-ordenes-comp',       ordenesComp);
+    set('rep-sin-stock',          sinStock);
+    set('rep-clientes-atendidos', clientesAtendidos);
+}
+
+// ── GRÁFICA 6 MESES (ingresos por órdenes) ────────────────────────────────────
+function renderGraficaIngresosMes(todasOrdenes) {
     const meses = [];
     for (let i = 5; i >= 0; i--) {
         const d = new Date();
         d.setMonth(d.getMonth() - i);
         meses.push({ key: d.toISOString().slice(0,7), label: mesCorto(d.toISOString()), total: 0 });
     }
-    todasVentas.forEach(v => {
-        const m      = v.creado_en ? v.creado_en.slice(0,7) : '';
+    todasOrdenes.forEach(o => {
+        const m      = o.creado_en ? o.creado_en.slice(0,7) : '';
         const bucket = meses.find(x => x.key === m);
-        if (bucket) bucket.total += parseFloat(v.total || 0);
+        if (bucket) bucket.total += ingresoOrden(o);
     });
 
     const maxV = Math.max(...meses.map(m => m.total), 1);
@@ -127,34 +132,36 @@ function renderGraficaVentasMes(todasVentas) {
         </div>`;
 }
 
-// ── MÉTODOS DE PAGO ───────────────────────────────────────────────────────────
-function renderVentasPorMetodo(ventas) {
-    const totales = {};
-    ventas.forEach(v => { const m = v.metodo_pago || 'otro'; totales[m] = (totales[m] || 0) + parseFloat(v.total || 0); });
-    const totalGeneral = Object.values(totales).reduce((s,v) => s+v, 0) || 1;
+// ── ÓRDENES POR TIPO DE ENTREGA ───────────────────────────────────────────────
+function renderOrdenesPorEntrega(ordenes) {
+    const conteo = {};
+    ordenes.forEach(o => {
+        const tipo = o.tipo_entrega || 'otro';
+        conteo[tipo] = (conteo[tipo] || 0) + 1;
+    });
+    const total = ordenes.length || 1;
 
-    const colores   = { efectivo:'var(--green)', tarjeta:'var(--blue)', transferencia:'var(--accent)', otro:'var(--text3)' };
+    const colores   = { tienda:'var(--blue)', domicilio:'var(--accent)', otro:'var(--text3)' };
     const etiquetas = {
-        efectivo:      _t('Efectivo','Cash'),
-        tarjeta:       _t('Tarjeta','Card'),
-        transferencia: _t('Transferencia','Transfer'),
-        otro:          _t('Otro','Other')
+        tienda:    _t('Retiro en tienda','Store pickup'),
+        domicilio: _t('Entrega a domicilio','Home delivery'),
+        otro:      _t('Sin especificar','Unspecified')
     };
 
-    const el = document.getElementById('rep-metodos');
+    const el = document.getElementById('rep-entrega');
     if (!el) return;
-    if (Object.keys(totales).length === 0) {
+    if (Object.keys(conteo).length === 0) {
         el.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:8px 0">${_t('Sin datos en el período','No data for this period')}</div>`;
         return;
     }
-    el.innerHTML = Object.entries(totales).sort((a,b) => b[1]-a[1]).map(([metodo, total]) => {
-        const pct   = Math.round((total / totalGeneral) * 100);
-        const color = colores[metodo] || 'var(--accent)';
+    el.innerHTML = Object.entries(conteo).sort((a,b) => b[1]-a[1]).map(([tipo, cnt]) => {
+        const pct   = Math.round((cnt / total) * 100);
+        const color = colores[tipo] || 'var(--accent)';
         return `
             <div style="margin-bottom:12px">
                 <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
-                    <span style="color:var(--text)">${etiquetas[metodo] || metodo}</span>
-                    <span style="color:var(--text2)">${pct}% — ${formatCOP(total)}</span>
+                    <span style="color:var(--text)">${etiquetas[tipo] || tipo}</span>
+                    <span style="color:var(--text2)">${cnt} (${pct}%)</span>
                 </div>
                 <div style="background:var(--bg3);border-radius:4px;height:8px">
                     <div style="height:100%;border-radius:4px;background:${color};width:${pct}%;transition:width .6s"></div>
@@ -163,8 +170,8 @@ function renderVentasPorMetodo(ventas) {
     }).join('');
 }
 
-// ── CATEGORÍAS ────────────────────────────────────────────────────────────────
-function renderCategorias(ventas, productos) {
+// ── CATEGORÍAS (valor de inventario) ──────────────────────────────────────────
+function renderCategorias(productos) {
     const stockCat = {};
     productos.filter(p => p.activo).forEach(p => {
         const c = p.categoria || 'otros';
@@ -200,47 +207,47 @@ function renderCategorias(ventas, productos) {
     }).join('');
 }
 
-// ── TOP VENDEDORES ────────────────────────────────────────────────────────────
-function renderTopVendedores(ventas, usuarios) {
+// ── TOP TÉCNICOS ──────────────────────────────────────────────────────────────
+function renderTopTecnicos(ordenes, usuarios) {
     const mapa = {};
-    ventas.forEach(v => {
-        if (!v.vendedor_id) return;
-        if (!mapa[v.vendedor_id]) mapa[v.vendedor_id] = { total:0, cantidad:0 };
-        mapa[v.vendedor_id].total    += parseFloat(v.total || 0);
-        mapa[v.vendedor_id].cantidad++;
+    ordenes.forEach(o => {
+        if (!o.tecnico_id || o.estado === 'cancelado') return;
+        if (!mapa[o.tecnico_id]) mapa[o.tecnico_id] = { total:0, cantidad:0 };
+        mapa[o.tecnico_id].total    += parseFloat(o.costo_servicio || 0);
+        mapa[o.tecnico_id].cantidad++;
     });
     const ranking = Object.entries(mapa).map(([id, data]) => {
         const u = usuarios.find(u => u.id == id);
-        return { nombre: u ? u.nombre : `${_t('Usuario','User')} #${id}`, ...data };
+        return { nombre: u ? u.nombre : `${_t('Técnico','Technician')} #${id}`, ...data };
     }).sort((a,b) => b.total - a.total).slice(0,5);
 
-    const el = document.getElementById('rep-vendedores');
+    const el = document.getElementById('rep-tecnicos');
     if (!el) return;
     if (ranking.length === 0) {
-        el.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:8px 0">${_t('Sin ventas en el período','No sales in this period')}</div>`;
+        el.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:8px 0">${_t('Sin órdenes asignadas en el período','No assigned orders in this period')}</div>`;
         return;
     }
-    const lblVenta  = _t('venta','sale');
-    const lblVentas = _t('ventas','sales');
+    const lblOrden  = _t('orden','order');
+    const lblOrdenes = _t('órdenes','orders');
     el.innerHTML = ranking.map((v,i) => `
         <div class="activity-item" style="align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
             <div style="font-size:11px;font-weight:700;color:var(--text3);min-width:22px">#${i+1}</div>
             <div style="flex:1">
                 <div style="font-size:13px;font-weight:500;color:var(--text)">${v.nombre}</div>
-                <div style="font-size:11px;color:var(--text3)">${v.cantidad} ${v.cantidad !== 1 ? lblVentas : lblVenta}</div>
+                <div style="font-size:11px;color:var(--text3)">${v.cantidad} ${v.cantidad !== 1 ? lblOrdenes : lblOrden}</div>
             </div>
             <div style="font-size:13px;font-weight:600;color:var(--green)">${formatCOP(v.total)}</div>
         </div>`).join('');
 }
 
 // ── TOP CLIENTES ──────────────────────────────────────────────────────────────
-function renderTopClientes(ventas, clientes) {
+function renderTopClientes(ordenes, clientes) {
     const mapa = {};
-    ventas.forEach(v => {
-        if (!v.cliente_id) return;
-        if (!mapa[v.cliente_id]) mapa[v.cliente_id] = { total:0, cantidad:0 };
-        mapa[v.cliente_id].total    += parseFloat(v.total || 0);
-        mapa[v.cliente_id].cantidad++;
+    ordenes.forEach(o => {
+        if (!o.cliente_id || o.estado === 'cancelado') return;
+        if (!mapa[o.cliente_id]) mapa[o.cliente_id] = { total:0, cantidad:0 };
+        mapa[o.cliente_id].total    += parseFloat(o.costo_servicio || 0);
+        mapa[o.cliente_id].cantidad++;
     });
     const ranking = Object.entries(mapa).map(([id, data]) => {
         const c = clientes.find(c => c.id == id);
@@ -253,14 +260,14 @@ function renderTopClientes(ventas, clientes) {
         el.innerHTML = `<div style="color:var(--text3);font-size:13px;padding:8px 0">${_t('Sin datos en el período','No data for this period')}</div>`;
         return;
     }
-    const lblCompra  = _t('compra','purchase');
-    const lblCompras = _t('compras','purchases');
+    const lblOrden  = _t('orden','order');
+    const lblOrdenes = _t('órdenes','orders');
     el.innerHTML = ranking.map((c,i) => `
         <div class="activity-item" style="align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
             <div style="font-size:11px;font-weight:700;color:var(--text3);min-width:22px">#${i+1}</div>
             <div style="flex:1">
                 <div style="font-size:13px;font-weight:500;color:var(--text)">${c.nombre}</div>
-                <div style="font-size:11px;color:var(--text3)">${c.cantidad} ${c.cantidad !== 1 ? lblCompras : lblCompra}</div>
+                <div style="font-size:11px;color:var(--text3)">${c.cantidad} ${c.cantidad !== 1 ? lblOrdenes : lblOrden}</div>
             </div>
             <div style="font-size:13px;font-weight:600;color:var(--blue)">${formatCOP(c.total)}</div>
         </div>`).join('');
@@ -274,7 +281,7 @@ function renderStockCritico(productos) {
     if (!el) return;
     if (criticos.length === 0) {
         const msg = _t('Todo el stock está en niveles normales','All stock is at normal levels');
-        el.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--green);padding:20px"><i class="ti ti-circle-check"></i> ${msg}</td></tr>`;
+        el.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--green);padding:20px"><i class="ti ti-circle-check"></i> ${msg}</td></tr>`;
         return;
     }
     const lblSinStock  = _t('Sin stock','Out of stock');
@@ -295,38 +302,42 @@ function renderStockCritico(productos) {
     }).join('');
 }
 
-// ── TABLA VENTAS ──────────────────────────────────────────────────────────────
-function renderTablaVentas(ventas, usuarios, clientes) {
-    const el = document.getElementById('rep-tabla-ventas');
+// ── TABLA ÓRDENES DEL PERÍODO ─────────────────────────────────────────────────
+function renderTablaOrdenes(ordenes, usuarios, clientes) {
+    const el = document.getElementById('rep-tabla-ordenes');
     if (!el) return;
-    const recientes = [...ventas].sort((a,b) => new Date(b.creado_en) - new Date(a.creado_en)).slice(0,15);
+    const recientes = [...ordenes].sort((a,b) => new Date(b.creado_en) - new Date(a.creado_en)).slice(0,15);
     if (recientes.length === 0) {
-        el.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">${_t('Sin ventas en el período seleccionado','No sales in the selected period')}</td></tr>`;
+        el.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">${_t('Sin órdenes en el período seleccionado','No orders in the selected period')}</td></tr>`;
         return;
     }
-    const metodoBadge = m => ({
-        efectivo:      `<span class="badge badge-green">${_t('Efectivo','Cash')}</span>`,
-        tarjeta:       `<span class="badge badge-blue">${_t('Tarjeta','Card')}</span>`,
-        transferencia: `<span class="badge badge-amber">${_t('Transferencia','Transfer')}</span>`,
-    }[m] || `<span class="badge badge-gray">${m || '—'}</span>`);
+    const estadoBadge = e => ({
+        pendiente:  `<span class="badge badge-amber">${_t('Pendiente','Pending')}</span>`,
+        en_proceso: `<span class="badge badge-blue">${_t('En Proceso','In Progress')}</span>`,
+        completado: `<span class="badge badge-green">${_t('Completado','Completed')}</span>`,
+        entregado:  `<span class="badge badge-green">${_t('Entregado','Delivered')}</span>`,
+        cancelado:  `<span class="badge badge-red">${_t('Cancelado','Cancelled')}</span>`,
+    }[e] || `<span class="badge badge-gray">${e || '—'}</span>`);
 
-    el.innerHTML = recientes.map(v => {
-        const vendedor = v.vendedor_nombre || usuarios.find(u => u.id == v.vendedor_id)?.nombre || '—';
-        const cliente  = v.cliente_nombre  || clientes.find(c => c.id == v.cliente_id)?.nombre  || '—';
-        const fecha    = v.creado_en ? v.creado_en.slice(0,10) : '—';
+    el.innerHTML = recientes.map(o => {
+        const cliente = clientes.find(c => c.id == o.cliente_id)?.nombre || '—';
+        const tecnico = o.tecnico_id ? (usuarios.find(u => u.id == o.tecnico_id)?.nombre || '—') : '—';
+        const equipo  = `${o.equipo||''}${o.marca?' '+o.marca:''}${o.modelo?' '+o.modelo:''}`.trim() || '—';
+        const fecha   = o.creado_en ? o.creado_en.slice(0,10) : '—';
         return `
             <tr>
-                <td style="font-weight:600;color:var(--accent)">#${String(v.id).padStart(4,'0')}</td>
-                <td>${vendedor}</td>
+                <td style="font-weight:600;color:var(--accent)">#${String(o.id).padStart(4,'0')}</td>
                 <td>${cliente}</td>
-                <td style="font-weight:600">${formatCOP(v.total)}</td>
-                <td>${metodoBadge(v.metodo_pago)}</td>
+                <td>${equipo}</td>
+                <td>${tecnico}</td>
+                <td style="font-weight:600">${formatCOP(o.costo_servicio)}</td>
+                <td>${estadoBadge(o.estado)}</td>
                 <td class="td-muted">${fecha}</td>
             </tr>`;
     }).join('');
 }
 
-// ── RESUMEN ÓRDENES ───────────────────────────────────────────────────────────
+// ── RESUMEN ÓRDENES POR ESTADO ────────────────────────────────────────────────
 function renderOrdenesResumen(ordenes) {
     const estados  = { pendiente:0, en_proceso:0, completado:0, entregado:0, cancelado:0 };
     ordenes.forEach(o => { if (estados[o.estado] !== undefined) estados[o.estado]++; });
@@ -387,62 +398,40 @@ async function exportarCSV() {
         });
     }
     try {
-        const [ventas, ordenes, facturas, productos, usuarios, clientes] = await Promise.all([
-            fetch(`${API}/ventas`).then(r => r.json()),
+        const [ordenes, productos, usuarios, clientes] = await Promise.all([
             fetch(`${API}/ordenes`).then(r => r.json()),
-            fetch(`${API}/facturas`).then(r => r.json()),
             fetch(`${API}/productos`).then(r => r.json()),
             fetch(`${API}/usuarios`).then(r => r.json()),
             fetch(`${API}/clientes`).then(r => r.json()),
         ]);
-        const ventasFiltradas   = filtrarPorFecha(ventas,   'creado_en');
-        const ordenesFiltradas  = filtrarPorFecha(ordenes,  'creado_en');
-        const facturasFiltradas = filtrarPorFecha(facturas, 'fecha_emision');
+        const ordenesFiltradas = filtrarPorFecha(ordenes, 'creado_en');
 
         const wb   = XLSX.utils.book_new();
         const nFmt = '#,##0.00';
 
-        // Hoja 1 — Ventas
-        const hdrVentas = [
-            _t('ID','ID'), _t('Fecha','Date'), _t('Vendedor','Seller'), _t('Cliente','Client'),
-            _t('Subtotal','Subtotal'), _t('Descuento','Discount'), _t('Impuestos','Taxes'),
-            _t('Total','Total'), _t('Método de Pago','Payment Method'), _t('Estado','Status')
-        ];
-        const filasVentas = ventasFiltradas.sort((a,b) => new Date(b.creado_en)-new Date(a.creado_en)).map(v => {
-            const vendedor = v.vendedor_nombre || usuarios.find(u => u.id == v.vendedor_id)?.nombre || '—';
-            const cliente  = v.cliente_nombre  || clientes.find(c => c.id == v.cliente_id)?.nombre  || '—';
-            return [`#${String(v.id).padStart(4,'0')}`, v.creado_en?v.creado_en.slice(0,10):'—',
-                vendedor, cliente, parseFloat(v.subtotal||0), parseFloat(v.descuento||0),
-                parseFloat(v.impuestos||0), parseFloat(v.total||0), v.metodo_pago||'—', v.estado||'—'];
-        });
-        const sumar = col => filasVentas.reduce((s,r) => s+(r[col]||0), 0);
-        const filaTotal = ['','','', _t('TOTAL','TOTAL'), sumar(4), sumar(5), sumar(6), sumar(7),'',''];
-        const wsVentas  = XLSX.utils.aoa_to_sheet([hdrVentas, ...filasVentas, filaTotal]);
-        wsVentas['!cols'] = [{wch:8},{wch:12},{wch:22},{wch:22},{wch:14},{wch:12},{wch:12},{wch:14},{wch:18},{wch:14}];
-        for (let r=1; r<=filasVentas.length+1; r++) {
-            [4,5,6,7].forEach(c => { const addr = XLSX.utils.encode_cell({r,c}); if (wsVentas[addr]) wsVentas[addr].z = nFmt; });
-        }
-        XLSX.utils.book_append_sheet(wb, wsVentas, _t('Ventas','Sales'));
-
-        // Hoja 2 — Órdenes
+        // Hoja 1 — Órdenes
         const hdrOrdenes = [
-            _t('ID','ID'), _t('Cliente ID','Client ID'), _t('Equipo','Device'),
-            _t('Estado','Status'), _t('Tipo Entrega','Delivery Type'),
-            _t('Costo Servicio','Service Cost'), _t('Fecha Promesa','Promise Date'),
-            _t('Creado En','Created On')
+            _t('ID','ID'), _t('Fecha','Date'), _t('Cliente','Client'), _t('Técnico','Technician'),
+            _t('Equipo','Device'), _t('Tipo Entrega','Delivery Type'),
+            _t('Costo Servicio','Service Cost'), _t('Estado','Status')
         ];
-        const filasOrdenes = ordenesFiltradas.sort((a,b)=>new Date(b.creado_en)-new Date(a.creado_en)).map(o => [
-            `#${String(o.id).padStart(4,'0')}`, o.cliente_id||'—',
-            `${o.equipo||''}${o.marca?' '+o.marca:''}${o.modelo?' '+o.modelo:''}`.trim()||'—',
-            o.estado||'—', o.tipo_entrega||'—', parseFloat(o.costo_servicio||0),
-            o.fecha_promesa?o.fecha_promesa.slice(0,10):'—',
-            o.creado_en?o.creado_en.slice(0,10):'—'
-        ]);
-        const wsOrdenes = XLSX.utils.aoa_to_sheet([hdrOrdenes, ...filasOrdenes]);
-        wsOrdenes['!cols'] = [{wch:8},{wch:12},{wch:26},{wch:14},{wch:16},{wch:16},{wch:14},{wch:14}];
+        const filasOrdenes = ordenesFiltradas.sort((a,b) => new Date(b.creado_en)-new Date(a.creado_en)).map(o => {
+            const cliente = clientes.find(c => c.id == o.cliente_id)?.nombre || '—';
+            const tecnico = o.tecnico_id ? (usuarios.find(u => u.id == o.tecnico_id)?.nombre || '—') : '—';
+            const equipo  = `${o.equipo||''}${o.marca?' '+o.marca:''}${o.modelo?' '+o.modelo:''}`.trim() || '—';
+            return [`#${String(o.id).padStart(4,'0')}`, o.creado_en?o.creado_en.slice(0,10):'—',
+                cliente, tecnico, equipo, o.tipo_entrega||'—', parseFloat(o.costo_servicio||0), o.estado||'—'];
+        });
+        const sumarCosto = filasOrdenes.reduce((s,r) => s+(r[6]||0), 0);
+        const filaTotal  = ['','','','','', _t('TOTAL','TOTAL'), sumarCosto, ''];
+        const wsOrdenes  = XLSX.utils.aoa_to_sheet([hdrOrdenes, ...filasOrdenes, filaTotal]);
+        wsOrdenes['!cols'] = [{wch:8},{wch:12},{wch:22},{wch:20},{wch:22},{wch:16},{wch:14},{wch:14}];
+        for (let r=1; r<=filasOrdenes.length+1; r++) {
+            const addr = XLSX.utils.encode_cell({r,c:6}); if (wsOrdenes[addr]) wsOrdenes[addr].z = nFmt;
+        }
         XLSX.utils.book_append_sheet(wb, wsOrdenes, _t('Órdenes','Orders'));
 
-        // Hoja 3 — Stock crítico
+        // Hoja 2 — Stock crítico
         const criticos   = productos.filter(p => p.activo && p.categoria !== 'servicios' && p.stock <= p.stock_minimo).sort((a,b)=>a.stock-b.stock);
         const hdrStock   = ['SKU', _t('Nombre','Name'), _t('Categoría','Category'),
             _t('Stock Actual','Current Stock'), _t('Stock Mínimo','Min Stock'),
@@ -456,28 +445,26 @@ async function exportarCSV() {
         wsStock['!cols'] = [{wch:14},{wch:28},{wch:14},{wch:14},{wch:14},{wch:12},{wch:14},{wch:16}];
         XLSX.utils.book_append_sheet(wb, wsStock, _t('Stock Crítico','Critical Stock'));
 
-        // Hoja 4 — Resumen
+        // Hoja 3 — Resumen
         const desde        = repFiltroDesde || _t('(todo)','(all)');
-        const hasta        = repFiltroHasta || _t('(todo)','(all)');
-        const totalVentas  = ventasFiltradas.reduce((s,v)=>s+parseFloat(v.total||0),0);
-        const totalOrdenes = ordenesFiltradas.reduce((s,o)=>s+parseFloat(o.costo_servicio||0),0);
-        const ordenesComp  = ordenesFiltradas.filter(o=>o.estado==='completado'||o.estado==='entregado').length;
-        const sinStock2    = productos.filter(p=>p.activo&&p.stock===0&&p.categoria!=='servicios').length;
+        const hasta         = repFiltroHasta || _t('(todo)','(all)');
+        const totalIngresos = ordenesFiltradas.reduce((s,o)=>s+ingresoOrden(o),0);
+        const ordenesComp   = ordenesFiltradas.filter(o=>o.estado==='completado'||o.estado==='entregado').length;
+        const sinStock2     = productos.filter(p=>p.activo&&p.stock===0&&p.categoria!=='servicios').length;
+        const clientesAt    = new Set(ordenesFiltradas.map(o=>o.cliente_id).filter(Boolean)).size;
         const resumenData  = [
             [_t('Reporte Generado','Report Generated'), new Date().toLocaleString(_locale())],
             [_t('Período Desde','Period From'), desde],
             [_t('Período Hasta','Period To'), hasta],
             [],
             [_t('INDICADOR','INDICATOR'), _t('VALOR','VALUE')],
-            [_t('Total Ingresos (Ventas)','Total Revenue (Sales)'),      totalVentas],
-            [_t('Número de Ventas','Number of Sales'),                    ventasFiltradas.length],
-            [_t('Ticket Promedio','Average Ticket'),                      ventasFiltradas.length ? totalVentas/ventasFiltradas.length : 0],
-            [_t('Total Órdenes de Servicio','Total Service Orders'),      ordenesFiltradas.length],
-            [_t('Órdenes Completadas','Completed Orders'),                ordenesComp],
-            [_t('Ingresos por Servicios','Revenue from Services'),        totalOrdenes],
-            [_t('Facturas Emitidas','Issued Invoices'),                   facturasFiltradas.length],
-            [_t('Productos Sin Stock','Out of Stock Products'),           sinStock2],
-            [_t('Productos en Stock Crítico','Critical Stock Products'),  criticos.length],
+            [_t('Total Ingresos (Órdenes)','Total Revenue (Orders)'),      totalIngresos],
+            [_t('Número de Órdenes','Number of Orders'),                   ordenesFiltradas.length],
+            [_t('Costo Promedio por Orden','Average Cost per Order'),       ordenesFiltradas.length ? totalIngresos/ordenesFiltradas.length : 0],
+            [_t('Órdenes Completadas','Completed Orders'),                 ordenesComp],
+            [_t('Clientes Atendidos','Clients Served'),                    clientesAt],
+            [_t('Productos Sin Stock','Out of Stock Products'),            sinStock2],
+            [_t('Productos en Stock Crítico','Critical Stock Products'),   criticos.length],
         ];
         const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
         wsResumen['!cols'] = [{wch:30},{wch:20}];
@@ -494,10 +481,10 @@ async function exportarCSV() {
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
 function mostrarSkeletons() {
-    ['rep-ingresos','rep-ordenes-comp','rep-sin-stock','rep-facturas'].forEach(id => set(id,'...'));
+    ['rep-ingresos','rep-ordenes-comp','rep-sin-stock','rep-clientes-atendidos'].forEach(id => set(id,'...'));
 }
 function mostrarError(msg) {
-    ['rep-grafica-meses','rep-metodos','rep-categorias','rep-vendedores','rep-top-clientes'].forEach(id => {
+    ['rep-grafica-meses','rep-entrega','rep-categorias','rep-tecnicos','rep-top-clientes'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = `<div style="color:var(--red);font-size:12px;padding:8px 0"><i class="ti ti-alert-circle"></i> ${msg}</div>`;
     });

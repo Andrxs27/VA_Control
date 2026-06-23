@@ -83,21 +83,21 @@
             <i class="ti ti-alert-triangle kpi-icon"></i>
           </div>
           <div class="kpi-card kpi-red">
-            <div class="kpi-label" data-i18n="rep_facturas">Facturas Emitidas</div>
-            <div class="kpi-value" id="rep-facturas">...</div>
-            <i class="ti ti-file-invoice kpi-icon"></i>
+            <div class="kpi-label" data-i18n="rep_clientes_atendidos">Clientes Atendidos</div>
+            <div class="kpi-value" id="rep-clientes-atendidos">...</div>
+            <i class="ti ti-users-group kpi-icon"></i>
           </div>
         </div>
 
         <div class="panel" style="margin-bottom:16px">
-          <div class="panel-title"><i class="ti ti-chart-bar"></i> <span data-i18n="rep_ventas_meses">Ventas de los últimos 6 meses</span></div>
+          <div class="panel-title"><i class="ti ti-chart-bar"></i> <span data-i18n="rep_ingresos_meses">Ingresos de los últimos 6 meses</span></div>
           <div id="rep-grafica-meses" class="chart-bars" style="height:120px;margin-top:8px"></div>
         </div>
 
         <div class="panel-grid">
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-credit-card"></i> <span data-i18n="rep_metodos_pago">Ventas por método de pago</span></div>
-            <div id="rep-metodos" style="margin-top:8px"></div>
+            <div class="panel-title"><i class="ti ti-truck-delivery"></i> <span data-i18n="rep_tipo_entrega">Órdenes por tipo de entrega</span></div>
+            <div id="rep-entrega" style="margin-top:8px"></div>
           </div>
           <div class="panel">
             <div class="panel-title"><i class="ti ti-tool"></i> <span data-i18n="rep_ordenes_estado">Órdenes por estado</span></div>
@@ -111,8 +111,8 @@
             <div id="rep-categorias" style="margin-top:8px"></div>
           </div>
           <div class="panel">
-            <div class="panel-title"><i class="ti ti-award"></i> <span data-i18n="rep_top_vendedores">Top vendedores del período</span></div>
-            <div id="rep-vendedores" style="margin-top:8px"></div>
+            <div class="panel-title"><i class="ti ti-award"></i> <span data-i18n="rep_top_tecnicos">Top técnicos del período</span></div>
+            <div id="rep-tecnicos" style="margin-top:8px"></div>
           </div>
         </div>
 
@@ -143,22 +143,23 @@
         </div>
 
         <div class="section-header" style="margin-top:8px">
-          <div class="section-title" data-i18n="rep_ventas_periodo">Ventas del período</div>
+          <div class="section-title" data-i18n="rep_ordenes_periodo">Órdenes del período</div>
         </div>
         <div class="table-wrap" style="margin-bottom:24px">
           <table>
             <thead>
               <tr>
                 <th>#</th>
-                <th data-i18n="th_vendedor">Vendedor</th>
                 <th data-i18n="th_cliente">Cliente</th>
-                <th data-i18n="th_subtotal">Total</th>
-                <th data-i18n="th_metodo">Método</th>
+                <th data-i18n="th_equipo">Equipo</th>
+                <th data-i18n="th_tecnico">Técnico</th>
+                <th data-i18n="th_costo">Costo</th>
+                <th data-i18n="th_estado">Estado</th>
                 <th data-i18n="th_fecha">Fecha</th>
               </tr>
             </thead>
-            <tbody id="rep-tabla-ventas">
-              <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:16px">Cargando...</td></tr>
+            <tbody id="rep-tabla-ordenes">
+              <tr><td colspan="7" style="text-align:center;color:var(--text3);padding:16px">Cargando...</td></tr>
             </tbody>
           </table>
         </div>
