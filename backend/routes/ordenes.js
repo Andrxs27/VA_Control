@@ -3,6 +3,30 @@ const router = express.Router();
 const pool = require('../db');
 
 // CRUD - GET Todas las órdenes
+/**
+ * @swagger
+ * /api/ordenes:
+ *   get:
+ *     summary: Listar todas las órdenes de servicio
+ *     tags: [Órdenes de servicio]
+ *     responses:
+ *       200:
+ *         description: Lista de órdenes de servicio
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/OrdenServicio'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al obtener las órdenes.'
+ */
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM ordenes_servicio ORDER BY id DESC');
@@ -13,6 +37,42 @@ router.get('/', async (req, res) => {
 });
 
 // CRUD - GET por ID
+/**
+ * @swagger
+ * /api/ordenes/{id}:
+ *   get:
+ *     summary: Obtener una orden de servicio por ID
+ *     tags: [Órdenes de servicio]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Orden encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OrdenServicio'
+ *       404:
+ *         description: Orden no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Orden no encontrada'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al obtener la orden.'
+ */
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -25,6 +85,34 @@ router.get('/:id', async (req, res) => {
 });
 
 // CRUD - POST (Crear nueva orden)
+/**
+ * @swagger
+ * /api/ordenes:
+ *   post:
+ *     summary: Crear una nueva orden de servicio
+ *     tags: [Órdenes de servicio]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/OrdenServicioInput'
+ *     responses:
+ *       201:
+ *         description: Orden creada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OrdenServicio'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al crear la orden.'
+ */
 router.post('/', async (req, res) => {
     try {
         const { 
@@ -52,6 +140,48 @@ router.post('/', async (req, res) => {
 });
 
 // CRUD - PUT (Actualizar orden existente)
+/**
+ * @swagger
+ * /api/ordenes/{id}:
+ *   put:
+ *     summary: Actualizar una orden de servicio existente
+ *     tags: [Órdenes de servicio]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/OrdenServicioInput'
+ *     responses:
+ *       200:
+ *         description: Orden actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/OrdenServicio'
+ *       404:
+ *         description: Orden no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Orden no encontrada'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al actualizar la orden.'
+ */
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -81,6 +211,38 @@ router.put('/:id', async (req, res) => {
 });
 
 // CRUD - DELETE
+/**
+ * @swagger
+ * /api/ordenes/{id}:
+ *   delete:
+ *     summary: Eliminar una orden de servicio
+ *     tags: [Órdenes de servicio]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Orden eliminada correctamente
+ *       404:
+ *         description: Orden no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Orden no encontrada'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al eliminar la orden.'
+ */
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

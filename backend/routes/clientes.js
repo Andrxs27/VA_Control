@@ -56,6 +56,30 @@ const validarClienteMiddleware = (req, res, next) => {
 // =========================================================================
 
 // GET - Obtener todos los clientes
+/**
+ * @swagger
+ * /api/clientes:
+ *   get:
+ *     summary: Listar todos los clientes
+ *     tags: [Clientes]
+ *     responses:
+ *       200:
+ *         description: Lista de clientes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Cliente'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno al obtener los clientes.'
+ */
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM clientes ORDER BY id ASC');
@@ -67,6 +91,42 @@ router.get('/', async (req, res) => {
 });
 
 // POST - Crear cliente
+/**
+ * @swagger
+ * /api/clientes:
+ *   post:
+ *     summary: Crear un nuevo cliente
+ *     tags: [Clientes]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ClienteInput'
+ *     responses:
+ *       201:
+ *         description: Cliente creado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Cliente'
+ *       400:
+ *         description: Datos inválidos o correo ya registrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El correo electrónico ya se encuentra registrado.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al crear el cliente.'
+ */
 router.post('/', validarClienteMiddleware, async (req, res) => {
     try {
         const { identificacion, nombre, email, telefono, direccion, tipo, notas } = req.body;
@@ -96,6 +156,56 @@ router.post('/', validarClienteMiddleware, async (req, res) => {
 });
 
 // PUT - Actualizar cliente
+/**
+ * @swagger
+ * /api/clientes/{id}:
+ *   put:
+ *     summary: Actualizar un cliente existente
+ *     tags: [Clientes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ClienteInput'
+ *     responses:
+ *       200:
+ *         description: Cliente actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Cliente'
+ *       400:
+ *         description: ID inválido, datos inválidos o correo en uso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El correo electrónico ya está siendo usado por otro cliente.'
+ *       404:
+ *         description: Cliente no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Cliente no encontrado.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al actualizar el cliente.'
+ */
 router.put('/:id', validarClienteMiddleware, async (req, res) => {
     try {
         // 1. Convertir el ID de string a entero para evitar conflictos con PostgreSQL
@@ -142,6 +252,48 @@ router.put('/:id', validarClienteMiddleware, async (req, res) => {
 });
 
 // PATCH - Alternar estado activo/inactivo
+/**
+ * @swagger
+ * /api/clientes/{id}/estado:
+ *   patch:
+ *     summary: Activar o desactivar un cliente
+ *     tags: [Clientes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               activo:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       200:
+ *         description: Estado actualizado correctamente
+ *       404:
+ *         description: Cliente no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Cliente no encontrado.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno al cambiar el estado del cliente.'
+ */
 router.patch('/:id/estado', async (req, res) => {
     try {
         const { id } = req.params;
@@ -163,6 +315,38 @@ router.patch('/:id/estado', async (req, res) => {
 });
 
 // DELETE - Eliminar permanentemente
+/**
+ * @swagger
+ * /api/clientes/{id}:
+ *   delete:
+ *     summary: Eliminar un cliente permanentemente
+ *     tags: [Clientes]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Cliente eliminado correctamente
+ *       404:
+ *         description: Cliente no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Cliente no encontrado.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al eliminar definitivamente el cliente.'
+ */
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
