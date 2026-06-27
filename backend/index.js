@@ -19,6 +19,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Si el body de la petición no es un JSON válido, responder 400 en vez de
+// dejar pasar el stack trace de body-parser (evita el SyntaxError feo en logs)
+app.use((err, req, res, next) => {
+    if (err.type === 'entity.parse.failed' || err instanceof SyntaxError) {
+        return res.status(400).json({ error: 'El cuerpo de la petición no es un JSON válido.' });
+    }
+    next(err);
+});
+
 // --- DOCUMENTACIÓN SWAGGER ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get('/api-docs.json', (req, res) => {
