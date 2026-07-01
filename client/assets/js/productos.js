@@ -128,26 +128,29 @@ function prepararEdicion(id) {
 
 // ── 5. GUARDAR ───────────────────────────────────────────────────────────────
 async function guardarProducto() {
-    const sku          = document.getElementById('p-sku').value.trim();
+    const sku        = document.getElementById('p-sku').value.trim();
     const nombre       = document.getElementById('p-nombre').value.trim();
     const descripcion  = document.getElementById('p-descripcion').value.trim();
     const categoria    = document.getElementById('p-categoria')?.value || '';
     const precio_venta = parseFloat((document.getElementById('p-precio').value || '0').toString().replace(',','.')) || 0;
 
-    // NUEVA VALIDACIÓN: Asegurar que el stock inicial no sea menor a 1
-    let stock = parseInt(document.getElementById('p-stock').value, 10);
-    if (isNaN(stock) || stock < 1) {
-        stock = 1;
-    }
-
-    // VALIDACIÓN: Asegurar que el stock mínimo no sea menor a 1
-    let stock_minimo = parseInt(document.getElementById('p-stockmin')?.value, 10);
-    if (isNaN(stock_minimo) || stock_minimo < 1) {
-        stock_minimo = 1;
-    }
-
+    // VALIDACIÓN: Campos obligatorios
     if (!sku || !nombre) {
         toast(_t('El SKU y el Nombre son campos requeridos','SKU and Name are required fields'), 'error');
+        return;
+    }
+
+    // VALIDACIÓN: Asegurar que el stock inicial sea un número válido y mayor o igual a 1
+    const stock = parseInt(document.getElementById('p-stock').value, 10);
+    if (isNaN(stock) || stock < 1) {
+        toast(_t('El stock inicial debe ser mayor o igual a 1', 'Initial stock must be greater than or equal to 1'), 'error');
+        return;
+    }
+
+    // VALIDACIÓN: Asegurar que el stock mínimo sea un número válido y mayor o igual a 1
+    const stock_minimo = parseInt(document.getElementById('p-stockmin')?.value, 10);
+    if (isNaN(stock_minimo) || stock_minimo < 1) {
+        toast(_t('El stock mínimo debe ser mayor o igual a 1', 'Minimum stock must be greater than or equal to 1'), 'error');
         return;
     }
     
@@ -225,7 +228,7 @@ function solicitarEliminacionProducto(id) {
 async function ejecutarAccionConfirmadaProducto() {
     if (idProductoAccion === null || !tipoAccionProducto) return;
     try {
-        if (tipoAccionProducto === 'eliminar') {
+        if (tipoActionProducto === 'eliminar') {
             const res = await fetch(`${API}/productos/${idProductoAccion}`, { method: 'DELETE' });
             if (!res.ok) { const e = await res.json(); throw new Error(e.error || _t('No se pudo eliminar','Could not delete')); }
             const data = await res.json();
@@ -238,7 +241,7 @@ async function ejecutarAccionConfirmadaProducto() {
             });
             if (!res.ok) { const e = await res.json(); throw new Error(e.error || _t('No se pudo cambiar el estado','Could not change status')); }
             toast(nuevoEstado
-                ? _t('Producto activado con éxito','Product activated successfully')
+                ? _t('Producto activado con éxito','Product updated successfully')
                 : _t('Producto desactivado con éxito','Product deactivated successfully'), 'success');
         }
     } catch (error) {
@@ -262,8 +265,6 @@ function resetearFormulario() {
         el.style.background = el.style.color = el.style.cursor = el.style.opacity = '';
     };
     desbloq('p-sku');
-    
-    // MODIFICACIÓN: Al limpiar el formulario, el stock inicial por defecto es 1
     desbloq('p-stock', 1);
     
     document.getElementById('p-categoria').value  = 'electronicos';
@@ -271,7 +272,6 @@ function resetearFormulario() {
     document.getElementById('p-nombre').value     = '';
     document.getElementById('p-descripcion').value = '';
     
-    // Al limpiar, el stock mínimo por defecto es 1
     const stockMin = document.getElementById('p-stockmin');
     if (stockMin) stockMin.value = 1; 
     
