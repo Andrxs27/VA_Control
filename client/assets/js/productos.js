@@ -9,7 +9,7 @@ let tipoAccionProducto   = '';
 function _en()        { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en)   { return _en() ? en : es; }
 
-// ── DICCIONARIOS PARA DATOS DE LA BASE DE DATOS ──────────────────────────────
+// ── DICCIONARIOS PARA TRADUCCIONES ───────────────────────────────────────────
 const traduccionesNombres = {
     "Cambio de pantalla": "Screen replacement",
     "Pantalla iPhone 13": "iPhone 13 Screen",
@@ -113,44 +113,57 @@ function prepararEdicion(id) {
         el.style.background = 'var(--bg1)'; el.style.color = 'var(--text3)';
         el.style.cursor = 'not-allowed';     el.style.opacity = '0.6';
     };
+
+    // Sanitización preventiva: Si el registro remoto tiene valores corruptos < 1, los forzamos visualmente a 1
+    const stockVisual = (producto.stock && producto.stock >= 1) ? producto.stock : 1;
+    const stockMinVisual = (producto.stock_minimo && producto.stock_minimo >= 1) ? producto.stock_minimo : 1;
+
     bloquear('p-sku',   producto.sku   || '');
-    bloquear('p-stock', producto.stock || 1);
+    bloquear('p-stock', stockVisual);
 
     document.getElementById('p-categoria').value   = producto.categoria     || '';
     document.getElementById('p-nombre').value       = producto.nombre        || '';
     document.getElementById('p-descripcion').value  = producto.descripcion   || '';
-    document.getElementById('p-stockmin').value     = producto.stock_minimo  || 1;
+    document.getElementById('p-stockmin').value     = stockMinVisual;
     document.getElementById('p-precio').value       = producto.precio_venta  || 0;
 
     document.querySelector('#modal-producto h2').innerText = _t('Editar Producto','Edit Product');
     if (typeof openModal === 'function') openModal('modal-producto');
 }
 
-// ── 5. GUARDAR ───────────────────────────────────────────────────────────────
+// ── 5. GUARDAR CON VALIDACIÓN TOTAL ──────────────────────────────────────────
 async function guardarProducto() {
-    const sku        = document.getElementById('p-sku').value.trim();
+    const sku          = document.getElementById('p-sku').value.trim();
     const nombre       = document.getElementById('p-nombre').value.trim();
     const descripcion  = document.getElementById('p-descripcion').value.trim();
     const categoria    = document.getElementById('p-categoria')?.value || '';
     const precio_venta = parseFloat((document.getElementById('p-precio').value || '0').toString().replace(',','.')) || 0;
 
-    // VALIDACIÓN: Campos obligatorios
     if (!sku || !nombre) {
         toast(_t('El SKU y el Nombre son campos requeridos','SKU and Name are required fields'), 'error');
         return;
     }
 
-    // VALIDACIÓN: Asegurar que el stock inicial sea un número válido y mayor o igual a 1
-    const stock = parseInt(document.getElementById('p-stock').value, 10);
-    if (isNaN(stock) || stock < 1) {
-        toast(_t('El stock inicial debe ser mayor o igual a 1', 'Initial stock must be greater than or equal to 1'), 'error');
+    const stockInput = document.getElementById('p-stock');
+    const stockMinInput = document.getElementById('p-stockmin');
+
+    if (!stockInput || !stockMinInput) {
+        toast('Error de estructura: No se encontraron los inputs de stock.', 'error');
         return;
     }
 
-    // VALIDACIÓN: Asegurar que el stock mínimo sea un número válido y mayor o igual a 1
-    const stock_minimo = parseInt(document.getElementById('p-stockmin')?.value, 10);
+    const stock = parseInt(stockInput.value, 10);
+    const stock_minimo = parseInt(stockMinInput.value, 10);
+
+    if (isNaN(stock) || stock < 1) {
+        toast(_t('El stock inicial debe ser mayor o igual a 1', 'Initial stock must be greater than or equal to 1'), 'error');
+        stockInput.focus();
+        return;
+    }
+
     if (isNaN(stock_minimo) || stock_minimo < 1) {
         toast(_t('El stock mínimo debe ser mayor o igual a 1', 'Minimum stock must be greater than or equal to 1'), 'error');
+        stockMinInput.focus();
         return;
     }
     
@@ -159,24 +172,29 @@ async function guardarProducto() {
 
     try {
         const res = await fetch(url, {
-            method: metodo, headers: { 'Content-Type': 'application/json' },
+            method: metodo, 
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ sku, nombre, descripcion, categoria, stock, stock_minimo, precio_venta })
         });
+        
         if (!res.ok) {
             const errData = await res.json();
             throw new Error(errData.error || _t('Error al procesar el producto','Error processing product'));
         }
+        
         toast(productoEditandoId !== null
             ? _t('Producto actualizado con éxito','Product updated successfully')
             : _t('Producto creado correctamente','Product created successfully'), 'success');
 
         resetearFormulario();
         if (typeof closeModal === 'function') closeModal('modal-producto');
-        filtroTexto = ''; filtroCategoria = '';
+        
         const inputBuscar = document.querySelector('.search-box input');
         const selectCat   = document.querySelector('.filter-select');
         if (inputBuscar) inputBuscar.value = '';
         if (selectCat)   selectCat.value   = '';
+        filtroTexto = ''; filtroCategoria = '';
+        
         renderProductos();
     } catch (error) {
         toast(error.message, 'error');
@@ -199,10 +217,14 @@ function solicitarCambioEstadoProducto(id, nuevoEstado) {
         : _t('El producto volverá a estar disponible en el catálogo.','The product will be available in the catalog again.');
 
     document.getElementById('confirm-icon').className  = esDesactivar ? 'ti ti-ban' : 'ti ti-circle-check';
-    iconWrapper.style.backgroundColor = esDesactivar ? 'rgba(239,68,68,0.1)'  : 'rgba(16,185,129,0.1)';
-    iconWrapper.style.color           = esDesactivar ? '#ef4444'               : '#10b981';
-    btnProceder.className             = esDesactivar ? 'btn btn-secondary'     : 'btn btn-success';
-    btnProceder.onclick               = ejecutarAccionConfirmadaProducto;
+    if(iconWrapper) {
+        iconWrapper.style.backgroundColor = esDesactivar ? 'rgba(239,68,68,0.1)'  : 'rgba(16,185,129,0.1)';
+        iconWrapper.style.color           = esDesactivar ? '#ef4444'               : '#10b981';
+    }
+    if(btnProceder) {
+        btnProceder.className             = esDesactivar ? 'btn btn-secondary'     : 'btn btn-success';
+        btnProceder.onclick               = ejecutarAccionConfirmadaProducto;
+    }
     openModal('modal-confirmacion');
 }
 
@@ -218,17 +240,21 @@ function solicitarEliminacionProducto(id) {
         'Upon confirming, the product will be permanently deleted. This action is irreversible.'
     );
     document.getElementById('confirm-icon').className  = 'ti ti-alert-triangle';
-    iconWrapper.style.backgroundColor = 'rgba(220,38,38,0.15)';
-    iconWrapper.style.color           = 'var(--red)';
-    btnProceder.className             = 'btn btn-danger';
-    btnProceder.onclick               = ejecutarAccionConfirmadaProducto;
+    if(iconWrapper) {
+        iconWrapper.style.backgroundColor = 'rgba(220,38,38,0.15)';
+        iconWrapper.style.color           = 'var(--red)';
+    }
+    if(btnProceder) {
+        btnProceder.className             = 'btn btn-danger';
+        btnProceder.onclick               = ejecutarAccionConfirmadaProducto;
+    }
     openModal('modal-confirmacion');
 }
 
 async function ejecutarAccionConfirmadaProducto() {
     if (idProductoAccion === null || !tipoAccionProducto) return;
     try {
-        if (tipoActionProducto === 'eliminar') {
+        if (tipoAccionProducto === 'eliminar') {
             const res = await fetch(`${API}/productos/${idProductoAccion}`, { method: 'DELETE' });
             if (!res.ok) { const e = await res.json(); throw new Error(e.error || _t('No se pudo eliminar','Could not delete')); }
             const data = await res.json();
@@ -265,7 +291,7 @@ function resetearFormulario() {
         el.style.background = el.style.color = el.style.cursor = el.style.opacity = '';
     };
     desbloq('p-sku');
-    desbloq('p-stock', 1);
+    desbloq('p-stock', 1); // Forzado por defecto a 1
     
     document.getElementById('p-categoria').value  = 'electronicos';
     document.getElementById('p-categoria').disabled = false;
@@ -273,7 +299,7 @@ function resetearFormulario() {
     document.getElementById('p-descripcion').value = '';
     
     const stockMin = document.getElementById('p-stockmin');
-    if (stockMin) stockMin.value = 1; 
+    if (stockMin) stockMin.value = 1; // Forzado por defecto a 1
     
     document.getElementById('p-precio').value = '';
 }
