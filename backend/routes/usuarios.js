@@ -59,6 +59,30 @@ const validarUsuarioMiddleware = (req, res, next) => {
 // =========================================================================
 
 // CRUD - GET (Obtener todos los usuarios - activos e inactivos)
+/**
+ * @swagger
+ * /api/usuarios:
+ *   get:
+ *     summary: Listar todos los usuarios (activos e inactivos)
+ *     tags: [Usuarios]
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Usuario'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno al obtener los usuarios.'
+ */
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query('SELECT id, nombre, email, rol, activo FROM usuarios ORDER BY id ASC');
@@ -70,6 +94,42 @@ router.get('/', async (req, res) => {
 });
 
 // CRUD - GET por ID
+/**
+ * @swagger
+ * /api/usuarios/{id}:
+ *   get:
+ *     summary: Obtener un usuario por ID
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Usuario encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Usuario no encontrado.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno al obtener el usuario.'
+ */
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -86,6 +146,42 @@ router.get('/:id', async (req, res) => {
 });
 
 // CRUD - POST (Crear usuario)
+/**
+ * @swagger
+ * /api/usuarios:
+ *   post:
+ *     summary: Crear un nuevo usuario
+ *     tags: [Usuarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UsuarioInput'
+ *     responses:
+ *       201:
+ *         description: Usuario creado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       400:
+ *         description: Datos inválidos o correo ya registrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El correo electrónico ya se encuentra registrado.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al crear el usuario.'
+ */
 router.post('/', validarUsuarioMiddleware, async (req, res) => {
     try {
         const { nombre, email, password, rol } = req.body;
@@ -113,6 +209,56 @@ router.post('/', validarUsuarioMiddleware, async (req, res) => {
 });
 
 // CRUD - PUT (Actualizar usuario - Soporta cambio opcional de contraseña)
+/**
+ * @swagger
+ * /api/usuarios/{id}:
+ *   put:
+ *     summary: Actualizar un usuario existente (la contraseña es opcional)
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UsuarioInput'
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Usuario'
+ *       400:
+ *         description: Datos inválidos o correo en uso por otro usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El correo electrónico ya está siendo usado por otro usuario.'
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Usuario no encontrado.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al actualizar el usuario.'
+ */
 router.put('/:id', validarUsuarioMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
@@ -155,6 +301,48 @@ router.put('/:id', validarUsuarioMiddleware, async (req, res) => {
 });
 
 // NUEVA RUTA - PATCH (Alternar estado activo/inactivo - Borrado lógico)
+/**
+ * @swagger
+ * /api/usuarios/{id}/estado:
+ *   patch:
+ *     summary: Activar o desactivar un usuario (borrado lógico)
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               activo:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       200:
+ *         description: Estado actualizado correctamente
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Usuario no encontrado.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno al cambiar el estado del usuario.'
+ */
 router.patch('/:id/estado', async (req, res) => {
     try {
         const { id } = req.params;
@@ -176,6 +364,38 @@ router.patch('/:id/estado', async (req, res) => {
 });
 
 // CRUD - DELETE (Eliminar usuario permanentemente)
+/**
+ * @swagger
+ * /api/usuarios/{id}:
+ *   delete:
+ *     summary: Eliminar un usuario permanentemente
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Usuario eliminado correctamente
+ *       404:
+ *         description: Usuario no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Usuario no encontrado.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al eliminar definitivamente el usuario.'
+ */
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

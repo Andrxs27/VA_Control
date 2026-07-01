@@ -5,6 +5,30 @@ const pool = require('../db');
 // ==========================================
 // GET / — Listar todas las ventas con nombre de cliente y vendedor
 // ==========================================
+/**
+ * @swagger
+ * /api/ventas:
+ *   get:
+ *     summary: Listar todas las ventas (incluye nombre de cliente y vendedor)
+ *     tags: [Ventas]
+ *     responses:
+ *       200:
+ *         description: Lista de ventas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Venta'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al obtener las ventas.'
+ */
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -26,6 +50,42 @@ router.get('/', async (req, res) => {
 // ==========================================
 // GET /:id — Obtener una venta por ID
 // ==========================================
+/**
+ * @swagger
+ * /api/ventas/{id}:
+ *   get:
+ *     summary: Obtener una venta por ID
+ *     tags: [Ventas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Venta encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Venta'
+ *       404:
+ *         description: Venta no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Venta no encontrada'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al obtener la venta.'
+ */
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -49,6 +109,46 @@ router.get('/:id', async (req, res) => {
 // ==========================================
 // GET /:id/detalles — Obtener líneas de detalle de una venta
 // ==========================================
+/**
+ * @swagger
+ * /api/ventas/{id}/detalles:
+ *   get:
+ *     summary: Obtener las líneas de detalle (productos) de una venta
+ *     tags: [Ventas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Detalle de la venta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id: { type: integer, example: 1 }
+ *                   venta_id: { type: integer, example: 1 }
+ *                   producto_id: { type: integer, example: 3 }
+ *                   producto_nombre: { type: string, example: 'Pantalla Samsung A52' }
+ *                   producto_referencia: { type: string, example: 'PROD-001' }
+ *                   cantidad: { type: integer, example: 2 }
+ *                   precio_unitario: { type: number, example: 85000 }
+ *                   descuento_item: { type: number, example: 0 }
+ *                   subtotal: { type: number, example: 170000 }
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al obtener el detalle de la venta.'
+ */
 router.get('/:id/detalles', async (req, res) => {
     try {
         const { id } = req.params;
@@ -71,6 +171,42 @@ router.get('/:id/detalles', async (req, res) => {
 // ==========================================
 // POST / — Crear venta + detalles (transacción atómica)
 // ==========================================
+/**
+ * @swagger
+ * /api/ventas:
+ *   post:
+ *     summary: Crear una venta junto con sus líneas de detalle (transacción atómica, descuenta stock)
+ *     tags: [Ventas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/VentaInput'
+ *     responses:
+ *       201:
+ *         description: Venta creada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Venta'
+ *       400:
+ *         description: La venta no tiene productos en el detalle
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'La venta debe tener al menos un producto en el detalle'
+ *       500:
+ *         description: Error interno o stock insuficiente (rollback automático)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al crear la venta. Stock insuficiente o datos inválidos.'
+ */
 router.post('/', async (req, res) => {
     const client = await pool.connect();
     try {
@@ -142,6 +278,58 @@ router.post('/', async (req, res) => {
 // ==========================================
 // PUT /:id — Actualizar solo los campos de cabecera
 // ==========================================
+/**
+ * @swagger
+ * /api/ventas/{id}:
+ *   put:
+ *     summary: Actualizar los campos de cabecera de una venta (no modifica el detalle ni el stock)
+ *     tags: [Ventas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               vendedor_id: { type: integer, example: 2 }
+ *               cliente_id: { type: integer, example: 1 }
+ *               subtotal: { type: number, example: 170000 }
+ *               descuento: { type: number, example: 0 }
+ *               impuestos: { type: number, example: 0 }
+ *               total: { type: number, example: 170000 }
+ *               metodo_pago: { type: string, example: 'efectivo' }
+ *               estado: { type: string, example: 'completada' }
+ *               notas: { type: string, example: 'Cliente confirmó pago' }
+ *     responses:
+ *       200:
+ *         description: Venta actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Venta'
+ *       404:
+ *         description: Venta no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Venta no encontrada'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al actualizar la venta.'
+ */
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -164,6 +352,38 @@ router.put('/:id', async (req, res) => {
 // DELETE /:id — Eliminar venta (los detalles se borran por CASCADE)
 // El stock se restaura automáticamente antes de eliminar
 // ==========================================
+/**
+ * @swagger
+ * /api/ventas/{id}:
+ *   delete:
+ *     summary: Eliminar una venta (restaura el stock de los productos automáticamente)
+ *     tags: [Ventas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Venta eliminada y stock restaurado correctamente
+ *       404:
+ *         description: Venta no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Venta no encontrada'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al eliminar la venta.'
+ */
 router.delete('/:id', async (req, res) => {
     const client = await pool.connect();
     try {

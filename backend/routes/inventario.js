@@ -7,6 +7,40 @@ const { verifyToken, adminOVendedor } = require('../middleware/authMiddleware');
 // GET /api/inventario
 // Resumen de stock de todos los productos con estado
 // ============================================================
+/**
+ * @swagger
+ * /api/inventario:
+ *   get:
+ *     summary: Resumen de stock de todos los productos (excluye categoría "servicios")
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Resumen de inventario con estado de stock
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/InventarioResumen'
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener el inventario'
+ */
 router.get('/', verifyToken, async (req, res) => {
   try {
     const result = await pool.query(`
@@ -46,6 +80,48 @@ router.get('/', verifyToken, async (req, res) => {
 // GET /api/inventario/alertas
 // Solo productos con stock bajo o sin stock
 // ============================================================
+/**
+ * @swagger
+ * /api/inventario/alertas:
+ *   get:
+ *     summary: Listar productos con stock bajo o sin stock (alertas)
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Productos en estado de alerta de stock
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id: { type: integer, example: 3 }
+ *                   sku: { type: string, example: 'PROD-001' }
+ *                   nombre: { type: string, example: 'Pantalla Samsung A52' }
+ *                   categoria: { type: string, example: 'repuestos' }
+ *                   stock: { type: integer, example: 2 }
+ *                   stock_minimo: { type: integer, example: 5 }
+ *                   estado_stock: { type: string, enum: [sin_stock, stock_bajo], example: 'stock_bajo' }
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener alertas de stock'
+ */
 router.get('/alertas', verifyToken, async (req, res) => {
   try {
     const result = await pool.query(`
@@ -78,6 +154,70 @@ router.get('/alertas', verifyToken, async (req, res) => {
 // Historial completo de movimientos (con filtros opcionales)
 // Query params: producto_id, tipo, desde, hasta, limit
 // ============================================================
+/**
+ * @swagger
+ * /api/inventario/movimientos:
+ *   get:
+ *     summary: Historial de movimientos de inventario (con filtros opcionales)
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: producto_id
+ *         schema:
+ *           type: integer
+ *         description: Filtrar por producto
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [entrada, salida, ajuste]
+ *         description: Filtrar por tipo de movimiento
+ *       - in: query
+ *         name: desde
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Fecha inicial del rango
+ *       - in: query
+ *         name: hasta
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Fecha final del rango
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 100
+ *         description: Máximo de registros a devolver (tope 500)
+ *     responses:
+ *       200:
+ *         description: Historial de movimientos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/MovimientoInventario'
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener el historial de movimientos'
+ */
 router.get('/movimientos', verifyToken, async (req, res) => {
   try {
     const { producto_id, tipo, desde, hasta, limit = 100 } = req.query;
@@ -140,6 +280,63 @@ router.get('/movimientos', verifyToken, async (req, res) => {
 // GET /api/inventario/movimientos/:productoId
 // Historial de movimientos de un producto específico
 // ============================================================
+/**
+ * @swagger
+ * /api/inventario/movimientos/{productoId}:
+ *   get:
+ *     summary: Historial de movimientos de un producto específico (últimos 50)
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productoId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Producto y su historial de movimientos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 producto:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: integer, example: 3 }
+ *                     nombre: { type: string, example: 'Pantalla Samsung A52' }
+ *                     sku: { type: string, example: 'PROD-001' }
+ *                 movimientos:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/MovimientoInventario'
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Producto no encontrado'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener movimientos del producto'
+ */
 router.get('/movimientos/:productoId', verifyToken, async (req, res) => {
   try {
     const { productoId } = req.params;
@@ -182,6 +379,73 @@ router.get('/movimientos/:productoId', verifyToken, async (req, res) => {
 // Registrar un movimiento y actualizar el stock del producto
 // Body: { producto_id, tipo, cantidad, motivo }
 // ============================================================
+/**
+ * @swagger
+ * /api/inventario/movimientos:
+ *   post:
+ *     summary: Registrar un movimiento de inventario (entrada, salida o ajuste) y actualizar el stock
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MovimientoInventarioInput'
+ *     responses:
+ *       201:
+ *         description: Movimiento registrado y stock actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 movimiento:
+ *                   $ref: '#/components/schemas/MovimientoInventario'
+ *                 stock_actualizado: { type: integer, example: 15 }
+ *                 mensaje: { type: string, example: 'Movimiento registrado. Stock de "Pantalla Samsung A52": 5 → 15 uds.' }
+ *       400:
+ *         description: Datos inválidos o stock insuficiente para una salida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Stock insuficiente. Stock actual: 4 uds. Cantidad solicitada: 10 uds.'
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       403:
+ *         description: Se requiere rol Administrador o Vendedor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Acceso denegado. Se requiere rol de Administrador o Vendedor.'
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El producto seleccionado no existe'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al registrar el movimiento: la conexión con la base de datos falló.'
+ */
 router.post('/movimientos', verifyToken, adminOVendedor, async (req, res) => {
   const client = await pool.connect();
   try {

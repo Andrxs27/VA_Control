@@ -3,6 +3,30 @@ const router = express.Router();
 const pool = require('../db'); 
 
 // CRUD - GET 
+/**
+ * @swagger
+ * /api/facturas:
+ *   get:
+ *     summary: Listar todas las facturas
+ *     tags: [Facturas]
+ *     responses:
+ *       200:
+ *         description: Lista de facturas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Factura'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al obtener las facturas.'
+ */
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM facturas');
@@ -13,6 +37,42 @@ router.get('/', async (req, res) => {
 });
 
 // CRUD - GET id
+/**
+ * @swagger
+ * /api/facturas/{id}:
+ *   get:
+ *     summary: Obtener una factura por ID
+ *     tags: [Facturas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Factura encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Factura'
+ *       404:
+ *         description: Factura no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Factura no encontrada'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al obtener la factura.'
+ */
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -25,6 +85,34 @@ router.get('/:id', async (req, res) => {
 });
 
 // CRUD - POST
+/**
+ * @swagger
+ * /api/facturas:
+ *   post:
+ *     summary: Crear una nueva factura (asociada a una venta o a una orden de servicio)
+ *     tags: [Facturas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/FacturaInput'
+ *     responses:
+ *       201:
+ *         description: Factura creada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Factura'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al crear la factura.'
+ */
 router.post('/', async (req, res) => {
     try {
         const { venta_id, orden_servicio_id, subtotal, descuento, impuestos, total, notas } = req.body;
@@ -42,6 +130,48 @@ router.post('/', async (req, res) => {
 });
 
 // CRUD - PUT
+/**
+ * @swagger
+ * /api/facturas/{id}:
+ *   put:
+ *     summary: Actualizar una factura existente
+ *     tags: [Facturas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/FacturaInput'
+ *     responses:
+ *       200:
+ *         description: Factura actualizada correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Factura'
+ *       404:
+ *         description: Factura no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Factura no encontrada'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al actualizar la factura.'
+ */
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -59,6 +189,38 @@ router.put('/:id', async (req, res) => {
 });
 
 // CRUD - DELETE (esta si la elimina)
+/**
+ * @swagger
+ * /api/facturas/{id}:
+ *   delete:
+ *     summary: Eliminar una factura
+ *     tags: [Facturas]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Factura eliminada correctamente
+ *       404:
+ *         description: Factura no encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Factura no encontrada'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error interno del servidor al eliminar la factura.'
+ */
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

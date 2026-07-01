@@ -3,6 +3,30 @@ const router = express.Router();
 const pool = require('../db'); 
 
 // CRUD - GET ALL
+/**
+ * @swagger
+ * /api/productos:
+ *   get:
+ *     summary: Listar todos los productos
+ *     tags: [Productos]
+ *     responses:
+ *       200:
+ *         description: Lista de productos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Producto'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener los productos de la base de datos'
+ */
 router.get('/', async (req, res) => {
     try {
         // Traemos ordenados para mantener la consistencia visual en la tabla
@@ -15,6 +39,42 @@ router.get('/', async (req, res) => {
 });
 
 // CRUD - GET BY ID
+/**
+ * @swagger
+ * /api/productos/{id}:
+ *   get:
+ *     summary: Obtener un producto por ID
+ *     tags: [Productos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Producto encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Producto'
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El producto solicitado no existe'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener el producto.'
+ */
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -30,6 +90,42 @@ router.get('/:id', async (req, res) => {
 });
 
 // CRUD - POST (Crear)
+/**
+ * @swagger
+ * /api/productos:
+ *   post:
+ *     summary: Crear un nuevo producto
+ *     tags: [Productos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductoInput'
+ *     responses:
+ *       201:
+ *         description: Producto creado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Producto'
+ *       400:
+ *         description: SKU/nombre faltante o SKU duplicado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El SKU "PROD-001" ya se encuentra registrado'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'No se pudo crear el producto: error de conexión con la base de datos.'
+ */
 router.post('/', async (req, res) => {
     try {
         const { sku, nombre, descripcion, categoria, stock, stock_minimo, precio_venta } = req.body;
@@ -58,6 +154,56 @@ router.post('/', async (req, res) => {
 });
 
 // CRUD - PUT (Actualizar)
+/**
+ * @swagger
+ * /api/productos/{id}:
+ *   put:
+ *     summary: Actualizar un producto existente
+ *     tags: [Productos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductoInput'
+ *     responses:
+ *       200:
+ *         description: Producto actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Producto'
+ *       400:
+ *         description: SKU ya usado por otro producto
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El SKU "PROD-001" ya está siendo usado por otro producto'
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Producto no encontrado para actualizar'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al actualizar el producto: tipo de dato inválido en el campo precio_venta.'
+ */
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -87,6 +233,52 @@ router.put('/:id', async (req, res) => {
 });
 
 // NUEVA RUTA: PATCH (Activar / Desactivar de forma lógica)
+/**
+ * @swagger
+ * /api/productos/{id}/estado:
+ *   patch:
+ *     summary: Activar o desactivar un producto (borrado lógico)
+ *     tags: [Productos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               activo:
+ *                 type: boolean
+ *                 example: false
+ *     responses:
+ *       200:
+ *         description: Producto actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Producto'
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El producto seleccionado no existe'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al actualizar el estado del producto'
+ */
 router.patch('/:id/estado', async (req, res) => {
     try {
         const { id } = req.params;
@@ -108,6 +300,38 @@ router.patch('/:id/estado', async (req, res) => {
 });
 
 // CRUD - DELETE (Eliminación física real de la base de datos)
+/**
+ * @swagger
+ * /api/productos/{id}:
+ *   delete:
+ *     summary: Eliminar un producto permanentemente
+ *     tags: [Productos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Producto eliminado correctamente
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El producto seleccionado no existe'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al eliminar permanentemente el producto'
+ */
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

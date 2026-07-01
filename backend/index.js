@@ -2,6 +2,8 @@ require('dotenv').config();
 const { execSync } = require('child_process');
 const express = require('express');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
 
 try {
   console.log('Ejecutando migraciones...');
@@ -16,6 +18,22 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Si el body de la petición no es un JSON válido, responder 400 en vez de
+// dejar pasar el stack trace de body-parser (evita el SyntaxError feo en logs)
+app.use((err, req, res, next) => {
+    if (err.type === 'entity.parse.failed' || err instanceof SyntaxError) {
+        return res.status(400).json({ error: 'El cuerpo de la petición no es un JSON válido.' });
+    }
+    next(err);
+});
+
+// --- DOCUMENTACIÓN SWAGGER ---
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api-docs.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
 
 // --- AUTENTICACIÓN ---
 const authRoutes = require('./routes/auth');
@@ -46,4 +64,5 @@ const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
+    console.log(`Documentación Swagger disponible en http://localhost:${PORT}/api-docs`);
 });
