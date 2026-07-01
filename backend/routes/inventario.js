@@ -10,16 +10,36 @@ const { verifyToken, adminOVendedor } = require('../middleware/authMiddleware');
 /**
  * @swagger
  * /api/inventario:
- * get:
- * summary: Resumen de stock de todos los productos (excluye categoría "servicios")
- * tags: [Inventario]
- * security:
- * - bearerAuth: []
- * responses:
- * 200:
- * description: Resumen de inventario con estado de stock
- * 500:
- * description: Error interno del servidor
+ *   get:
+ *     summary: Resumen de stock de todos los productos (excluye categoría "servicios")
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Resumen de inventario con estado de stock
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/InventarioResumen'
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener el inventario'
  */
 router.get('/', verifyToken, async (req, res) => {
   try {
@@ -29,24 +49,21 @@ router.get('/', verifyToken, async (req, res) => {
         p.sku,
         p.nombre,
         p.categoria,
-        COALESCE(p.stock, 0) AS stock,
-        COALESCE(p.stock_minimo, 1) AS stock_minimo,
+        p.stock,
+        p.stock_minimo,
         p.activo,
-        COALESCE(p.actualizado_en, p.creado_en) AS actualizado_en,
+        p.actualizado_en,
         CASE
-          WHEN COALESCE(p.stock, 0) = 0                  THEN 'sin_stock'
-          WHEN COALESCE(p.stock, 0) <= COALESCE(p.stock_minimo, 1) THEN 'stock_bajo'
-          ELSE                                                    'normal'
+          WHEN p.stock = 0                        THEN 'sin_stock'
+          WHEN p.stock <= p.stock_minimo           THEN 'stock_bajo'
+          ELSE                                          'normal'
         END AS estado_stock,
-        COALESCE(
-          (
-            SELECT m.creado_en
-            FROM movimientos_inventario m
-            WHERE m.producto_id = p.id
-            ORDER BY m.creado_en DESC
-            LIMIT 1
-          ), 
-          p.creado_en
+        (
+          SELECT m.creado_en
+          FROM movimientos_inventario m
+          WHERE m.producto_id = p.id
+          ORDER BY m.creado_en DESC
+          LIMIT 1
         ) AS ultimo_movimiento
       FROM productos p
       WHERE p.categoria != 'servicios'
@@ -66,16 +83,44 @@ router.get('/', verifyToken, async (req, res) => {
 /**
  * @swagger
  * /api/inventario/alertas:
- * get:
- * summary: Listar productos con stock bajo o sin stock (alertas)
- * tags: [Inventario]
- * security:
- * - bearerAuth: []
- * responses:
- * 200:
- * description: Productos en estado de alerta de stock
- * 500:
- * description: Error interno del servidor
+ *   get:
+ *     summary: Listar productos con stock bajo o sin stock (alertas)
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Productos en estado de alerta de stock
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id: { type: integer, example: 3 }
+ *                   sku: { type: string, example: 'PROD-001' }
+ *                   nombre: { type: string, example: 'Pantalla Samsung A52' }
+ *                   categoria: { type: string, example: 'repuestos' }
+ *                   stock: { type: integer, example: 2 }
+ *                   stock_minimo: { type: integer, example: 5 }
+ *                   estado_stock: { type: string, enum: [sin_stock, stock_bajo], example: 'stock_bajo' }
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener alertas de stock'
  */
 router.get('/alertas', verifyToken, async (req, res) => {
   try {
@@ -85,16 +130,16 @@ router.get('/alertas', verifyToken, async (req, res) => {
         p.sku,
         p.nombre,
         p.categoria,
-        COALESCE(p.stock, 0) AS stock,
-        COALESCE(p.stock_minimo, 1) AS stock_minimo,
+        p.stock,
+        p.stock_minimo,
         CASE
-          WHEN COALESCE(p.stock, 0) = 0 THEN 'sin_stock'
-          WHEN COALESCE(p.stock, 0) <= COALESCE(p.stock_minimo, 1) THEN 'stock_bajo'
+          WHEN p.stock = 0             THEN 'sin_stock'
+          WHEN p.stock <= p.stock_minimo THEN 'stock_bajo'
         END AS estado_stock
       FROM productos p
       WHERE p.activo = true
         AND p.categoria != 'servicios'
-        AND COALESCE(p.stock, 0) <= COALESCE(p.stock_minimo, 1)
+        AND p.stock <= p.stock_minimo
       ORDER BY p.stock ASC
     `);
     res.json(result.rows);
@@ -107,20 +152,71 @@ router.get('/alertas', verifyToken, async (req, res) => {
 // ============================================================
 // GET /api/inventario/movimientos
 // Historial completo de movimientos (con filtros opcionales)
+// Query params: producto_id, tipo, desde, hasta, limit
 // ============================================================
 /**
  * @swagger
  * /api/inventario/movimientos:
- * get:
- * summary: Historial de movimientos de inventario (con filtros opcionales)
- * tags: [Inventario]
- * security:
- * - bearerAuth: []
- * responses:
- * 200:
- * description: Historial de movimientos
- * 500:
- * description: Error interno del servidor
+ *   get:
+ *     summary: Historial de movimientos de inventario (con filtros opcionales)
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: producto_id
+ *         schema:
+ *           type: integer
+ *         description: Filtrar por producto
+ *       - in: query
+ *         name: tipo
+ *         schema:
+ *           type: string
+ *           enum: [entrada, salida, ajuste]
+ *         description: Filtrar por tipo de movimiento
+ *       - in: query
+ *         name: desde
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Fecha inicial del rango
+ *       - in: query
+ *         name: hasta
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Fecha final del rango
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 100
+ *         description: Máximo de registros a devolver (tope 500)
+ *     responses:
+ *       200:
+ *         description: Historial de movimientos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/MovimientoInventario'
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener el historial de movimientos'
  */
 router.get('/movimientos', verifyToken, async (req, res) => {
   try {
@@ -159,12 +255,12 @@ router.get('/movimientos', verifyToken, async (req, res) => {
         m.cantidad,
         m.stock_antes,
         m.stock_despues,
-        COALESCE(m.motivo, 'Sin motivo especificado') AS motivo,
+        m.motivo,
         m.creado_en,
         p.id        AS producto_id,
         p.sku       AS producto_sku,
         p.nombre    AS producto_nombre,
-        COALESCE(u.nombre, 'Sistema / Remoto') AS usuario_nombre
+        u.nombre    AS usuario_nombre
       FROM movimientos_inventario m
       JOIN productos p ON p.id = m.producto_id
       LEFT JOIN usuarios u ON u.id = m.usuario_id
@@ -187,21 +283,65 @@ router.get('/movimientos', verifyToken, async (req, res) => {
 /**
  * @swagger
  * /api/inventario/movimientos/{productoId}:
- * get:
- * summary: Historial de movimientos de un producto específico (últimos 50)
- * tags: [Inventario]
- * security:
- * - bearerAuth: []
- * responses:
- * 200:
- * description: Producto y su historial de movimientos
- * 404:
- * description: Producto no encontrado
+ *   get:
+ *     summary: Historial de movimientos de un producto específico (últimos 50)
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productoId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Producto y su historial de movimientos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 producto:
+ *                   type: object
+ *                   properties:
+ *                     id: { type: integer, example: 3 }
+ *                     nombre: { type: string, example: 'Pantalla Samsung A52' }
+ *                     sku: { type: string, example: 'PROD-001' }
+ *                 movimientos:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/MovimientoInventario'
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Producto no encontrado'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener movimientos del producto'
  */
 router.get('/movimientos/:productoId', verifyToken, async (req, res) => {
   try {
     const { productoId } = req.params;
 
+    // Verificar que el producto existe
     const prod = await pool.query('SELECT id, nombre, sku FROM productos WHERE id = $1', [productoId]);
     if (!prod.rows.length) {
       return res.status(404).json({ error: 'Producto no encontrado' });
@@ -214,9 +354,9 @@ router.get('/movimientos/:productoId', verifyToken, async (req, res) => {
         m.cantidad,
         m.stock_antes,
         m.stock_despues,
-        COALESCE(m.motivo, 'Sin motivo especificado') AS motivo,
+        m.motivo,
         m.creado_en,
-        COALESCE(u.nombre, 'Sistema / Remoto') AS usuario_nombre
+        u.nombre AS usuario_nombre
       FROM movimientos_inventario m
       LEFT JOIN usuarios u ON u.id = m.usuario_id
       WHERE m.producto_id = $1
@@ -237,52 +377,97 @@ router.get('/movimientos/:productoId', verifyToken, async (req, res) => {
 // ============================================================
 // POST /api/inventario/movimientos
 // Registrar un movimiento y actualizar el stock del producto
+// Body: { producto_id, tipo, cantidad, motivo }
 // ============================================================
 /**
  * @swagger
  * /api/inventario/movimientos:
- * post:
- * summary: Registrar un movimiento de inventario y actualizar el stock
- * tags: [Inventario]
- * security:
- * - bearerAuth: []
- * responses:
- * 201:
- * description: Movimiento registrado con éxito
- * 400:
- * description: Datos inválidos o stock insuficiente
+ *   post:
+ *     summary: Registrar un movimiento de inventario (entrada, salida o ajuste) y actualizar el stock
+ *     tags: [Inventario]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/MovimientoInventarioInput'
+ *     responses:
+ *       201:
+ *         description: Movimiento registrado y stock actualizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 movimiento:
+ *                   $ref: '#/components/schemas/MovimientoInventario'
+ *                 stock_actualizado: { type: integer, example: 15 }
+ *                 mensaje: { type: string, example: 'Movimiento registrado. Stock de "Pantalla Samsung A52": 5 → 15 uds.' }
+ *       400:
+ *         description: Datos inválidos o stock insuficiente para una salida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Stock insuficiente. Stock actual: 4 uds. Cantidad solicitada: 10 uds.'
+ *       401:
+ *         description: Token requerido, inválido o expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Token de autenticación requerido.'
+ *       403:
+ *         description: Se requiere rol Administrador o Vendedor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Acceso denegado. Se requiere rol de Administrador o Vendedor.'
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El producto seleccionado no existe'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al registrar el movimiento: la conexión con la base de datos falló.'
  */
 router.post('/movimientos', verifyToken, adminOVendedor, async (req, res) => {
   const client = await pool.connect();
   try {
     const { producto_id, tipo, cantidad, motivo } = req.body;
 
-    // Validar existencia de parámetros de forma segura (permitiendo el número 0)
-    if (producto_id === undefined || !tipo || cantidad === undefined) {
+    // --- Validaciones ---
+    if (!producto_id || !tipo || !cantidad) {
       return res.status(400).json({ error: 'Los campos producto, tipo y cantidad son obligatorios' });
     }
     if (!['entrada', 'salida', 'ajuste'].includes(tipo)) {
       return res.status(400).json({ error: 'El tipo de movimiento debe ser: entrada, salida o ajuste' });
     }
-
-    const cant = parseInt(cantidad, 10);
-    if (isNaN(cant)) {
-      return res.status(400).json({ error: 'La cantidad debe ser un número entero válido' });
-    }
-
-    // Reglas de negocio para las cantidades según tipo de movimiento
-    if (tipo !== 'ajuste' && cant <= 0) {
-      return res.status(400).json({ error: 'La cantidad para entradas o salidas debe ser mayor a 0' });
-    }
-    if (tipo === 'ajuste' && cant < 0) {
-      return res.status(400).json({ error: 'El stock de ajuste no puede ser un número negativo' });
+    const cant = parseInt(cantidad);
+    if (isNaN(cant) || cant <= 0) {
+      return res.status(400).json({ error: 'La cantidad debe ser un número entero positivo' });
     }
 
     await client.query('BEGIN');
 
-    // Forzar bloqueo de fila para transacciones simultáneas limpias
+    // Bloqueo para evitar condiciones de carrera
     const prodResult = await client.query(
-      'SELECT id, nombre, sku, COALESCE(stock, 0) AS stock FROM productos WHERE id = $1 FOR UPDATE',
+      'SELECT id, nombre, sku, stock FROM productos WHERE id = $1 FOR UPDATE',
       [producto_id]
     );
     if (!prodResult.rows.length) {
@@ -305,20 +490,17 @@ router.post('/movimientos', verifyToken, adminOVendedor, async (req, res) => {
       }
       stockDespues = stockAntes - cant;
     } else {
-      // Ajuste: El valor enviado se vuelve el nuevo stock total absoluto
+      // ajuste: la cantidad es el nuevo valor absoluto de stock
       stockDespues = cant;
     }
 
-    // Actualizar la tabla de productos
+    // Actualizar stock del producto
     await client.query(
       'UPDATE productos SET stock = $1, actualizado_en = NOW() WHERE id = $2',
       [stockDespues, producto_id]
     );
 
-    // Calcular la variación real del ajuste para la bitácora
-    const deltaCantidad = tipo === 'ajuste' ? Math.abs(stockDespues - stockAntes) : cant;
-
-    // Guardar el historial sin nulos críticos en usuario_id o motivo
+    // Registrar el movimiento
     const movResult = await client.query(`
       INSERT INTO movimientos_inventario
         (producto_id, tipo, cantidad, stock_antes, stock_despues, motivo, usuario_id, creado_en)
@@ -327,20 +509,17 @@ router.post('/movimientos', verifyToken, adminOVendedor, async (req, res) => {
     `, [
       producto_id,
       tipo,
-      deltaCantidad === 0 ? 1 : deltaCantidad, // Evita registrar movimientos de 0 unidades
+      tipo === 'ajuste' ? Math.abs(stockDespues - stockAntes) || 1 : cant,
       stockAntes,
       stockDespues,
-      motivo ? motivo.trim() : 'Ajuste manual de inventario',
-      req.user?.id || req.user?.usuario_id || null
+      motivo || null,
+      req.user.id
     ]);
 
     await client.query('COMMIT');
 
     res.status(201).json({
-      movimiento: {
-        ...movResult.rows[0],
-        motivo: movResult.rows[0].motivo || 'Ajuste manual de inventario'
-      },
+      movimiento: movResult.rows[0],
       stock_actualizado: stockDespues,
       mensaje: `Movimiento registrado. Stock de "${producto.nombre}": ${stockAntes} → ${stockDespues} uds.`
     });
