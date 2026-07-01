@@ -10,7 +10,6 @@ function _en()        { return localStorage.getItem('va_idioma') === 'en'; }
 function _t(es, en)   { return _en() ? en : es; }
 
 // ── DICCIONARIOS PARA DATOS DE LA BASE DE DATOS ──────────────────────────────
-// Aquí mapeamos los nombres y categorías que vienen en español desde la BD
 const traduccionesNombres = {
     "Cambio de pantalla": "Screen replacement",
     "Pantalla iPhone 13": "iPhone 13 Screen",
@@ -49,8 +48,6 @@ async function renderProductos(productosAMostrar = null) {
                 ? `<button class="btn btn-sm" style="background:#6b7280;color:white" onclick="solicitarCambioEstadoProducto(${p.id},false)" title="${lblDesact}"><i class="ti ti-ban"></i></button>`
                 : `<button class="btn btn-sm" style="background:#10b981;color:white" onclick="solicitarCambioEstadoProducto(${p.id},true)"  title="${lblActivar}"><i class="ti ti-refresh"></i></button>`;
 
-            // TRADUCCIÓN DINÁMICA DE DATOS:
-            // Si está en inglés, busca el equivalente. Si no existe o está en español, usa el original de la BD.
             const nombreMostrar = _en() ? (traduccionesNombres[p.nombre] || p.nombre) : p.nombre;
             const categoriaMostrar = _en() ? (traduccionesCategorias[p.categoria] || p.categoria) : p.categoria;
 
@@ -122,7 +119,7 @@ function prepararEdicion(id) {
     document.getElementById('p-categoria').value   = producto.categoria     || '';
     document.getElementById('p-nombre').value       = producto.nombre        || '';
     document.getElementById('p-descripcion').value  = producto.descripcion   || '';
-    document.getElementById('p-stockmin').value     = producto.stock_minimo  || 5;
+    document.getElementById('p-stockmin').value     = producto.stock_minimo  || 1;
     document.getElementById('p-precio').value       = producto.precio_venta  || 0;
 
     document.querySelector('#modal-producto h2').innerText = _t('Editar Producto','Edit Product');
@@ -136,14 +133,19 @@ async function guardarProducto() {
     const descripcion  = document.getElementById('p-descripcion').value.trim();
     const categoria    = document.getElementById('p-categoria')?.value || '';
     const stock        = parseInt(document.getElementById('p-stock').value, 10)    || 0;
-    const stock_minimo = parseInt(document.getElementById('p-stockmin')?.value, 10) || 0;
     const precio_venta = parseFloat((document.getElementById('p-precio').value || '0').toString().replace(',','.')) || 0;
+
+    // VALIDACIÓN AJUSTADA: Asegurar que el stock mínimo no sea menor a 1
+    let stock_minimo = parseInt(document.getElementById('p-stockmin')?.value, 10);
+    if (isNaN(stock_minimo) || stock_minimo < 1) {
+        stock_minimo = 1;
+    }
 
     if (!sku || !nombre) {
         toast(_t('El SKU y el Nombre son campos requeridos','SKU and Name are required fields'), 'error');
         return;
     }
-
+    
     const url    = productoEditandoId !== null ? `${API}/productos/${productoEditandoId}` : `${API}/productos`;
     const metodo = productoEditandoId !== null ? 'PUT' : 'POST';
 
@@ -260,8 +262,11 @@ function resetearFormulario() {
     document.getElementById('p-categoria').disabled = false;
     document.getElementById('p-nombre').value     = '';
     document.getElementById('p-descripcion').value = '';
+    
+    // MODIFICACIÓN: Al limpiar, se setea por defecto en 1
     const stockMin = document.getElementById('p-stockmin');
-    if (stockMin) stockMin.value = '';
+    if (stockMin) stockMin.value = 1; 
+    
     document.getElementById('p-precio').value = '';
 }
 

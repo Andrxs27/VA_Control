@@ -37,7 +37,7 @@ function normalizarYTraducir(cadena) {
     const limpia = cadena.toLowerCase()
                          .replace(/["']/g, '') // Elimina comillas simples y dobles
                          .replace(/[áéíóú]/g, m => ({'á':'a','é':'e','í':'i','ó':'o','ú':'u'}[m])) // Quita tildes
-                         .trim();
+                        .trim();
 
     if (diccionarioGlobal[limpia]) return diccionarioGlobal[limpia];
 
@@ -88,6 +88,7 @@ function estadoBadge(e) {
 async function renderOrdenes(filtro = 'all') {
     try {
         if (filtro === 'all' || filtro === true || ordenesListados.length === 0) {
+            //fetch get
             const res   = await fetch(`${API}/ordenes`);
             ordenesListados = await res.json();
         }
@@ -115,16 +116,16 @@ async function renderOrdenes(filtro = 'all') {
 
             const idStr          = String(o.id);
             const coincideTexto  = nombreCliente.includes(filtroTexto) ||
-                                   nombreTecnico.includes(filtroTexto) ||
-                                   equipoTraducido.toLowerCase().includes(filtroTexto) ||
-                                   fallaTraducida.toLowerCase().includes(filtroTexto)  ||
-                                   idStr.includes(filtroTexto);
+                                nombreTecnico.includes(filtroTexto) ||
+                                equipoTraducido.toLowerCase().includes(filtroTexto) ||
+                                fallaTraducida.toLowerCase().includes(filtroTexto)  ||
+                                idStr.includes(filtroTexto);
             return coincideEstado && coincideTexto;
         });
 
         let html = '';
         for (const o of data) {
-            // Aplicamos la traducción ultra-tolerante para las celdas
+            // Aplicamos la traducción para las celdas
             const equipoMostrar = normalizarYTraducir(o.equipo);
             const fallaMostrar  = normalizarYTraducir(o.falla);
 
@@ -193,6 +194,7 @@ function solicitarEliminacion(id) {
 }
 
 async function ejecutarAccionConfirmada() {
+    //fetch delete 
     try {
         if (tipoAccion === 'eliminar') {
             await fetch(`${API}/ordenes/${idOrdenAccion}`, { method: 'DELETE' });
@@ -221,7 +223,7 @@ async function ejecutarAccionConfirmada() {
 // ── MODAL NUEVA / EDITAR ORDEN ───────────────────────────────────────────────
 function desbloquearTodosCampos() {
     ['o-cliente','o-serial','o-marca','o-modelo','o-tecnico','o-equipo',
-     'o-fecha','o-costo','o-falla','o-diagnostico','o-notas','o-entrega','o-estado'
+    'o-fecha','o-costo','o-falla','o-diagnostico','o-notas','o-entrega','o-estado'
     ].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -233,7 +235,7 @@ function desbloquearTodosCampos() {
 function nuevaOrden() {
     ordenEditandoId = null;
     ['o-cliente','o-tecnico','o-equipo','o-fecha','o-marca','o-modelo',
-     'o-serial','o-costo','o-falla','o-diagnostico','o-notas'
+    'o-serial','o-costo','o-falla','o-diagnostico','o-notas'
     ].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
     document.getElementById('o-entrega').value = 'tienda';
     document.getElementById('o-estado').value  = 'pendiente';
@@ -266,7 +268,8 @@ async function guardarOrden() {
         }
 
         const datosOrden = { cliente_id, tecnico_id, equipo, falla, estado, tipo_entrega, fecha_promesa, marca, modelo, serial_equipo, costo_servicio, notas, diagnostico };
-
+        
+        //fetch post/put
         if (ordenEditandoId) {
             await fetch(`${API}/ordenes/${ordenEditandoId}`, {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },

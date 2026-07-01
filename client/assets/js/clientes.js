@@ -235,7 +235,7 @@ function solicitarEliminacion(id) {
     });
 }
 
-// CRUD - DELETE
+
 async function cambiarEstadoCliente(id, nuevoEstado) {
     try {
 
@@ -248,7 +248,7 @@ async function cambiarEstadoCliente(id, nuevoEstado) {
         cargarClientes();
     } catch (error) { mostrarToast(error.message, 'error'); }
 }
-
+// CRUD - DELETE
 async function eliminarClienteDefinitivo(id) {
     try {
         const res  = await fetch(`${API}/clientes/${id}`, { method: 'DELETE' });

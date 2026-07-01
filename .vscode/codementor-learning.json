@@ -1,0 +1,44 @@
+{
+  "JS-001": {
+    "occurrences": 4,
+    "confidence": 1,
+    "mastered_explicitly": false,
+    "first_seen": "2026-07-01T12:57:54.528Z",
+    "last_seen": "2026-07-01T12:57:54.545Z"
+  },
+  "SEC-004": {
+    "occurrences": 11,
+    "confidence": 1,
+    "mastered_explicitly": false,
+    "first_seen": "2026-07-01T12:58:18.314Z",
+    "last_seen": "2026-07-01T13:52:59.237Z"
+  },
+  "ASYNC-001": {
+    "occurrences": 17,
+    "confidence": 1,
+    "mastered_explicitly": false,
+    "first_seen": "2026-07-01T12:58:18.319Z",
+    "last_seen": "2026-07-01T13:52:59.236Z"
+  },
+  "PERF-002": {
+    "occurrences": 1,
+    "confidence": 1,
+    "mastered_explicitly": false,
+    "first_seen": "2026-07-01T12:58:18.322Z",
+    "last_seen": "2026-07-01T12:58:18.322Z"
+  },
+  "ARCH-003": {
+    "occurrences": 8,
+    "confidence": 1,
+    "mastered_explicitly": false,
+    "first_seen": "2026-07-01T12:58:18.325Z",
+    "last_seen": "2026-07-01T13:52:59.242Z"
+  },
+  "CC-004": {
+    "occurrences": 6,
+    "confidence": 1,
+    "mastered_explicitly": false,
+    "first_seen": "2026-07-01T12:58:18.326Z",
+    "last_seen": "2026-07-01T13:52:59.240Z"
+  }
+}

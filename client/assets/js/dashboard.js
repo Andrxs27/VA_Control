@@ -63,7 +63,7 @@ function traducirDatoBD(cadena) {
     return cadena; // Retorno por defecto si no se encuentra
 }
 
-// ── DATOS INICIALES ──────────────────────────────────────────────────────────
+// ── Fetch ──────────────────────────────────────────────────────
 async function cargarDashboard() {
     try {
         const fecha = new Date().toLocaleDateString(_locale(), {
