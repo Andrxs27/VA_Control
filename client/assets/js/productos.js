@@ -114,7 +114,7 @@ function prepararEdicion(id) {
         el.style.cursor = 'not-allowed';     el.style.opacity = '0.6';
     };
     bloquear('p-sku',   producto.sku   || '');
-    bloquear('p-stock', producto.stock || 0);
+    bloquear('p-stock', producto.stock || 1);
 
     document.getElementById('p-categoria').value   = producto.categoria     || '';
     document.getElementById('p-nombre').value       = producto.nombre        || '';
@@ -132,10 +132,15 @@ async function guardarProducto() {
     const nombre       = document.getElementById('p-nombre').value.trim();
     const descripcion  = document.getElementById('p-descripcion').value.trim();
     const categoria    = document.getElementById('p-categoria')?.value || '';
-    const stock        = parseInt(document.getElementById('p-stock').value, 10)    || 0;
     const precio_venta = parseFloat((document.getElementById('p-precio').value || '0').toString().replace(',','.')) || 0;
 
-    // VALIDACIÓN AJUSTADA: Asegurar que el stock mínimo no sea menor a 1
+    // NUEVA VALIDACIÓN: Asegurar que el stock inicial no sea menor a 1
+    let stock = parseInt(document.getElementById('p-stock').value, 10);
+    if (isNaN(stock) || stock < 1) {
+        stock = 1;
+    }
+
+    // VALIDACIÓN: Asegurar que el stock mínimo no sea menor a 1
     let stock_minimo = parseInt(document.getElementById('p-stockmin')?.value, 10);
     if (isNaN(stock_minimo) || stock_minimo < 1) {
         stock_minimo = 1;
@@ -257,13 +262,16 @@ function resetearFormulario() {
         el.style.background = el.style.color = el.style.cursor = el.style.opacity = '';
     };
     desbloq('p-sku');
-    desbloq('p-stock');
+    
+    // MODIFICACIÓN: Al limpiar el formulario, el stock inicial por defecto es 1
+    desbloq('p-stock', 1);
+    
     document.getElementById('p-categoria').value  = 'electronicos';
     document.getElementById('p-categoria').disabled = false;
     document.getElementById('p-nombre').value     = '';
     document.getElementById('p-descripcion').value = '';
     
-    // MODIFICACIÓN: Al limpiar, se setea por defecto en 1
+    // Al limpiar, el stock mínimo por defecto es 1
     const stockMin = document.getElementById('p-stockmin');
     if (stockMin) stockMin.value = 1; 
     
