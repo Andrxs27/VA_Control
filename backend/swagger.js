@@ -7,8 +7,8 @@ const options = {
       title: 'VA_Control API',
       version: '1.0.0',
       description:
-        'Documentación de la API REST de VA_Control: sistema de gestión de ventas, ' +
-        'órdenes de servicio, inventario, clientes y usuarios para negocios de reparación/servicio técnico.',
+        'Documentación de la API REST de VA_Control: sistema de gestión de ' +
+        'órdenes de servicio, inventario, productos, clientes y usuarios para negocios de reparación/servicio técnico.',
       contact: {
         name: 'VA_Control'
       }
@@ -28,9 +28,7 @@ const options = {
       { name: 'Usuarios', description: 'Gestión de usuarios del sistema (admin, vendedor, técnico)' },
       { name: 'Clientes', description: 'Gestión de clientes' },
       { name: 'Productos', description: 'Catálogo de productos' },
-      { name: 'Ventas', description: 'Registro y gestión de ventas' },
       { name: 'Órdenes de servicio', description: 'Órdenes de reparación / servicio técnico' },
-      { name: 'Facturas', description: 'Facturación de ventas y órdenes de servicio' },
       { name: 'Inventario', description: 'Stock, alertas y movimientos de inventario' }
     ],
     components: {

@@ -6,26 +6,26 @@ const pool = require('../db');
 /**
  * @swagger
  * /api/productos:
- * get:
- * summary: Listar todos los productos
- * tags: [Productos]
- * responses:
- * 200:
- * description: Lista de productos
- * content:
- * application/json:
- * schema:
- * type: array
- * items:
- * $ref: '#/components/schemas/Producto'
- * 500:
- * description: Error interno del servidor
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error'
- * example:
- * error: 'Error al obtener los productos de la base de datos'
+ *   get:
+ *     summary: Listar todos los productos
+ *     tags: [Productos]
+ *     responses:
+ *       200:
+ *         description: Lista de productos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Producto'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener los productos de la base de datos'
  */
 router.get('/', async (req, res) => {
     try {
@@ -41,38 +41,38 @@ router.get('/', async (req, res) => {
 /**
  * @swagger
  * /api/productos/{id}:
- * get:
- * summary: Obtener un producto por ID
- * tags: [Productos]
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: integer
- * responses:
- * 200:
- * description: Producto encontrado
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Producto'
- * 404:
- * description: Producto no encontrado
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error'
- * example:
- * error: 'El producto solicitado no existe'
- * 500:
- * description: Error interno del servidor
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error'
- * example:
- * error: 'Error al obtener el producto.'
+ *   get:
+ *     summary: Obtener un producto por ID
+ *     tags: [Productos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Producto encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Producto'
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El producto solicitado no existe'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'Error al obtener el producto.'
  */
 router.get('/:id', async (req, res) => {
     try {
@@ -92,32 +92,36 @@ router.get('/:id', async (req, res) => {
 /**
  * @swagger
  * /api/productos:
- * post:
- * summary: Crear un nuevo producto
- * tags: [Productos]
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/ProductoInput'
- * responses:
- * 201:
- * description: Producto creado correctamente
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Producto'
- * 400:
- * description: SKU/nombre faltante, SKU duplicado o stocks inválidos
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Error'
- * example:
- * error: 'El stock inicial debe ser mayor o igual a 1'
- * 500:
- * description: Error interno del servidor
+ *   post:
+ *     summary: Crear un nuevo producto
+ *     tags: [Productos]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductoInput'
+ *     responses:
+ *       201:
+ *         description: Producto creado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Producto'
+ *       400:
+ *         description: SKU/nombre faltante, SKU duplicado o stocks inválidos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *             example:
+ *               error: 'El stock inicial debe ser mayor o igual a 1'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/', async (req, res) => {
     try {
@@ -161,30 +165,46 @@ router.post('/', async (req, res) => {
 /**
  * @swagger
  * /api/productos/{id}:
- * put:
- * summary: Actualizar un producto existente
- * tags: [Productos]
- * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: integer
- * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/ProductoInput'
- * responses:
- * 200:
- * description: Producto actualizado correctamente
- * 400:
- * description: SKU duplicado o valores de stock menores a 1
- * 404:
- * description: Producto no encontrado
- * 500:
- * description: Error interno del servidor
+ *   put:
+ *     summary: Actualizar un producto existente
+ *     tags: [Productos]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ProductoInput'
+ *     responses:
+ *       200:
+ *         description: Producto actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Producto'
+ *       400:
+ *         description: SKU duplicado o valores de stock menores a 1
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Producto no encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.put('/:id', async (req, res) => {
     try {
